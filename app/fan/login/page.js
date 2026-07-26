@@ -19,7 +19,7 @@ export default function FanLogin() {
 
   const inputStyle = {
     width:'100%', padding:'14px 16px', background:'rgba(255,255,255,0.6)',
-    border:'1px solid rgba(0,0,0,0.1)', borderRadius:'10px', color:'#1d1d1f',
+    border:'1px solid rgba(0,0,0,0.1)', borderRadius:'10px', color:'#152238',
     fontSize:'16px', marginBottom:'12px', outline:'none',
     backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)',
     WebkitAppearance:'none', transition:'border-color 0.2s, box-shadow 0.2s'
@@ -44,7 +44,7 @@ export default function FanLogin() {
 
       {/* Nav */}
       <nav style={{padding:'0 24px',height:'60px',display:'flex',alignItems:'center',borderBottom:'1px solid rgba(0,0,0,0.08)',background:'rgba(255,255,255,0.5)',backdropFilter:'saturate(200%) blur(28px)',WebkitBackdropFilter:'saturate(200%) blur(28px)',flexShrink:0,position:'relative',zIndex:1}}>
-        <a href="/"><img src="/SportSpot Logo Updated.png" alt="SportSpot" style={{height:'40px',width:'auto'}}/></a>
+        <a href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'48px',width:'auto'}}/></a>
       </nav>
 
       {/* Card */}
@@ -58,7 +58,7 @@ export default function FanLogin() {
           boxShadow:'0 8px 64px rgba(0,0,0,0.08), 0 2px 0 rgba(255,255,255,0.8) inset',
           borderRadius:'28px',padding:'40px',
         }}>
-          <h1 style={{fontSize:'22px',fontWeight:'700',marginBottom:'4px',color:'#1d1d1f',letterSpacing:'-0.5px'}}>Fan sign in</h1>
+          <h1 style={{fontSize:'22px',fontWeight:'700',marginBottom:'4px',color:'#152238',letterSpacing:'-0.5px'}}>Fan sign in</h1>
           <p style={{color:'#6e6e73',fontSize:'14px',marginBottom:'28px',lineHeight:'1.5'}}>
             See pubs showing your favourite teams.
           </p>

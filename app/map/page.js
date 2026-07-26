@@ -230,7 +230,7 @@ export default function FanMap() {
                     <Star size={9} strokeWidth={2} fill="white"/>
                   </div>
                 )}
-                <div style={{fontWeight:'700',fontSize: compact ? '13px' : '14px',color:'#1d1d1f',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',letterSpacing:'-0.1px'}}>{pub.name}</div>
+                <div style={{fontWeight:'700',fontSize: compact ? '13px' : '14px',color:'#152238',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',letterSpacing:'-0.1px'}}>{pub.name}</div>
               </div>
               <div style={{fontSize:'11px',color:'#aeaeb2',display:'flex',alignItems:'center',gap:'4px'}}>
                 <MapPin size={11} strokeWidth={2} color="#c7c7cc"/>
@@ -277,7 +277,7 @@ export default function FanMap() {
       <div style={{width:'300px',fontFamily:'system-ui,sans-serif',overflow:'hidden',borderRadius:'10px',border:'1px solid #e8732a30',background:'white'}}>
         <div style={{background:'linear-gradient(135deg,#fff8f3,#f8f0ff)',padding:'14px 16px 12px',display:'flex',justifyContent:'space-between',alignItems:'flex-start',borderBottom:'1px solid rgba(0,0,0,0.06)'}}>
           <div style={{flex:1,paddingRight:'8px'}}>
-            <div style={{fontWeight:'800',fontSize:'15px',color:'#1d1d1f',lineHeight:'1.2',marginBottom:'4px',letterSpacing:'-0.2px'}}>{pub.name}</div>
+            <div style={{fontWeight:'800',fontSize:'15px',color:'#152238',lineHeight:'1.2',marginBottom:'4px',letterSpacing:'-0.2px'}}>{pub.name}</div>
             <div style={{fontSize:'11px',color:'#8e8e93',display:'flex',alignItems:'center',gap:'4px'}}><MapPin size={11} strokeWidth={2}/><span>{pub.address}</span></div>
           </div>
           <button onClick={() => setSelectedPub(null)} style={{background:'white',border:'1px solid rgba(0,0,0,0.08)',borderRadius:'50%',width:'26px',height:'26px',color:'#8e8e93',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}><X size={13} strokeWidth={2}/></button>
@@ -311,7 +311,7 @@ export default function FanMap() {
                       <SportIcon sport={f.sport}/>
                       <span style={{fontSize:'11px',fontWeight:'700',color:'#e8732a',textTransform:'uppercase',letterSpacing:'0.5px'}}>{f.competition}</span>
                     </div>
-                    <span style={{fontSize:'11px',fontWeight:'700',color:'#1d1d1f',background:'#f5f5f7',padding:'2px 8px',borderRadius:'4px'}}>{time}</span>
+                    <span style={{fontSize:'11px',fontWeight:'700',color:'#152238',background:'#f5f5f7',padding:'2px 8px',borderRadius:'4px'}}>{time}</span>
                   </div>
                   <div style={{fontSize:'13px',fontWeight:'700',color:'#3a3a3c',paddingLeft:'20px'}}>{f.home_team} vs {f.away_team}</div>
                   <div style={{fontSize:'11px',color:'#aeaeb2',paddingLeft:'20px',marginTop:'2px'}}>{f.broadcaster}</div>
@@ -344,7 +344,7 @@ export default function FanMap() {
 
         {/* Mobile nav */}
         <div style={{background:'rgba(255,255,255,0.75)',backdropFilter:'saturate(200%) blur(20px)',WebkitBackdropFilter:'saturate(200%) blur(20px)',borderBottom:'1px solid rgba(0,0,0,0.06)',padding:'0 16px',height:'52px',display:'flex',alignItems:'center',justifyContent:'space-between',flexShrink:0,zIndex:10}}>
-          <a href="/"><img src="/SportSpot Logo Updated.png" alt="SportSpot" style={{height:'36px',width:'auto'}}/></a>
+          <a href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'40px',width:'auto'}}/></a>
           <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
             {activeFiltersCount > 0 && (
               <div style={{background:'#e8732a',borderRadius:'20px',padding:'4px 12px',fontSize:'11px',fontWeight:'700',color:'white',letterSpacing:'0.3px'}}>
@@ -424,7 +424,7 @@ export default function FanMap() {
                     <div style={{background:'white',border:'1px solid #e8732a30',borderRadius:'14px',marginBottom:'12px',overflow:'hidden',animation:'fadeIn 0.2s ease',boxShadow:'0 4px 20px rgba(0,0,0,0.05)'}}>
                       <div style={{padding:'14px 16px 12px',display:'flex',justifyContent:'space-between',alignItems:'flex-start'}}>
                         <div style={{flex:1}}>
-                          <div style={{fontWeight:'800',fontSize:'15px',color:'#1d1d1f',marginBottom:'4px',letterSpacing:'-0.2px'}}>{mobilePubDetail.name}</div>
+                          <div style={{fontWeight:'800',fontSize:'15px',color:'#152238',marginBottom:'4px',letterSpacing:'-0.2px'}}>{mobilePubDetail.name}</div>
                           <div style={{fontSize:'12px',color:'#8e8e93'}}>{mobilePubDetail.address}</div>
                           {userLocation && <div style={{fontSize:'11px',color:'#e8732a',marginTop:'3px',fontWeight:'700'}}>{getDistance(userLocation.lat,userLocation.lng,mobilePubDetail.latitude,mobilePubDetail.longitude)} mi away</div>}
                         </div>
@@ -456,7 +456,7 @@ export default function FanMap() {
                                   <div style={{display:'flex',alignItems:'center',gap:'7px',flex:1,minWidth:0}}>
                                     <SportIcon sport={f.sport}/>
                                     <div style={{minWidth:0}}>
-                                      <div style={{fontSize:'13px',fontWeight:'700',color:'#1d1d1f',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{f.home_team} vs {f.away_team}</div>
+                                      <div style={{fontSize:'13px',fontWeight:'700',color:'#152238',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{f.home_team} vs {f.away_team}</div>
                                       <div style={{fontSize:'11px',color:'#aeaeb2'}}>{f.competition}</div>
                                     </div>
                                   </div>
@@ -557,7 +557,7 @@ export default function FanMap() {
                               {isSelected && <Check size={13} strokeWidth={2.5} color="white"/>}
                             </div>
                             <div style={{flex:1}}>
-                              <div style={{fontSize:'13px',fontWeight:'700',color:isSelected?'#1d1d1f':'#6e6e73',marginBottom:'2px'}}>{f.home_team} vs {f.away_team}</div>
+                              <div style={{fontSize:'13px',fontWeight:'700',color:isSelected?'#152238':'#6e6e73',marginBottom:'2px'}}>{f.home_team} vs {f.away_team}</div>
                               <div style={{fontSize:'11px',color:'#aeaeb2'}}>{time} · {f.broadcaster}</div>
                             </div>
                           </button>
@@ -590,7 +590,7 @@ export default function FanMap() {
                   {fanSession.user.email[0].toUpperCase()}
                 </div>
                 <div>
-                  <div style={{fontWeight:'700',fontSize:'14px',color:'#1d1d1f'}}>Fan Account</div>
+                  <div style={{fontWeight:'700',fontSize:'14px',color:'#152238'}}>Fan Account</div>
                   <div style={{fontSize:'11px',color:'#aeaeb2',marginTop:'2px',wordBreak:'break-all'}}>{fanSession.user.email}</div>
                 </div>
               </div>
@@ -602,7 +602,7 @@ export default function FanMap() {
                   </div>
                 </div>
               )}
-              <a href="/fan/profile" style={{display:'block',background:'#f5f5f7',border:'1px solid rgba(0,0,0,0.06)',color:'#1d1d1f',borderRadius:'8px',padding:'12px',fontSize:'14px',fontWeight:'600',textAlign:'center',marginBottom:'8px'}}>Edit Profile</a>
+              <a href="/fan/profile" style={{display:'block',background:'#f5f5f7',border:'1px solid rgba(0,0,0,0.06)',color:'#152238',borderRadius:'8px',padding:'12px',fontSize:'14px',fontWeight:'600',textAlign:'center',marginBottom:'8px'}}>Edit Profile</a>
               <button onClick={async () => { await supabase.auth.signOut(); window.location.href='/' }} style={{width:'100%',background:'none',border:'1px solid rgba(0,0,0,0.08)',borderRadius:'8px',padding:'12px',fontSize:'14px',color:'#aeaeb2',cursor:'pointer'}}>Sign Out</button>
             </div>
           </div>
@@ -618,7 +618,7 @@ export default function FanMap() {
 
       {/* Top nav bar */}
       <div style={{background:'rgba(255,255,255,0.75)',borderBottom:'1px solid rgba(0,0,0,0.06)',padding:'0 24px',height:'56px',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'16px',flexShrink:0,backdropFilter:'saturate(200%) blur(20px)',WebkitBackdropFilter:'saturate(200%) blur(20px)'}}>
-        <a href="/"><img src="/SportSpot Logo Updated.png" alt="SportSpot" style={{height:'40px',width:'auto'}}/></a>
+        <a href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'46px',width:'auto'}}/></a>
 
         {/* Filter bar — centre */}
         <div ref={filterRef} style={{position:'relative',flex:1,maxWidth:'680px'}}>
@@ -787,7 +787,7 @@ export default function FanMap() {
               {fanSession.user.email[0].toUpperCase()}
             </div>
             <div>
-              <div style={{fontWeight:'700',fontSize:'14px',color:'#1d1d1f',letterSpacing:'-0.1px'}}>Fan Account</div>
+              <div style={{fontWeight:'700',fontSize:'14px',color:'#152238',letterSpacing:'-0.1px'}}>Fan Account</div>
               <div style={{fontSize:'11px',color:'#aeaeb2',marginTop:'2px'}}>{fanSession.user.email}</div>
             </div>
           </div>
@@ -807,7 +807,7 @@ export default function FanMap() {
               </div>
             </div>
           )}
-          <a href="/fan/profile" style={{display:'block',background:'#f5f5f7',border:'1px solid rgba(0,0,0,0.06)',color:'#1d1d1f',borderRadius:'10px',padding:'12px',fontSize:'14px',fontWeight:'600',textAlign:'center',marginBottom:'8px'}}>Edit Profile</a>
+          <a href="/fan/profile" style={{display:'block',background:'#f5f5f7',border:'1px solid rgba(0,0,0,0.06)',color:'#152238',borderRadius:'10px',padding:'12px',fontSize:'14px',fontWeight:'600',textAlign:'center',marginBottom:'8px'}}>Edit Profile</a>
           <button onClick={async () => { await supabase.auth.signOut(); window.location.href='/' }} style={{width:'100%',background:'none',border:'1px solid rgba(0,0,0,0.08)',borderRadius:'10px',padding:'12px',fontSize:'14px',color:'#aeaeb2',cursor:'pointer'}}>Sign Out</button>
         </div>
       )}

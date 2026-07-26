@@ -53,7 +53,7 @@ export default function SetupPage() {
     border: '1px solid rgba(0,0,0,0.1)',
     borderRadius: '10px',
     padding: '13px 14px',
-    color: '#1d1d1f',
+    color: '#152238',
     marginBottom: '12px',
     fontSize: '15px',
     outline: 'none',
@@ -92,14 +92,14 @@ export default function SetupPage() {
           <div style={{width:'6px',height:'6px',borderRadius:'50%',background:'#e8732a'}}/>
           <span style={{fontSize:'12px',color:'#e8732a',fontWeight:'600',letterSpacing:'0.2px'}}>Venue setup</span>
         </div>
-        <h1 style={{color:'#1d1d1f',fontSize:'28px',fontWeight:'700',letterSpacing:'-1px',marginBottom:'4px'}}>Set up your venue</h1>
+        <h1 style={{color:'#152238',fontSize:'28px',fontWeight:'700',letterSpacing:'-1px',marginBottom:'4px'}}>Set up your venue</h1>
         <p style={{color:'#6e6e73',marginBottom:'28px',fontSize:'14px'}}>This information appears on the fan map</p>
         <input className="auth-input" style={inputStyle} placeholder="Pub name" value={name} onChange={e=>setName(e.target.value)}/>
         <input className="auth-input" style={inputStyle} placeholder="Full address" value={address} onChange={e=>setAddress(e.target.value)}/>
         <p style={{color:'#aeaeb2',fontSize:'12px',marginBottom:'8px'}}>Find coordinates at maps.google.com — right-click your pub and copy the numbers</p>
         <input className="auth-input" style={inputStyle} placeholder="Latitude (e.g. 51.5045)" value={lat} onChange={e=>setLat(e.target.value)}/>
         <input className="auth-input" style={inputStyle} placeholder="Longitude (e.g. -0.0865)" value={lng} onChange={e=>setLng(e.target.value)}/>
-        <p style={{color:'#1d1d1f',fontSize:'14px',marginBottom:'12px',fontWeight:'600'}}>Sports packages</p>
+        <p style={{color:'#152238',fontSize:'14px',marginBottom:'12px',fontWeight:'600'}}>Sports packages</p>
         <label style={{display:'flex',alignItems:'center',gap:'10px',color:'#3a3a3c',marginBottom:'10px',cursor:'pointer',fontSize:'14px'}}>
           <input className="setup-check" type="checkbox" checked={hasSky} onChange={e=>setHasSky(e.target.checked)}/> Sky Sports
         </label>

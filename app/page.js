@@ -1,5 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import Lenis from 'lenis'
 import { User, ClipboardList, MapPin, Beer, CheckCircle2, Tv, FootballIcon, Menu, X } from '../lib/icons'
 
 export default function Home() {
@@ -12,8 +15,70 @@ export default function Home() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  // Smooth scroll (Lenis) + scroll-triggered reveals (GSAP). Skipped entirely
+  // for prefers-reduced-motion — content is fully visible either way, this
+  // only controls how it arrives.
+  useEffect(() => {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    gsap.registerPlugin(ScrollTrigger)
+
+    let lenis = null
+    if (!reducedMotion) {
+      lenis = new Lenis({ duration: 1.1, smoothWheel: true })
+      lenis.on('scroll', ScrollTrigger.update)
+      gsap.ticker.add((time) => lenis.raf(time * 1000))
+      gsap.ticker.lagSmoothing(0)
+    }
+
+    const ctx = gsap.context(() => {
+      const revealGroups = [
+        { selector: '.step-card', stagger: 0.1 },
+        { selector: '.feature-card', stagger: 0.08 },
+      ]
+      revealGroups.forEach(({ selector, stagger }) => {
+        const els = gsap.utils.toArray(selector)
+        if (!els.length) return
+        if (reducedMotion) { gsap.set(els, { opacity: 1, y: 0 }); return }
+        gsap.fromTo(els,
+          { opacity: 0, y: 32 },
+          {
+            opacity: 1, y: 0, stagger, duration: 0.7, ease: 'power3.out',
+            scrollTrigger: { trigger: els[0].closest('.steps-grid, .features-grid') || els[0], start: 'top 85%' },
+          }
+        )
+      })
+
+      const ctaInner = document.querySelector('.cta-inner')
+      if (ctaInner) {
+        if (reducedMotion) { gsap.set(ctaInner, { opacity: 1, y: 0 }) }
+        else {
+          gsap.fromTo(ctaInner,
+            { opacity: 0, y: 28 },
+            { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
+              scrollTrigger: { trigger: ctaInner, start: 'top 85%' } }
+          )
+        }
+      }
+
+      if (!reducedMotion) {
+        gsap.utils.toArray('.hero-orb').forEach((orb, i) => {
+          gsap.to(orb, {
+            y: (i % 2 === 0 ? -1 : 1) * 80,
+            ease: 'none',
+            scrollTrigger: { trigger: orb, start: 'top bottom', end: 'bottom top', scrub: 0.6 },
+          })
+        })
+      }
+    })
+
+    return () => {
+      ctx.revert()
+      lenis?.destroy()
+    }
+  }, [])
+
   return (
-    <div style={{background:'#f5f5f7',minHeight:'100vh',color:'#1d1d1f',fontFamily:"-apple-system,'SF Pro Display','SF Pro Text',BlinkMacSystemFont,'Helvetica Neue',sans-serif"}}>
+    <div style={{background:'#f5f5f7',minHeight:'100vh',color:'#152238',fontFamily:"-apple-system,'SF Pro Display','SF Pro Text',BlinkMacSystemFont,'Helvetica Neue',sans-serif"}}>
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -49,7 +114,6 @@ export default function Home() {
         .hero-glass { animation: scaleIn 0.8s cubic-bezier(0.22,1,0.36,1) 0.05s both; }
 
         .step-card {
-          animation: scaleIn 0.7s cubic-bezier(0.22,1,0.36,1) both;
           transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease;
         }
         .step-card:hover {
@@ -84,7 +148,7 @@ export default function Home() {
           transition: color 0.2s ease;
           text-decoration: none;
         }
-        .nav-link:hover { color: #1d1d1f !important; }
+        .nav-link:hover { color: #152238 !important; }
 
         @media (max-width: 768px) {
           .nav-desktop { display: none !important; }
@@ -121,7 +185,7 @@ export default function Home() {
         display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 24px',
       }}>
         <a href="/">
-          <img src="/SportSpot Logo Updated.png" alt="SportSpot" style={{height:'32px',width:'auto'}}/>
+          <img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'40px',width:'auto'}}/>
         </a>
 
         <div className="nav-desktop" style={{display:'flex',gap:'4px',alignItems:'center'}}>
@@ -138,7 +202,7 @@ export default function Home() {
         </div>
 
         <button className="nav-hamburger" onClick={() => setMenuOpen(p => !p)}
-          style={{display:'none',background:'none',border:'none',cursor:'pointer',padding:'8px',alignItems:'center',justifyContent:'center',color:'#1d1d1f'}}>
+          style={{display:'none',background:'none',border:'none',cursor:'pointer',padding:'8px',alignItems:'center',justifyContent:'center',color:'#152238'}}>
           {menuOpen ? <X size={18} strokeWidth={1.75}/> : <Menu size={18} strokeWidth={1.75}/>}
         </button>
       </nav>
@@ -148,7 +212,7 @@ export default function Home() {
         <div style={{position:'fixed',top:'52px',left:0,right:0,zIndex:99,background:'rgba(245,245,247,0.92)',backdropFilter:'blur(28px)',WebkitBackdropFilter:'blur(28px)',borderBottom:'1px solid rgba(0,0,0,0.08)',padding:'12px 24px 20px',display:'flex',flexDirection:'column',gap:'2px'}}>
           {[{href:'/map',label:'Find Pubs'},{href:'/fan/login',label:'Fan Sign In'},{href:'/login',label:'Venue Login'}].map(item => (
             <a key={item.href} href={item.href} onClick={() => setMenuOpen(false)}
-              style={{color:'#1d1d1f',fontSize:'17px',fontWeight:'400',padding:'14px 0',borderBottom:'1px solid rgba(0,0,0,0.06)',letterSpacing:'-0.2px',textDecoration:'none',display:'block'}}>
+              style={{color:'#152238',fontSize:'17px',fontWeight:'400',padding:'14px 0',borderBottom:'1px solid rgba(0,0,0,0.06)',letterSpacing:'-0.2px',textDecoration:'none',display:'block'}}>
               {item.label}
             </a>
           ))}
@@ -170,10 +234,10 @@ export default function Home() {
         background:'linear-gradient(135deg, #fff8f3 0%, #ffffff 25%, #f0f4ff 55%, #f8f0ff 80%, #fff5f0 100%)',
       }}>
         {/* Colour orbs — large blurred blobs that make the glass effect dramatic */}
-        <div style={{position:'absolute',top:'-5%',left:'-5%',width:'55vw',height:'55vw',borderRadius:'50%',background:'rgba(232,115,42,0.22)',filter:'blur(80px)',animation:'floatA 9s ease-in-out infinite',pointerEvents:'none'}}/>
-        <div style={{position:'absolute',top:'15%',right:'-10%',width:'50vw',height:'50vw',borderRadius:'50%',background:'rgba(99,102,241,0.15)',filter:'blur(90px)',animation:'floatB 11s ease-in-out infinite',pointerEvents:'none'}}/>
-        <div style={{position:'absolute',bottom:'-10%',left:'25%',width:'60vw',height:'40vw',borderRadius:'50%',background:'rgba(168,85,247,0.1)',filter:'blur(100px)',animation:'floatC 13s ease-in-out infinite',pointerEvents:'none'}}/>
-        <div style={{position:'absolute',top:'40%',left:'35%',width:'30vw',height:'30vw',borderRadius:'50%',background:'rgba(232,115,42,0.1)',filter:'blur(60px)',pointerEvents:'none'}}/>
+        <div className="hero-orb" style={{position:'absolute',top:'-5%',left:'-5%',width:'55vw',height:'55vw',borderRadius:'50%',background:'rgba(232,115,42,0.22)',filter:'blur(80px)',animation:'floatA 9s ease-in-out infinite',pointerEvents:'none'}}/>
+        <div className="hero-orb" style={{position:'absolute',top:'15%',right:'-10%',width:'50vw',height:'50vw',borderRadius:'50%',background:'rgba(99,102,241,0.15)',filter:'blur(90px)',animation:'floatB 11s ease-in-out infinite',pointerEvents:'none'}}/>
+        <div className="hero-orb" style={{position:'absolute',bottom:'-10%',left:'25%',width:'60vw',height:'40vw',borderRadius:'50%',background:'rgba(168,85,247,0.1)',filter:'blur(100px)',animation:'floatC 13s ease-in-out infinite',pointerEvents:'none'}}/>
+        <div className="hero-orb" style={{position:'absolute',top:'40%',left:'35%',width:'30vw',height:'30vw',borderRadius:'50%',background:'rgba(232,115,42,0.1)',filter:'blur(60px)',pointerEvents:'none'}}/>
 
         <div className="hero-inner" style={{maxWidth:'860px',margin:'0 auto',padding:'80px 24px 100px',textAlign:'center',position:'relative',zIndex:1,width:'100%'}}>
 
@@ -194,7 +258,7 @@ export default function Home() {
                 <span style={{fontSize:'13px',color:'#e8732a',fontWeight:'500',letterSpacing:'0.1px'}}>Live in London</span>
               </div>
 
-              <h1 className="hero-headline" style={{fontSize:'68px',fontWeight:'700',lineHeight:'1.03',letterSpacing:'-3px',color:'#1d1d1f',marginBottom:'20px'}}>
+              <h1 className="hero-headline" style={{fontSize:'68px',fontWeight:'700',lineHeight:'1.03',letterSpacing:'-3px',color:'#152238',marginBottom:'20px'}}>
                 Find a pub showing<br/>
                 <span style={{color:'#e8732a'}}>the game you want.</span>
               </h1>
@@ -209,7 +273,7 @@ export default function Home() {
                   Find a Pub
                 </a>
                 <a href="/fan/register" className="cta-btn-secondary"
-                  style={{background:'rgba(255,255,255,0.5)',backdropFilter:'blur(8px)',WebkitBackdropFilter:'blur(8px)',color:'#1d1d1f',padding:'15px 36px',borderRadius:'980px',fontSize:'17px',fontWeight:'600',letterSpacing:'-0.3px',border:'1px solid rgba(0,0,0,0.1)'}}>
+                  style={{background:'rgba(255,255,255,0.5)',backdropFilter:'blur(8px)',WebkitBackdropFilter:'blur(8px)',color:'#152238',padding:'15px 36px',borderRadius:'980px',fontSize:'17px',fontWeight:'600',letterSpacing:'-0.3px',border:'1px solid rgba(0,0,0,0.1)'}}>
                   Create Fan Account
                 </a>
               </div>
@@ -226,7 +290,7 @@ export default function Home() {
               {value:'Free',label:'For fans always'},
             ].map(s => (
               <div key={s.label} style={{textAlign:'center'}}>
-                <div style={{fontSize:'26px',fontWeight:'700',color:'#1d1d1f',letterSpacing:'-1px',marginBottom:'4px'}}>{s.value}</div>
+                <div style={{fontSize:'26px',fontWeight:'700',color:'#152238',letterSpacing:'-1px',marginBottom:'4px'}}>{s.value}</div>
                 <div style={{fontSize:'13px',color:'#aeaeb2',fontWeight:'400'}}>{s.label}</div>
               </div>
             ))}
@@ -239,7 +303,7 @@ export default function Home() {
         <div style={{maxWidth:'1080px',margin:'0 auto'}}>
           <div style={{textAlign:'center',marginBottom:'64px'}}>
             <div style={{fontSize:'13px',fontWeight:'600',letterSpacing:'0.5px',textTransform:'uppercase',color:'#e8732a',marginBottom:'12px'}}>How it works</div>
-            <h2 className="section-title" style={{fontSize:'48px',fontWeight:'700',letterSpacing:'-2px',color:'#1d1d1f',marginBottom:'16px'}}>Find your pub in 4 steps</h2>
+            <h2 className="section-title" style={{fontSize:'48px',fontWeight:'700',letterSpacing:'-2px',color:'#152238',marginBottom:'16px'}}>Find your pub in 4 steps</h2>
             <p className="section-sub" style={{fontSize:'19px',color:'#6e6e73',fontWeight:'400',letterSpacing:'-0.3px'}}>Designed to get you to the right pub, fast.</p>
           </div>
           <div className="steps-grid" style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'16px'}}>
@@ -248,11 +312,11 @@ export default function Home() {
               {step:'02',icon:ClipboardList,title:'Venues confirm daily',desc:'Pub managers log in each match day and confirm exactly which games they are showing.'},
               {step:'03',icon:MapPin,title:'Open the fan map',desc:'See every confirmed venue near you on a live map, sorted by distance.'},
               {step:'04',icon:Beer,title:'Head to the right pub',desc:'Pick a venue, check the kick-off time, and walk in knowing exactly what is on screen.'},
-            ].map((s, i) => (
-              <div key={s.step} className="step-card" style={{animationDelay:`${i*0.08}s`,background:'white',borderRadius:'20px',padding:'32px 28px',position:'relative',boxShadow:'0 4px 24px rgba(0,0,0,0.04)',border:'1px solid rgba(0,0,0,0.04)'}}>
+            ].map((s) => (
+              <div key={s.step} className="step-card" style={{background:'white',borderRadius:'20px',padding:'32px 28px',position:'relative',boxShadow:'0 4px 24px rgba(0,0,0,0.04)',border:'1px solid rgba(0,0,0,0.04)'}}>
                 <div style={{position:'absolute',top:'20px',right:'24px',fontSize:'13px',fontWeight:'700',color:'rgba(0,0,0,0.08)',letterSpacing:'1px'}}>{s.step}</div>
                 <div style={{width:'48px',height:'48px',borderRadius:'14px',background:'rgba(232,115,42,0.08)',display:'flex',alignItems:'center',justifyContent:'center',color:'#e8732a',marginBottom:'20px'}}><s.icon size={22} strokeWidth={1.75}/></div>
-                <div style={{fontWeight:'600',fontSize:'16px',marginBottom:'10px',color:'#1d1d1f',letterSpacing:'-0.3px'}}>{s.title}</div>
+                <div style={{fontWeight:'600',fontSize:'16px',marginBottom:'10px',color:'#152238',letterSpacing:'-0.3px'}}>{s.title}</div>
                 <div style={{fontSize:'14px',color:'#6e6e73',lineHeight:'1.6',fontWeight:'400'}}>{s.desc}</div>
               </div>
             ))}
@@ -265,7 +329,7 @@ export default function Home() {
         <div style={{maxWidth:'900px',margin:'0 auto'}}>
           <div style={{textAlign:'center',marginBottom:'64px'}}>
             <div style={{fontSize:'13px',fontWeight:'600',letterSpacing:'0.5px',textTransform:'uppercase',color:'#e8732a',marginBottom:'12px'}}>Why SportSpot</div>
-            <h2 className="section-title" style={{fontSize:'48px',fontWeight:'700',letterSpacing:'-2px',color:'#1d1d1f',marginBottom:'16px'}}>No more wasted trips.</h2>
+            <h2 className="section-title" style={{fontSize:'48px',fontWeight:'700',letterSpacing:'-2px',color:'#152238',marginBottom:'16px'}}>No more wasted trips.</h2>
             <p className="section-sub" style={{fontSize:'19px',color:'#6e6e73',fontWeight:'400',letterSpacing:'-0.3px',maxWidth:'500px',margin:'0 auto'}}>Every feature built around one goal — getting you to the right pub.</p>
           </div>
           <div className="features-grid" style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'16px'}}>
@@ -281,7 +345,7 @@ export default function Home() {
                   <f.icon size={20} strokeWidth={1.75}/>
                 </div>
                 <div>
-                  <div style={{fontWeight:'600',fontSize:'16px',marginBottom:'8px',color:'#1d1d1f',letterSpacing:'-0.3px'}}>{f.title}</div>
+                  <div style={{fontWeight:'600',fontSize:'16px',marginBottom:'8px',color:'#152238',letterSpacing:'-0.3px'}}>{f.title}</div>
                   <div style={{fontSize:'14px',color:'#6e6e73',lineHeight:'1.6',fontWeight:'400'}}>{f.desc}</div>
                 </div>
               </div>
@@ -305,7 +369,7 @@ export default function Home() {
             border:'1px solid rgba(255,255,255,0.8)',
           }}>
             <div style={{fontSize:'13px',fontWeight:'600',letterSpacing:'0.5px',textTransform:'uppercase',color:'#e8732a',marginBottom:'16px'}}>Ready</div>
-            <h2 style={{fontSize:'40px',fontWeight:'700',letterSpacing:'-1.5px',color:'#1d1d1f',marginBottom:'16px'}}>Find your pub now.</h2>
+            <h2 style={{fontSize:'40px',fontWeight:'700',letterSpacing:'-1.5px',color:'#152238',marginBottom:'16px'}}>Find your pub now.</h2>
             <p style={{color:'#6e6e73',marginBottom:'36px',fontSize:'18px',fontWeight:'400',letterSpacing:'-0.2px',lineHeight:'1.6'}}>Open the live map and find a confirmed venue near you right now.</p>
             <a href="/map" className="cta-btn-primary"
               style={{background:'#e8732a',color:'white',padding:'16px 48px',borderRadius:'980px',fontSize:'17px',fontWeight:'600',letterSpacing:'-0.3px',boxShadow:'0 4px 20px rgba(232,115,42,0.25)'}}>
@@ -318,7 +382,7 @@ export default function Home() {
       {/* ── FOOTER ── */}
       <div style={{background:'white',borderTop:'1px solid rgba(0,0,0,0.06)',padding:'32px 24px'}}>
         <div className="footer-inner" style={{maxWidth:'1080px',margin:'0 auto',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'12px'}}>
-          <img src="/SportSpot Logo Updated.png" alt="SportSpot" style={{height:'28px',width:'auto'}}/>
+          <img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'28px',width:'auto'}}/>
           <p style={{color:'#aeaeb2',fontSize:'13px',fontWeight:'400'}}>© 2026 SportSpot. All rights reserved.</p>
           <div className="footer-links" style={{display:'flex',gap:'24px'}}>
             {[{href:'/map',label:'Find Pubs'},{href:'/login',label:'Venue Login'},{href:'/register',label:'Register'}].map(item => (

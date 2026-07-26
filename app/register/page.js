@@ -22,7 +22,7 @@ export default function RegisterPage() {
     }
   }
 
-  const inputStyle = {width:'100%',background:'rgba(255,255,255,0.6)',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'10px',padding:'13px 14px',color:'#1d1d1f',marginBottom:'12px',fontSize:'15px',outline:'none',backdropFilter:'blur(8px)',WebkitBackdropFilter:'blur(8px)',transition:'border-color 0.2s, box-shadow 0.2s'}
+  const inputStyle = {width:'100%',background:'rgba(255,255,255,0.6)',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'10px',padding:'13px 14px',color:'#152238',marginBottom:'12px',fontSize:'15px',outline:'none',backdropFilter:'blur(8px)',WebkitBackdropFilter:'blur(8px)',transition:'border-color 0.2s, box-shadow 0.2s'}
 
   return (
     <div style={{minHeight:'100vh',position:'relative',overflow:'hidden',background:'linear-gradient(135deg, #fff8f3 0%, #ffffff 25%, #f0f4ff 55%, #f8f0ff 80%, #fff5f0 100%)',display:'flex',alignItems:'center',justifyContent:'center',padding:'24px',fontFamily:"-apple-system,'SF Pro Display','SF Pro Text',BlinkMacSystemFont,'Helvetica Neue',sans-serif"}}>
@@ -51,7 +51,7 @@ export default function RegisterPage() {
         zIndex:1,
       }}>
         <a href="/" style={{display:'block',marginBottom:'24px'}}>
-          <img src="/SportSpot Logo Updated.png" alt="SportSpot" style={{height:'44px',width:'auto'}}/>
+          <img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'44px',width:'auto'}}/>
         </a>
         <p style={{color:'#6e6e73',marginBottom:'28px',fontSize:'14px',letterSpacing:'-0.1px'}}>Register your venue</p>
         <input

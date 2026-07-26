@@ -107,7 +107,7 @@ export default function FanProfile() {
   )
 
   return (
-    <div style={{minHeight:'100vh',background:'#f5f5f7',color:'#1d1d1f',fontFamily:"-apple-system,'SF Pro Display','SF Pro Text',BlinkMacSystemFont,'Helvetica Neue',sans-serif"}}>
+    <div style={{minHeight:'100vh',background:'#f5f5f7',color:'#152238',fontFamily:"-apple-system,'SF Pro Display','SF Pro Text',BlinkMacSystemFont,'Helvetica Neue',sans-serif"}}>
       <style>{`
         * { box-sizing: border-box; }
         @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
@@ -131,7 +131,7 @@ export default function FanProfile() {
 
       {/* Nav */}
       <nav style={{background:'rgba(245,245,247,0.72)',borderBottom:'1px solid rgba(0,0,0,0.08)',padding:'0 32px',height:'60px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:100,backdropFilter:'saturate(200%) blur(28px)',WebkitBackdropFilter:'saturate(200%) blur(28px)'}}>
-        <a href="/"><img src="/SportSpot Logo Updated.png" alt="SportSpot" style={{height:'36px',width:'auto'}}/></a>
+        <a href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'48px',width:'auto'}}/></a>
         <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
           <a href="/map" className="nav-link" style={{color:'#3a3a3c',fontSize:'13px',padding:'7px 14px',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'8px',fontWeight:'500',transition:'all 0.2s'}}>
             Fan Map
@@ -153,7 +153,7 @@ export default function FanProfile() {
           </div>
 
           <div style={{flex:1,minWidth:0}}>
-            <div style={{fontSize:'22px',fontWeight:'700',color:'#1d1d1f',marginBottom:'4px',letterSpacing:'-0.5px'}}>
+            <div style={{fontSize:'22px',fontWeight:'700',color:'#152238',marginBottom:'4px',letterSpacing:'-0.5px'}}>
               {firstName || lastName ? `${firstName} ${lastName}`.trim() : 'Your Profile'}
             </div>
             <div style={{fontSize:'13px',color:'#6e6e73',marginBottom:'12px'}}>{session?.user?.email}</div>
@@ -213,13 +213,13 @@ export default function FanProfile() {
                   <label style={{display:'block',fontSize:'11px',fontWeight:'700',letterSpacing:'1px',textTransform:'uppercase',color:'#aeaeb2',marginBottom:'8px'}}>First Name</label>
                   <input className="input-field" value={firstName} onChange={e => setFirstName(e.target.value)}
                     placeholder="e.g. James"
-                    style={{width:'100%',padding:'12px 14px',background:'rgba(255,255,255,0.8)',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'10px',color:'#1d1d1f',fontSize:'15px',transition:'all 0.2s'}}/>
+                    style={{width:'100%',padding:'12px 14px',background:'rgba(255,255,255,0.8)',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'10px',color:'#152238',fontSize:'15px',transition:'all 0.2s'}}/>
                 </div>
                 <div>
                   <label style={{display:'block',fontSize:'11px',fontWeight:'700',letterSpacing:'1px',textTransform:'uppercase',color:'#aeaeb2',marginBottom:'8px'}}>Last Name</label>
                   <input className="input-field" value={lastName} onChange={e => setLastName(e.target.value)}
                     placeholder="e.g. Smith"
-                    style={{width:'100%',padding:'12px 14px',background:'rgba(255,255,255,0.8)',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'10px',color:'#1d1d1f',fontSize:'15px',transition:'all 0.2s'}}/>
+                    style={{width:'100%',padding:'12px 14px',background:'rgba(255,255,255,0.8)',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'10px',color:'#152238',fontSize:'15px',transition:'all 0.2s'}}/>
                 </div>
               </div>
             </div>
@@ -244,7 +244,7 @@ export default function FanProfile() {
               </div>
               <div>
                 <div style={{fontSize:'12px',fontWeight:'700',letterSpacing:'1.5px',textTransform:'uppercase',color:'#e8732a',marginBottom:'4px'}}>SportSpot Member</div>
-                <div style={{fontSize:'20px',fontWeight:'700',color:'#1d1d1f',letterSpacing:'-0.3px'}}>Since {memberSince || '—'}</div>
+                <div style={{fontSize:'20px',fontWeight:'700',color:'#152238',letterSpacing:'-0.3px'}}>Since {memberSince || '—'}</div>
                 <div style={{fontSize:'12px',color:'#6e6e73',marginTop:'3px'}}>Thanks for being part of the community</div>
               </div>
             </div>
@@ -254,7 +254,7 @@ export default function FanProfile() {
               <div style={{fontSize:'11px',fontWeight:'700',letterSpacing:'2px',textTransform:'uppercase',color:'#e8732a',marginBottom:'20px'}}>Notifications</div>
               <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:'16px'}}>
                 <div style={{flex:1}}>
-                  <div style={{fontWeight:'700',fontSize:'15px',color:'#1d1d1f',marginBottom:'4px'}}>Email Alerts</div>
+                  <div style={{fontWeight:'700',fontSize:'15px',color:'#152238',marginBottom:'4px'}}>Email Alerts</div>
                   <div style={{fontSize:'13px',color:'#6e6e73',lineHeight:'1.5'}}>Get notified at 9am when your favourite teams are showing at a pub near you today</div>
                 </div>
                 <div onClick={() => setNotify(p => !p)}
@@ -317,7 +317,7 @@ export default function FanProfile() {
                     <button onClick={() => setExpandedLeague(isOpen ? null : league)}
                       style={{width:'100%',padding:'16px 28px',display:'flex',alignItems:'center',justifyContent:'space-between',background: isOpen ? 'rgba(0,0,0,0.02)' : 'transparent',border:'none',cursor:'pointer',transition:'background 0.2s'}}>
                       <div style={{display:'flex',alignItems:'center',gap:'12px'}}>
-                        <span style={{fontSize:'13px',fontWeight:'700',color: isOpen ? '#1d1d1f' : '#6e6e73'}}>{league}</span>
+                        <span style={{fontSize:'13px',fontWeight:'700',color: isOpen ? '#152238' : '#6e6e73'}}>{league}</span>
                         {selectedInLeague > 0 && (
                           <span style={{fontSize:'11px',fontWeight:'700',background:'#e8732a',color:'white',borderRadius:'10px',padding:'2px 8px'}}>{selectedInLeague}</span>
                         )}

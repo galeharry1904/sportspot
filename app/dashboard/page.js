@@ -65,7 +65,7 @@ export default function Dashboard() {
   const activeCount = fixtures.filter(f => showings[f.id] === true).length
   const topSport = fixtures.length ? fixtures[0]?.sport || 'Football' : 'Football'
 
-  const inputStyle = { width:'100%', padding:'12px 14px', background:'rgba(255,255,255,0.8)', border:'1px solid rgba(0,0,0,0.1)', borderRadius:'8px', color:'#1d1d1f', fontSize:'15px', marginBottom:'12px', outline:'none', WebkitAppearance:'none' }
+  const inputStyle = { width:'100%', padding:'12px 14px', background:'rgba(255,255,255,0.8)', border:'1px solid rgba(0,0,0,0.1)', borderRadius:'8px', color:'#152238', fontSize:'15px', marginBottom:'12px', outline:'none', WebkitAppearance:'none' }
 
   if (loading) return (
     <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',color:'#6e6e73',background:'#f5f5f7'}}>Loading...</div>
@@ -100,7 +100,7 @@ export default function Dashboard() {
       {/* Nav */}
       <div className="dash-nav" style={{background:'rgba(245,245,247,0.72)',borderBottom:'1px solid rgba(0,0,0,0.08)',backdropFilter:'saturate(200%) blur(28px)',WebkitBackdropFilter:'saturate(200%) blur(28px)',padding:'0 32px',display:'flex',alignItems:'center',justifyContent:'space-between',height:'60px',position:'sticky',top:0,zIndex:100}}>
         <div style={{display:'flex',alignItems:'center',gap:'12px'}}>
-          <a href="/"><img src="/SportSpot Logo Updated.png" alt="SportSpot" style={{height:'44px',width:'auto'}}/></a>
+          <a href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'50px',width:'auto'}}/></a>
           <span className="dash-nav-pub" style={{background:'rgba(0,0,0,0.05)',color:'#6e6e73',fontSize:'12px',padding:'3px 10px',borderRadius:'20px'}}>{pub?.name}</span>
         </div>
         <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
@@ -114,7 +114,7 @@ export default function Dashboard() {
 
       <div className="dash-content" style={{maxWidth:'1000px',margin:'0 auto',padding:'32px 24px'}}>
 
-        <h1 className="dash-title" style={{fontSize:'24px',fontWeight:'700',letterSpacing:'-0.5px',marginBottom:'4px',color:'#1d1d1f'}}>Manager Dashboard</h1>
+        <h1 className="dash-title" style={{fontSize:'24px',fontWeight:'700',letterSpacing:'-0.5px',marginBottom:'4px',color:'#152238'}}>Manager Dashboard</h1>
         <p style={{color:'#6e6e73',fontSize:'14px',marginBottom:'20px'}}>Control which sporting events are showcased on your screens today.</p>
 
         {/* Confirm banner */}
@@ -187,10 +187,10 @@ export default function Dashboard() {
 
                     {/* Date/time */}
                     <div>
-                      <div style={{fontSize:'14px',fontWeight:'600',color: on ? '#e8732a' : '#1d1d1f'}}>{day}</div>
+                      <div style={{fontSize:'14px',fontWeight:'600',color: on ? '#e8732a' : '#152238'}}>{day}</div>
                       <div style={{fontSize:'13px',color:'#6e6e73'}}>{time}</div>
                       {/* Mobile-only: show matchup inline */}
-                      <div style={{fontSize:'13px',fontWeight:'600',color:'#1d1d1f',marginTop:'4px',display:'none'}} className="mobile-matchup">
+                      <div style={{fontSize:'13px',fontWeight:'600',color:'#152238',marginTop:'4px',display:'none'}} className="mobile-matchup">
                         {f.home_team} vs {f.away_team}
                       </div>
                       <div style={{fontSize:'11px',color:'#6e6e73',marginTop:'2px',display:'none'}} className="mobile-comp">
@@ -202,13 +202,13 @@ export default function Dashboard() {
                     <div className="fixture-competition">
                       <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
                         <span style={{width:'8px',height:'8px',borderRadius:'50%',background:'#e8732a',flexShrink:0,display:'inline-block'}}/>
-                        <span style={{fontSize:'14px',color:'#1d1d1f'}}>{f.competition}</span>
+                        <span style={{fontSize:'14px',color:'#152238'}}>{f.competition}</span>
                       </div>
                       <div style={{fontSize:'12px',color:'#6e6e73',marginTop:'2px'}}>{f.broadcaster}</div>
                     </div>
 
                     {/* Matchup */}
-                    <div style={{fontSize:'15px',fontWeight:'600',color:'#1d1d1f'}}>{f.home_team} vs {f.away_team}</div>
+                    <div style={{fontSize:'15px',fontWeight:'600',color:'#152238'}}>{f.home_team} vs {f.away_team}</div>
 
                     {/* Toggle */}
                     <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
@@ -239,7 +239,7 @@ export default function Dashboard() {
                     <span style={{fontSize:'11px',fontWeight:'700',letterSpacing:'1px',color:'#aeaeb2',textTransform:'uppercase'}}>{card.label}</span>
                     <card.icon size={18} strokeWidth={1.75} color="#e8732a"/>
                   </div>
-                  <div style={{fontSize:'28px',fontWeight:'700',color:'#1d1d1f',marginBottom:'4px'}}>{card.value}</div>
+                  <div style={{fontSize:'28px',fontWeight:'700',color:'#152238',marginBottom:'4px'}}>{card.value}</div>
                   <div style={{fontSize:'12px',color:'#6e6e73'}}>{card.sub}</div>
                 </div>
               ))}
@@ -253,7 +253,7 @@ export default function Dashboard() {
 
             {/* Venue info */}
             <div style={{background:'white',border:'1px solid rgba(0,0,0,0.06)',borderRadius:'12px',padding:'24px',boxShadow:'0 2px 12px rgba(0,0,0,0.03)'}}>
-              <h2 style={{fontSize:'16px',fontWeight:'700',color:'#1d1d1f',marginBottom:'4px'}}>Venue Information</h2>
+              <h2 style={{fontSize:'16px',fontWeight:'700',color:'#152238',marginBottom:'4px'}}>Venue Information</h2>
               <p style={{fontSize:'13px',color:'#6e6e73',marginBottom:'20px'}}>Update your pub name and address shown to fans.</p>
               <label style={{fontSize:'11px',fontWeight:'700',letterSpacing:'1px',textTransform:'uppercase',color:'#aeaeb2',display:'block',marginBottom:'6px'}}>Pub Name</label>
               <input className="input-field" value={venueForm.name} onChange={e => setVenueForm(p => ({...p, name: e.target.value}))} style={inputStyle} placeholder="e.g. The Crown"/>
@@ -263,7 +263,7 @@ export default function Dashboard() {
 
             {/* Sports packages */}
             <div style={{background:'white',border:'1px solid rgba(0,0,0,0.06)',borderRadius:'12px',padding:'24px',boxShadow:'0 2px 12px rgba(0,0,0,0.03)'}}>
-              <h2 style={{fontSize:'16px',fontWeight:'700',color:'#1d1d1f',marginBottom:'4px'}}>Sports Packages</h2>
+              <h2 style={{fontSize:'16px',fontWeight:'700',color:'#152238',marginBottom:'4px'}}>Sports Packages</h2>
               <p style={{fontSize:'13px',color:'#6e6e73',marginBottom:'20px'}}>Which live sport subscriptions does your venue hold?</p>
               {[
                 { key:'has_sky', label:'Sky Sports', desc:'Premier League, cricket, F1 and more', color:'#0ea5e9' },
@@ -274,7 +274,7 @@ export default function Dashboard() {
                     background: venueForm[pkg.key] ? `${pkg.color}11` : '#f5f5f7',
                     border:`1px solid ${venueForm[pkg.key] ? pkg.color+'44' : 'rgba(0,0,0,0.08)'}`}}>
                   <div>
-                    <div style={{fontWeight:'700',fontSize:'14px',color: venueForm[pkg.key] ? pkg.color : '#1d1d1f'}}>{pkg.label}</div>
+                    <div style={{fontWeight:'700',fontSize:'14px',color: venueForm[pkg.key] ? pkg.color : '#152238'}}>{pkg.label}</div>
                     <div style={{fontSize:'12px',color:'#6e6e73',marginTop:'2px'}}>{pkg.desc}</div>
                   </div>
                   <div style={{width:'44px',height:'24px',borderRadius:'12px',background: venueForm[pkg.key] ? pkg.color : 'rgba(0,0,0,0.12)',position:'relative',flexShrink:0}}>
