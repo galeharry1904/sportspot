@@ -26,3 +26,15 @@ enabled = true
 verify_jwt = false
 import_map = "./functions/notify-pubs/deno.json"
 entrypoint = "./functions/notify-pubs/index.ts"
+
+[functions.sync-results-and-standings]
+enabled = true
+verify_jwt = true
+import_map = "./functions/sync-results-and-standings/deno.json"
+entrypoint = "./functions/sync-results-and-standings/index.ts"
+
+[functions.sync-football-news]
+enabled = true
+verify_jwt = true
+import_map = "./functions/sync-football-news/deno.json"
+entrypoint = "./functions/sync-football-news/index.ts"

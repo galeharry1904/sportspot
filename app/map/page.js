@@ -20,6 +20,10 @@ const LEAGUE_ORDER = [
   'Premiership Rugby','Six Nations','Formula 1','Cricket'
 ]
 
+// Competitions the /leagues page has table/results data for — used to
+// decide whether to show a "View table" cross-link in the League dropdown.
+const LEAGUES_WITH_TABLES = ['Premier League', 'Championship', 'FA Cup', 'League Cup', 'Champions League', 'Europa League']
+
 function sortLeagues(leagues) {
   return [...leagues].sort((a, b) => {
     const ai = LEAGUE_ORDER.indexOf(a), bi = LEAGUE_ORDER.indexOf(b)
@@ -844,6 +848,12 @@ export default function FanMap() {
                     setOpenDropdown('fixture')
                   }}/>
               ))}
+              {selectedLeague && LEAGUES_WITH_TABLES.includes(selectedLeague) && (
+                <a href={`/leagues?competition=${encodeURIComponent(selectedLeague)}`}
+                  style={{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',marginTop:'4px',padding:'9px 12px',borderRadius:'9px',border:'none',background:'transparent',color:'#e8732a',fontSize:'12px',fontWeight:'700',textDecoration:'none',borderTop:'1px solid rgba(0,0,0,0.06)'}}>
+                  View {selectedLeague} table <ArrowRight size={12} strokeWidth={2.5}/>
+                </a>
+              )}
             </FilterDropdown>
 
             {/* Teams — multi-select, one row per team rather than per fixture */}

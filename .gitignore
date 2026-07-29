@@ -43,6 +43,8 @@ yarn-error.log*
 # contains a live service_role key filled in for one-off manual SQL —
 # never commit this
 /supabase/sql/notify-pubs-cron.sql
+/supabase/sql/sync-results-and-standings-cron.sql
+/supabase/sql/sync-football-news-cron.sql
 
 # typescript
 *.tsbuildinfo
