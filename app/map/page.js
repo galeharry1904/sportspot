@@ -907,7 +907,7 @@ export default function FanMap() {
                 : selectedFixtureIds.length > 0 ? `${selectedFixtureIds.length} fixture${selectedFixtureIds.length>1?'s':''} selected`
                   : selectedLeague ? selectedLeague
                   : selectedSport ? selectedSport
-                  : `All sports${userLocation?' · nearest first':''}`
+                  : `All Venues${userLocation?' · Nearest First':''}`
               }
             </div>
           </div>
