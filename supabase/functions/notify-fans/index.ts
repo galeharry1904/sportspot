@@ -3,7 +3,29 @@ const supabase = createClient(
   Deno.env.get('SUPABASE_URL'),
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
 )
+
+// The cron schedule that triggers this function now fires every hour —
+// Postgres's cron.timezone on this project is pinned to fixed-offset GMT
+// with no DST awareness, so a single daily UTC time can't reliably mean
+// "9am UK time" year-round. Deno's own Intl/timezone database does handle
+// BST/GMT correctly, so the function checks the real London wall-clock
+// time itself and no-ops outside the 9am hour.
+function isNineAmInLondon() {
+  const londonHour = Number(
+    new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Europe/London',
+      hourCycle: 'h23',
+      hour: '2-digit',
+    }).format(new Date())
+  )
+  return londonHour === 9
+}
+
 Deno.serve(async () => {
+  if (!isNineAmInLondon()) {
+    return new Response(JSON.stringify({ success: true, skipped: true, reason: 'not 9am London time' }))
+  }
+
   const today = new Date().toISOString().split('T')[0]
   const resendKey = Deno.env.get('RESEND_KEY')
   // Get today's confirmed showings with fixture and pub info
