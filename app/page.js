@@ -447,7 +447,7 @@ export default function Home() {
           <div style={{textAlign:'center',marginBottom:'56px'}}>
             <div style={{fontSize:'13px',fontWeight:'600',letterSpacing:'0.5px',textTransform:'uppercase',color:'#e8732a',marginBottom:'12px'}}>Latest News</div>
             <h2 className="section-title" style={{fontSize:'48px',fontWeight:'700',letterSpacing:'-2px',color:'#152238',marginBottom:'16px'}}>From the world of football.</h2>
-            <p className="section-sub" style={{fontSize:'19px',color:'#6e6e73',fontWeight:'400',letterSpacing:'-0.3px',maxWidth:'500px',margin:'0 auto'}}>Headlines from BBC Sport and The Guardian — no need to leave SportSpot.</p>
+            <p className="section-sub" style={{fontSize:'19px',color:'#6e6e73',fontWeight:'400',letterSpacing:'-0.3px',maxWidth:'500px',margin:'0 auto'}}>Headlines from six major outlets, side by side — no need to leave SportSpot.</p>
           </div>
           {news.length === 0 ? (
             <div style={{textAlign:'center',padding:'40px',color:'#aeaeb2',fontSize:'14px'}}>Loading latest news…</div>
@@ -465,7 +465,7 @@ export default function Home() {
           <div style={{textAlign:'center',marginBottom:'56px'}}>
             <div style={{fontSize:'13px',fontWeight:'600',letterSpacing:'0.5px',textTransform:'uppercase',color:'#e8732a',marginBottom:'12px'}}>Transfer News</div>
             <h2 className="section-title" style={{fontSize:'48px',fontWeight:'700',letterSpacing:'-2px',color:'#152238',marginBottom:'16px'}}>Deals, done and rumoured.</h2>
-            <p className="section-sub" style={{fontSize:'19px',color:'#6e6e73',fontWeight:'400',letterSpacing:'-0.3px',maxWidth:'500px',margin:'0 auto'}}>Transfer gossip and confirmed signings from BBC Sport and The Guardian.</p>
+            <p className="section-sub" style={{fontSize:'19px',color:'#6e6e73',fontWeight:'400',letterSpacing:'-0.3px',maxWidth:'500px',margin:'0 auto'}}>Transfer gossip and confirmed signings from BBC Sport, The Guardian and Mirror Football.</p>
           </div>
           {transferNews.length === 0 ? (
             <div style={{textAlign:'center',padding:'40px',color:'#aeaeb2',fontSize:'14px'}}>Loading transfer news…</div>
