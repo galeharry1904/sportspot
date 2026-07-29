@@ -1,9 +1,9 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { APIProvider, Map, AdvancedMarker, Pin, InfoWindow } from '@vis.gl/react-google-maps'
+import { APIProvider, Map, AdvancedMarker, AdvancedMarkerAnchorPoint, InfoWindow } from '@vis.gl/react-google-maps'
 import { supabase } from '../../lib/supabase'
-import { SportIcon, Star, Tv, MapPin, X, Check, ChevronDown, ChevronUp, ChevronRight, ArrowRight, PIN_STAR_GLYPH, PIN_TV_GLYPH } from '../../lib/icons'
+import { SportIcon, Star, Tv, MapPin, X, Check, ChevronDown, ChevronUp, ArrowRight, PubPin } from '../../lib/icons'
 
 function getDistance(lat1, lon1, lat2, lon2) {
   const R = 6371
@@ -33,6 +33,86 @@ const SHEET_PEEK = 88
 const SHEET_HALF = 0.52
 const SHEET_FULL = 0.92
 
+// ─── DESKTOP FILTER DROPDOWN ────────────────────────────────────────────────
+function FilterDropdown({ label, displayValue, isOpen, onToggle, disabled, disabledHint, width = 168, panelWidth, children }) {
+  return (
+    <div style={{position:'relative'}}>
+      <button
+        onClick={onToggle}
+        disabled={disabled}
+        title={disabled ? disabledHint : undefined}
+        style={{
+          display:'flex', alignItems:'center', justifyContent:'space-between', gap:'8px',
+          width, height:'38px', padding:'0 12px',
+          borderRadius:'11px',
+          border:`1px solid ${isOpen ? '#e8732a55' : displayValue ? '#e8732a40' : 'rgba(0,0,0,0.09)'}`,
+          background: disabled ? 'rgba(0,0,0,0.02)' : displayValue ? 'rgba(232,115,42,0.06)' : 'white',
+          boxShadow: isOpen ? '0 6px 20px rgba(232,115,42,0.16)' : '0 1px 3px rgba(0,0,0,0.04)',
+          cursor: disabled ? 'not-allowed' : 'pointer',
+          transition:'all 0.15s ease',
+        }}>
+        <span style={{
+          fontSize:'12.5px', fontWeight:'700', letterSpacing:'0.1px',
+          color: disabled ? '#c7c7cc' : displayValue ? '#e8732a' : '#6e6e73',
+          overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap',
+        }}>
+          {displayValue || label}
+        </span>
+        <ChevronDown size={14} strokeWidth={2.25}
+          color={disabled ? '#d5d5d9' : displayValue ? '#e8732a' : '#aeaeb2'}
+          style={{flexShrink:0, transition:'transform 0.2s ease', transform: isOpen ? 'rotate(180deg)' : 'none'}}/>
+      </button>
+      {isOpen && !disabled && (
+        <div style={{
+          position:'absolute', top:'calc(100% + 8px)', left:0, zIndex:150,
+          width: panelWidth || Math.max(width, 240),
+          background:'white', borderRadius:'14px', border:'1px solid rgba(0,0,0,0.07)',
+          boxShadow:'0 20px 50px rgba(15,23,42,0.16), 0 4px 14px rgba(15,23,42,0.06)',
+          padding:'6px', maxHeight:'340px', overflowY:'auto',
+          animation:'dropdownIn 0.16s cubic-bezier(0.22,1,0.36,1) both',
+        }}>
+          {children}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function FilterOption({ label, sublabel, active, multiSelect, onClick, icon }) {
+  return (
+    <button onClick={onClick} className="filter-option"
+      style={{
+        display:'flex', alignItems:'center', gap:'10px', width:'100%',
+        padding: sublabel ? '9px 10px' : '10px 12px', borderRadius:'9px', border:'none',
+        background: active ? 'rgba(232,115,42,0.08)' : 'transparent',
+        cursor:'pointer', textAlign:'left', transition:'background 0.12s ease',
+      }}>
+      {multiSelect && (
+        <div style={{
+          width:'16px', height:'16px', borderRadius:'5px', flexShrink:0,
+          border:`1px solid ${active ? '#e8732a' : 'rgba(0,0,0,0.18)'}`,
+          background: active ? '#e8732a' : 'white',
+          display:'flex', alignItems:'center', justifyContent:'center',
+        }}>
+          {active && <Check size={11} strokeWidth={3} color="white"/>}
+        </div>
+      )}
+      {icon}
+      <div style={{flex:1, minWidth:0}}>
+        <div style={{
+          fontSize:'13px', fontWeight: sublabel ? '700' : '600',
+          color: active ? '#e8732a' : '#152238',
+          whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis',
+        }}>
+          {label}
+        </div>
+        {sublabel && <div style={{fontSize:'11px', color: active ? '#e8732a99' : '#aeaeb2', marginTop:'1px'}}>{sublabel}</div>}
+      </div>
+      {!multiSelect && active && <Check size={14} strokeWidth={2.5} color="#e8732a" style={{flexShrink:0}}/>}
+    </button>
+  )
+}
+
 export default function FanMap() {
   const [infoTab, setInfoTab] = useState('fixtures')
   const [pubs, setPubs] = useState([])
@@ -50,7 +130,8 @@ export default function FanMap() {
   const [sheetState, setSheetState] = useState('peek')
   const [mobileTab, setMobileTab] = useState('venues')
   const [mobilePubDetail, setMobilePubDetail] = useState(null)
-  const [filterDropdownOpen, setFilterDropdownOpen] = useState(false)
+  const [openDropdown, setOpenDropdown] = useState(null) // null | 'sport' | 'league' | 'fixture'
+  const [checkedTeams, setCheckedTeams] = useState([]) // desktop Teams dropdown checkbox state only — an opponent isn't auto-checked just because its match got included via selectedFixtureIds
   const [desktopListTab, setDesktopListTab] = useState('all') // 'favourites' | 'all'
   const filterRef = useRef(null)
   const sheetRef = useRef(null)
@@ -80,7 +161,7 @@ export default function FanMap() {
   useEffect(() => {
     function handleClick(e) {
       if (filterRef.current && !filterRef.current.contains(e.target)) {
-        setFilterDropdownOpen(false)
+        setOpenDropdown(null)
       }
     }
     document.addEventListener('mousedown', handleClick)
@@ -117,6 +198,15 @@ export default function FanMap() {
       .map(s => s.fixtures).filter(Boolean).map(f => [f.id, f])
   ).values()].sort((a, b) => new Date(a.kickoff_time) - new Date(b.kickoff_time)) : []
 
+  // One row per team rather than per fixture, for the "Teams" filter dropdown —
+  // each team maps back to the single fixture it plays in this league today.
+  const leagueTeams = [...new globalThis.Map(
+    leagueFixtures.flatMap(f => [
+      [f.home_team, { team: f.home_team, fixture: f }],
+      [f.away_team, { team: f.away_team, fixture: f }],
+    ])
+  ).values()].sort((a, b) => a.team.localeCompare(b.team))
+
   const activePubIds = [...new Set(validShowings.map(s => s.pub_id))]
   let activePubs = pubs.filter(p => activePubIds.includes(p.id))
 
@@ -142,16 +232,21 @@ export default function FanMap() {
   const favouritePubs = activePubs.filter(p => isFavouritePub(p))
   const hasFavourites = fanProfile?.favourite_teams?.length > 0 && favouritePubs.length > 0
 
+  function isFavouriteFixture(fixture) {
+    if (!fanProfile?.favourite_teams?.length) return false
+    return fanProfile.favourite_teams.some(t => fixture.home_team?.includes(t) || fixture.away_team?.includes(t))
+  }
+
   function getFixturesForPub(pubId) {
-    return validShowings.filter(s => s.pub_id === pubId).map(s => s.fixtures).filter(Boolean)
+    const fixtures = validShowings.filter(s => s.pub_id === pubId).map(s => s.fixtures).filter(Boolean)
       .sort((a, b) => new Date(a.kickoff_time) - new Date(b.kickoff_time))
+    // Favourited fixtures float to the top, kickoff order preserved within each group.
+    return [...fixtures.filter(isFavouriteFixture), ...fixtures.filter(f => !isFavouriteFixture(f))]
   }
 
   function isFavouritePub(pub) {
     if (!fanProfile?.favourite_teams?.length) return false
-    return getFixturesForPub(pub.id).some(f =>
-      fanProfile.favourite_teams.some(t => f.home_team?.includes(t) || f.away_team?.includes(t))
-    )
+    return getFixturesForPub(pub.id).some(isFavouriteFixture)
   }
 
   function selectPub(pub) {
@@ -163,17 +258,21 @@ export default function FanMap() {
   function toggleFixture(id) {
     setSelectedFixtureIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])
   }
+  function toggleTeam(team, fixtureId) {
+    setCheckedTeams(prev => prev.includes(team) ? prev.filter(t => t !== team) : [...prev, team])
+    toggleFixture(fixtureId)
+  }
   function handleSelectSport(sport) {
     setSelectedSport(sport === selectedSport ? null : sport)
-    setSelectedLeague(null); setSelectedFixtureIds([])
+    setSelectedLeague(null); setSelectedFixtureIds([]); setCheckedTeams([])
   }
   function handleSelectLeague(league) {
     setSelectedLeague(league === selectedLeague ? null : league)
-    setSelectedFixtureIds([])
+    setSelectedFixtureIds([]); setCheckedTeams([])
   }
   function resetFilters() {
-    setSelectedSport(null); setSelectedLeague(null); setSelectedFixtureIds([])
-    setFilterDropdownOpen(false)
+    setSelectedSport(null); setSelectedLeague(null); setSelectedFixtureIds([]); setCheckedTeams([])
+    setOpenDropdown(null)
   }
 
   function onDragStart(clientY) { dragStartY.current = clientY; dragStartState.current = sheetState }
@@ -302,7 +401,37 @@ export default function FanMap() {
             </div>
             {fixtures.length === 0 ? (
               <div style={{fontSize:'12px',color:'#aeaeb2',textAlign:'center',padding:'12px 0'}}>No confirmed fixtures today</div>
-            ) : fixtures.map((f, i) => {
+            ) : (() => {
+              const favs = fixtures.filter(isFavouriteFixture)
+              const rest = fixtures.filter(f => !isFavouriteFixture(f))
+              return <>
+              {favs.length > 0 && (
+                <div style={{display:'flex',alignItems:'center',gap:'5px',marginBottom:'8px'}}>
+                  <Star size={11} fill="#e8732a" color="#e8732a" strokeWidth={0}/>
+                  <span style={{fontSize:'10px',fontWeight:'800',letterSpacing:'1px',textTransform:'uppercase',color:'#e8732a'}}>Your Favourited Teams</span>
+                </div>
+              )}
+              {favs.map((f, i) => {
+                const time = new Date(f.kickoff_time).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})
+                return (
+                  <div key={i} style={{position:'relative',overflow:'hidden',background:'linear-gradient(135deg, rgba(232,115,42,0.1), rgba(232,115,42,0.03))',border:'1px solid rgba(232,115,42,0.25)',borderRadius:'10px',padding:'9px 12px 9px 15px',marginBottom:'8px'}}>
+                    <div style={{position:'absolute',left:0,top:0,bottom:0,width:'3px',background:'#e8732a'}}/>
+                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'3px'}}>
+                      <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
+                        <SportIcon sport={f.sport}/>
+                        <span style={{fontSize:'11px',fontWeight:'700',color:'#e8732a',textTransform:'uppercase',letterSpacing:'0.5px'}}>{f.competition}</span>
+                      </div>
+                      <span style={{fontSize:'11px',fontWeight:'700',color:'#152238',background:'white',padding:'2px 8px',borderRadius:'4px'}}>{time}</span>
+                    </div>
+                    <div style={{fontSize:'13px',fontWeight:'700',color:'#3a3a3c',paddingLeft:'20px'}}>{f.home_team} vs {f.away_team}</div>
+                    <div style={{fontSize:'11px',color:'#aeaeb2',paddingLeft:'20px',marginTop:'3px'}}>{f.broadcaster}</div>
+                  </div>
+                )
+              })}
+              {favs.length > 0 && rest.length > 0 && (
+                <div style={{fontSize:'10px',fontWeight:'700',letterSpacing:'1px',textTransform:'uppercase',color:'#aeaeb2',margin:'12px 0 8px'}}>Other Fixtures</div>
+              )}
+              {rest.map((f, i) => {
               const time = new Date(f.kickoff_time).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})
               return (
                 <div key={i} style={{padding:'8px 0',borderTop: i>0?'1px solid rgba(0,0,0,0.06)':'none'}}>
@@ -317,7 +446,9 @@ export default function FanMap() {
                   <div style={{fontSize:'11px',color:'#aeaeb2',paddingLeft:'20px',marginTop:'2px'}}>{f.broadcaster}</div>
                 </div>
               )
-            })}
+              })}
+              </>
+            })()}
           </div>
         )}
         {infoTab === 'info' && (
@@ -366,13 +497,9 @@ export default function FanMap() {
             <Map defaultCenter={mapCenter} defaultZoom={13} mapId={process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}
               style={{width:'100%',height:'100%'}} colorScheme="LIGHT" gestureHandling="greedy">
               {activePubs.map(pub => (
-                <AdvancedMarker key={pub.id} position={{lat:pub.latitude,lng:pub.longitude}} onClick={() => selectPub(pub)}>
-                  <Pin
-                    background={selectedPub?.id===pub.id ? '#e8732a' : isFavouritePub(pub) ? '#22c55e' : 'white'}
-                    borderColor={isFavouritePub(pub) ? '#16a34a' : '#e8732a'}
-                    glyphColor="white"
-                    glyphSrc={isFavouritePub(pub) ? PIN_STAR_GLYPH : PIN_TV_GLYPH}
-                  />
+                <AdvancedMarker key={pub.id} position={{lat:pub.latitude,lng:pub.longitude}} onClick={() => selectPub(pub)}
+                  anchorPoint={AdvancedMarkerAnchorPoint.BOTTOM_CENTER}>
+                  <PubPin variant={selectedPub?.id===pub.id ? 'selected' : isFavouritePub(pub) ? 'favourite' : 'default'}/>
                 </AdvancedMarker>
               ))}
             </Map>
@@ -449,7 +576,39 @@ export default function FanMap() {
                         <div style={{padding:'10px 16px 14px'}}>
                           {getFixturesForPub(mobilePubDetail.id).length === 0
                             ? <div style={{fontSize:'12px',color:'#aeaeb2',textAlign:'center',padding:'12px 0'}}>No confirmed fixtures today</div>
-                            : getFixturesForPub(mobilePubDetail.id).map((f,i) => {
+                            : (() => {
+                              const pubFixtures = getFixturesForPub(mobilePubDetail.id)
+                              const favs = pubFixtures.filter(isFavouriteFixture)
+                              const rest = pubFixtures.filter(f => !isFavouriteFixture(f))
+                              return <>
+                              {favs.length > 0 && (
+                                <div style={{display:'flex',alignItems:'center',gap:'5px',marginBottom:'8px'}}>
+                                  <Star size={11} fill="#e8732a" color="#e8732a" strokeWidth={0}/>
+                                  <span style={{fontSize:'10px',fontWeight:'800',letterSpacing:'1px',textTransform:'uppercase',color:'#e8732a'}}>Your Favourited Teams</span>
+                                </div>
+                              )}
+                              {favs.map((f, i) => {
+                                const time = new Date(f.kickoff_time).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})
+                                return (
+                                  <div key={i} style={{position:'relative',overflow:'hidden',background:'linear-gradient(135deg, rgba(232,115,42,0.1), rgba(232,115,42,0.03))',border:'1px solid rgba(232,115,42,0.25)',borderRadius:'10px',padding:'8px 12px 8px 15px',marginBottom:'8px'}}>
+                                    <div style={{position:'absolute',left:0,top:0,bottom:0,width:'3px',background:'#e8732a'}}/>
+                                    <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'8px'}}>
+                                      <div style={{display:'flex',alignItems:'center',gap:'7px',flex:1,minWidth:0}}>
+                                        <SportIcon sport={f.sport}/>
+                                        <div style={{minWidth:0}}>
+                                          <div style={{fontSize:'13px',fontWeight:'700',color:'#152238',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{f.home_team} vs {f.away_team}</div>
+                                          <div style={{fontSize:'11px',color:'#aeaeb2'}}>{f.competition}</div>
+                                        </div>
+                                      </div>
+                                      <div style={{flexShrink:0,background:'white',border:'1px solid rgba(232,115,42,0.28)',borderRadius:'5px',padding:'3px 10px',fontSize:'12px',fontWeight:'700',color:'#e8732a'}}>{time}</div>
+                                    </div>
+                                  </div>
+                                )
+                              })}
+                              {favs.length > 0 && rest.length > 0 && (
+                                <div style={{fontSize:'10px',fontWeight:'700',letterSpacing:'1px',textTransform:'uppercase',color:'#aeaeb2',margin:'12px 0 8px'}}>Other Fixtures</div>
+                              )}
+                              {rest.map((f, i) => {
                               const time = new Date(f.kickoff_time).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})
                               return (
                                 <div key={i} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'7px 0',borderTop:i>0?'1px solid rgba(0,0,0,0.06)':'none'}}>
@@ -463,7 +622,9 @@ export default function FanMap() {
                                   <div style={{flexShrink:0,marginLeft:'8px',background:'#e8732a12',border:'1px solid #e8732a28',borderRadius:'5px',padding:'3px 10px',fontSize:'12px',fontWeight:'700',color:'#e8732a'}}>{time}</div>
                                 </div>
                               )
-                            })}
+                              })}
+                              </>
+                            })()}
                         </div>
                       )}
                       {infoTab === 'info' && (
@@ -614,67 +775,11 @@ export default function FanMap() {
   // ─── DESKTOP ─────────────────────────────────────────────────────────────────
   return (
     <div style={{height:'100vh',display:'flex',flexDirection:'column',background:'#f5f5f7'}}>
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}} @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}} .filter-pill:hover{background:rgba(0,0,0,0.04)!important;border-color:rgba(0,0,0,0.12)!important} .pub-hover:hover{border-color:rgba(0,0,0,0.12)!important;background:#fafafa!important}`}</style>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}} @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}} @keyframes dropdownIn{from{opacity:0;transform:translateY(-6px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}} .pub-hover:hover{border-color:rgba(0,0,0,0.12)!important;background:#fafafa!important} .filter-option:hover{background:rgba(0,0,0,0.045)!important}`}</style>
 
       {/* Top nav bar */}
-      <div style={{background:'rgba(255,255,255,0.75)',borderBottom:'1px solid rgba(0,0,0,0.06)',padding:'0 24px',height:'56px',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'16px',flexShrink:0,backdropFilter:'saturate(200%) blur(20px)',WebkitBackdropFilter:'saturate(200%) blur(20px)'}}>
+      <div style={{position:'relative',zIndex:100,background:'rgba(255,255,255,0.75)',borderBottom:'1px solid rgba(0,0,0,0.06)',padding:'0 24px',height:'56px',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'16px',flexShrink:0,backdropFilter:'saturate(200%) blur(20px)',WebkitBackdropFilter:'saturate(200%) blur(20px)'}}>
         <a href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'46px',width:'auto'}}/></a>
-
-        {/* Filter bar — centre */}
-        <div ref={filterRef} style={{position:'relative',flex:1,maxWidth:'680px'}}>
-          <div style={{display:'flex',gap:'6px',alignItems:'center',justifyContent:'center',flexWrap:'nowrap',overflowX:'auto'}}>
-
-            {/* Sport pills */}
-            {availableSports.map(sport => {
-              const isActive = selectedSport === sport
-              return (
-                <button key={sport} className="filter-pill" onClick={() => handleSelectSport(sport)}
-                  style={{padding:'6px 14px',borderRadius:'20px',border:`1px solid ${isActive?'#e8732a55':'rgba(0,0,0,0.08)'}`,background:isActive?'#e8732a18':'white',fontSize:'12px',fontWeight:'700',color:isActive?'#e8732a':'#6e6e73',cursor:'pointer',whiteSpace:'nowrap',transition:'all 0.15s',letterSpacing:'0.2px'}}>
-                  {sport}
-                </button>
-              )
-            })}
-
-            {selectedSport && availableLeagues.length > 0 && (
-              <>
-                <ChevronRight size={14} strokeWidth={2} color="#c7c7cc"/>
-                {availableLeagues.map(league => {
-                  const isActive = selectedLeague === league
-                  return (
-                    <button key={league} className="filter-pill" onClick={() => handleSelectLeague(league)}
-                      style={{padding:'6px 14px',borderRadius:'20px',border:`1px solid ${isActive?'#e8732a55':'rgba(0,0,0,0.08)'}`,background:isActive?'#e8732a18':'white',fontSize:'12px',fontWeight:'600',color:isActive?'#e8732a':'#6e6e73',cursor:'pointer',whiteSpace:'nowrap',transition:'all 0.15s'}}>
-                      {league}
-                    </button>
-                  )
-                })}
-              </>
-            )}
-
-            {selectedLeague && leagueFixtures.length > 0 && (
-              <>
-                <ChevronRight size={14} strokeWidth={2} color="#c7c7cc"/>
-                {leagueFixtures.map(f => {
-                  const isSelected = selectedFixtureIds.includes(f.id)
-                  const time = new Date(f.kickoff_time).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})
-                  return (
-                    <button key={f.id} className="filter-pill" onClick={() => toggleFixture(f.id)}
-                      style={{padding:'6px 14px',borderRadius:'20px',border:`1px solid ${isSelected?'#e8732a55':'rgba(0,0,0,0.08)'}`,background:isSelected?'#e8732a18':'white',fontSize:'11px',fontWeight:'600',color:isSelected?'#e8732a':'#6e6e73',cursor:'pointer',whiteSpace:'nowrap',transition:'all 0.15s',display:'flex',alignItems:'center',gap:'6px'}}>
-                      <span>{f.home_team} vs {f.away_team}</span>
-                      <span style={{color:isSelected?'#e8732a88':'#c7c7cc',fontSize:'12px'}}>· {time}</span>
-                    </button>
-                  )
-                })}
-              </>
-            )}
-
-            {activeFiltersCount > 0 && (
-              <button onClick={resetFilters}
-                style={{padding:'6px 12px',borderRadius:'20px',border:'1px solid #dc262633',background:'#dc262610',fontSize:'11px',fontWeight:'700',color:'#dc2626',cursor:'pointer',whiteSpace:'nowrap',letterSpacing:'0.2px',display:'flex',alignItems:'center',gap:'4px'}}>
-                Clear <X size={11} strokeWidth={2.5}/>
-              </button>
-            )}
-          </div>
-        </div>
 
         {/* Right controls */}
         <div style={{display:'flex',gap:'8px',alignItems:'center',flexShrink:0}}>
@@ -688,6 +793,85 @@ export default function FanMap() {
           ) : (
             <a href="/fan/register" style={{background:'#e8732a',color:'white',padding:'6px 14px',borderRadius:'8px',fontSize:'12px',fontWeight:'700',whiteSpace:'nowrap'}}>Sign Up</a>
           )}
+        </div>
+      </div>
+
+      {/* Find Your Match — filter band */}
+      <div style={{
+        position:'relative', zIndex:95, flexShrink:0,
+        background:'linear-gradient(135deg, rgba(255,248,243,0.92) 0%, rgba(255,255,255,0.92) 45%, rgba(240,244,255,0.92) 100%)',
+        borderBottom:'1px solid rgba(0,0,0,0.06)',
+        boxShadow:'0 1px 0 rgba(255,255,255,0.6) inset',
+        padding:'0 24px', height:'60px',
+        display:'flex', alignItems:'center', gap:'18px',
+        backdropFilter:'saturate(180%) blur(16px)', WebkitBackdropFilter:'saturate(180%) blur(16px)',
+      }}>
+        <div style={{display:'inline-flex',alignItems:'center',gap:'7px',flexShrink:0,background:'rgba(232,115,42,0.1)',border:'1px solid rgba(232,115,42,0.25)',borderRadius:'980px',padding:'7px 16px'}}>
+          <div style={{width:'6px',height:'6px',borderRadius:'50%',background:'#e8732a'}}/>
+          <span style={{fontSize:'12.5px',fontWeight:'800',letterSpacing:'0.3px',color:'#e8732a',whiteSpace:'nowrap'}}>Find Your Match</span>
+        </div>
+
+        <div style={{width:'1px',height:'22px',background:'rgba(0,0,0,0.08)',flexShrink:0}}/>
+
+        <div ref={filterRef} style={{position:'relative',flex:1,maxWidth:'720px'}}>
+          <div style={{display:'flex',gap:'10px',alignItems:'center',flexWrap:'nowrap'}}>
+
+            {/* Sport */}
+            <FilterDropdown label="Sport" displayValue={selectedSport}
+              isOpen={openDropdown==='sport'} onToggle={() => setOpenDropdown(o => o==='sport'?null:'sport')}>
+              {availableSports.length === 0
+                ? <div style={{padding:'14px 10px',fontSize:'12px',color:'#aeaeb2',textAlign:'center'}}>No sports available today</div>
+                : availableSports.map(sport => (
+                  <FilterOption key={sport} label={sport} active={selectedSport===sport}
+                    icon={<SportIcon sport={sport} size={15} style={{color: selectedSport===sport ? '#e8732a' : '#8e8e93', flexShrink:0}}/>}
+                    onClick={() => {
+                      handleSelectSport(sport)
+                      const hasLeagues = sport !== selectedSport &&
+                        validShowings.some(s => s.fixtures?.sport?.toLowerCase() === sport.toLowerCase())
+                      setOpenDropdown(hasLeagues ? 'league' : null)
+                    }}/>
+                ))}
+            </FilterDropdown>
+
+            {/* League */}
+            <FilterDropdown label="League" displayValue={selectedLeague}
+              disabled={!selectedSport} disabledHint="Choose a sport first"
+              isOpen={openDropdown==='league'} onToggle={() => setOpenDropdown(o => o==='league'?null:'league')}>
+              {availableLeagues.map(league => (
+                <FilterOption key={league} label={league} active={selectedLeague===league}
+                  onClick={() => {
+                    handleSelectLeague(league)
+                    setOpenDropdown('fixture')
+                  }}/>
+              ))}
+            </FilterDropdown>
+
+            {/* Teams — multi-select, one row per team rather than per fixture */}
+            <FilterDropdown label="Teams" width={190} panelWidth={240}
+              displayValue={checkedTeams.length > 0 ? `${checkedTeams.length} team${checkedTeams.length>1?'s':''}` : null}
+              disabled={!selectedLeague} disabledHint="Choose a league first"
+              isOpen={openDropdown==='fixture'} onToggle={() => setOpenDropdown(o => o==='fixture'?null:'fixture')}>
+              {leagueTeams.length === 0
+                ? <div style={{padding:'14px 10px',fontSize:'12px',color:'#aeaeb2',textAlign:'center'}}>No teams playing in this league today</div>
+                : leagueTeams.map(({ team, fixture }) => (
+                  <FilterOption key={team} label={team} multiSelect
+                    active={checkedTeams.includes(team)} onClick={() => toggleTeam(team, fixture.id)}/>
+                ))}
+              {checkedTeams.length > 0 && (
+                <button onClick={() => { setSelectedFixtureIds([]); setCheckedTeams([]) }}
+                  style={{width:'100%',marginTop:'4px',padding:'8px',borderRadius:'8px',border:'none',background:'transparent',color:'#aeaeb2',fontSize:'11px',fontWeight:'600',cursor:'pointer',borderTop:'1px solid rgba(0,0,0,0.06)'}}>
+                  Clear team selection
+                </button>
+              )}
+            </FilterDropdown>
+
+            {activeFiltersCount > 0 && (
+              <button onClick={resetFilters}
+                style={{height:'38px',padding:'0 14px',borderRadius:'11px',border:'1px solid #dc262630',background:'#dc262610',fontSize:'12px',fontWeight:'700',color:'#dc2626',cursor:'pointer',whiteSpace:'nowrap',letterSpacing:'0.2px',display:'flex',alignItems:'center',gap:'5px',flexShrink:0}}>
+                Clear <X size={12} strokeWidth={2.5}/>
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -759,13 +943,9 @@ export default function FanMap() {
           <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}>
             <Map defaultCenter={mapCenter} defaultZoom={13} mapId={process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY} style={{width:'100%',height:'100%'}} colorScheme="LIGHT">
               {activePubs.map(pub => (
-                <AdvancedMarker key={pub.id} position={{lat:pub.latitude,lng:pub.longitude}} onClick={() => selectPub(pub)}>
-                  <Pin
-                    background={selectedPub?.id===pub.id?'#e8732a':isFavouritePub(pub)?'#22c55e':'white'}
-                    borderColor={selectedPub?.id===pub.id?'#e8732a':isFavouritePub(pub)?'#16a34a':'#e8732a'}
-                    glyphColor="white"
-                    glyphSrc={isFavouritePub(pub)?PIN_STAR_GLYPH:PIN_TV_GLYPH}
-                  />
+                <AdvancedMarker key={pub.id} position={{lat:pub.latitude,lng:pub.longitude}} onClick={() => selectPub(pub)}
+                  anchorPoint={AdvancedMarkerAnchorPoint.BOTTOM_CENTER}>
+                  <PubPin variant={selectedPub?.id===pub.id ? 'selected' : isFavouritePub(pub) ? 'favourite' : 'default'}/>
                 </AdvancedMarker>
               ))}
               {selectedPub && (
