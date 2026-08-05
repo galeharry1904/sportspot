@@ -26,8 +26,10 @@ export default function LoginPage() {
         * { box-sizing: border-box; }
         .auth-input:focus { border-color: #e8732a !important; box-shadow: 0 0 0 3px rgba(232,115,42,0.12); }
         .auth-submit { transition: all 0.25s cubic-bezier(0.22,1,0.36,1); }
-        .auth-submit:hover:not(:disabled) { transform: scale(1.015); box-shadow: 0 8px 28px rgba(232,115,42,0.35) !important; }
-        .auth-link:hover { text-decoration: underline; }
+        @media (hover: hover) and (pointer: fine) {
+          .auth-submit:hover:not(:disabled) { transform: scale(1.015); box-shadow: 0 8px 28px rgba(232,115,42,0.35) !important; }
+          .auth-link:hover { text-decoration: underline; }
+        }
       `}</style>
 
       <div style={{position:'absolute',top:'-10%',left:'-10%',width:'50vw',height:'50vw',borderRadius:'50%',background:'rgba(232,115,42,0.18)',filter:'blur(90px)',pointerEvents:'none'}}/>
@@ -79,6 +81,9 @@ export default function LoginPage() {
         <p style={{color:'#6e6e73',fontSize:'13px',textAlign:'center'}}>
           No account? <a href="/register" className="auth-link" style={{color:'#e8732a',fontWeight:'600'}}>Register your venue</a>
         </p>
+        <div style={{borderTop:'1px solid rgba(0,0,0,0.08)',marginTop:'20px',paddingTop:'16px',textAlign:'center'}}>
+          <a href="/" className="auth-link" style={{color:'#aeaeb2',fontSize:'12px'}}>← Return to Home Page</a>
+        </div>
       </div>
     </div>
   )

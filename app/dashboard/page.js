@@ -76,7 +76,9 @@ export default function Dashboard() {
       <style>{`
         * { box-sizing: border-box; }
         .input-field:focus { border-color: #e8732a !important; box-shadow: 0 0 0 3px rgba(232,115,42,0.1); outline: none; }
-        .nav-link:hover { background: rgba(0,0,0,0.04) !important; }
+        @media (hover: hover) and (pointer: fine) {
+          .nav-link:hover { background: rgba(0,0,0,0.04) !important; }
+        }
         @media (max-width: 768px) {
           .dash-nav { padding: 0 16px !important; height: 56px !important; }
           .dash-nav-pub { display: none !important; }

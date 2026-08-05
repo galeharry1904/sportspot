@@ -75,9 +75,11 @@ function LeaguesContent() {
     <div style={{minHeight:'100vh',background:'#f5f5f7',color:'#152238',fontFamily:"-apple-system,'SF Pro Display','SF Pro Text',BlinkMacSystemFont,'Helvetica Neue',sans-serif"}}>
       <style>{`
         * { box-sizing: border-box; }
-        .comp-pill:hover { background: rgba(0,0,0,0.04) !important; }
-        .tab-btn:hover { color: #e8732a; }
-        .table-row:hover { background: rgba(0,0,0,0.02) !important; }
+        @media (hover: hover) and (pointer: fine) {
+          .comp-pill:hover { background: rgba(0,0,0,0.04) !important; }
+          .tab-btn:hover { color: #e8732a; }
+          .table-row:hover { background: rgba(0,0,0,0.02) !important; }
+        }
       `}</style>
 
       {/* Nav */}

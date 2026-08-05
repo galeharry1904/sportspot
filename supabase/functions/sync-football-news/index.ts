@@ -64,12 +64,26 @@ function cleanSummary(raw) {
   return stripped.length > 220 ? stripped.slice(0, 217) + '…' : stripped
 }
 
+// Metro's feed has no <media:*> or <enclosure> at item level at all — its
+// only image is the first <img> inside <content:encoded>'s embedded HTML.
+// Only used as a last resort below, since a real <enclosure>/<media:*> is
+// always a more deliberate "this is the article image" signal than
+// grabbing whatever <img> happens to appear first in the body.
+function extractContentEncodedImage(block) {
+  const contentMatch = /<content:encoded><!\[CDATA\[([\s\S]*?)\]\]><\/content:encoded>/.exec(block)
+  if (!contentMatch) return null
+  const imgTag = /<img\b[^>]*>/.exec(contentMatch[1])
+  if (!imgTag) return null
+  const urlMatch = /src="([^"]*)"/.exec(imgTag[0])
+  return urlMatch ? urlMatch[1] : null
+}
+
 // Feeds carry images three different ways: a single <media:thumbnail>
 // (BBC), several <media:content> at different widths (The Guardian), or a
-// WordPress <enclosure type="image/...">  with no size info at all
-// (Mirror, Metro). None of these give a reliable width for the enclosure
-// case, so it's treated as a reasonable mid-size guess — enough to beat a
-// small explicit thumbnail but not a genuinely large media:content image.
+// WordPress <enclosure type="image/..."> with no size info at all
+// (Mirror). None of these give a reliable width for the enclosure case,
+// so it's treated as a reasonable mid-size guess — enough to beat a small
+// explicit thumbnail but not a genuinely large media:content image.
 function extractBestImage(block) {
   let bestUrl = null
   let bestWidth = -1
@@ -96,6 +110,10 @@ function extractBestImage(block) {
       bestWidth = assumedWidth
       bestUrl = urlMatch[1]
     }
+  }
+
+  if (bestUrl === null) {
+    bestUrl = extractContentEncodedImage(block)
   }
 
   return bestUrl ? decodeEntities(bestUrl) : null

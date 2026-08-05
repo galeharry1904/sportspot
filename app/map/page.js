@@ -481,6 +481,7 @@ export default function FanMap() {
         <div style={{background:'rgba(255,255,255,0.75)',backdropFilter:'saturate(200%) blur(20px)',WebkitBackdropFilter:'saturate(200%) blur(20px)',borderBottom:'1px solid rgba(0,0,0,0.06)',padding:'0 16px',height:'52px',display:'flex',alignItems:'center',justifyContent:'space-between',flexShrink:0,zIndex:10}}>
           <a href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'40px',width:'auto'}}/></a>
           <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
+            <a href="/" style={{background:'transparent',color:'#6e6e73',padding:'5px 10px',borderRadius:'8px',fontSize:'11px',fontWeight:'600',border:'1px solid rgba(0,0,0,0.08)',whiteSpace:'nowrap'}}>Home</a>
             {activeFiltersCount > 0 && (
               <div style={{background:'#e8732a',borderRadius:'20px',padding:'4px 12px',fontSize:'11px',fontWeight:'700',color:'white',letterSpacing:'0.3px'}}>
                 {activeFiltersCount} filter{activeFiltersCount > 1 ? 's' : ''}
@@ -779,7 +780,7 @@ export default function FanMap() {
   // ─── DESKTOP ─────────────────────────────────────────────────────────────────
   return (
     <div style={{height:'100vh',display:'flex',flexDirection:'column',background:'#f5f5f7'}}>
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}} @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}} @keyframes dropdownIn{from{opacity:0;transform:translateY(-6px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}} .pub-hover:hover{border-color:rgba(0,0,0,0.12)!important;background:#fafafa!important} .filter-option:hover{background:rgba(0,0,0,0.045)!important}`}</style>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}} @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}} @keyframes dropdownIn{from{opacity:0;transform:translateY(-6px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}} @media (hover: hover) and (pointer: fine){ .pub-hover:hover{border-color:rgba(0,0,0,0.12)!important;background:#fafafa!important} .filter-option:hover{background:rgba(0,0,0,0.045)!important} }`}</style>
 
       {/* Top nav bar */}
       <div style={{position:'relative',zIndex:100,background:'rgba(255,255,255,0.75)',borderBottom:'1px solid rgba(0,0,0,0.06)',padding:'0 24px',height:'56px',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'16px',flexShrink:0,backdropFilter:'saturate(200%) blur(20px)',WebkitBackdropFilter:'saturate(200%) blur(20px)'}}>
@@ -788,6 +789,7 @@ export default function FanMap() {
         {/* Right controls */}
         <div style={{display:'flex',gap:'8px',alignItems:'center',flexShrink:0}}>
           <div style={{fontSize:'12px',color:'#aeaeb2',fontWeight:'600',whiteSpace:'nowrap'}}>{activePubs.length} venue{activePubs.length!==1?'s':''}</div>
+          <a href="/" style={{background:'transparent',color:'#6e6e73',padding:'6px 12px',borderRadius:'8px',fontSize:'12px',fontWeight:'600',border:'1px solid rgba(0,0,0,0.08)',whiteSpace:'nowrap'}}>Return to Home Page</a>
           <a href="/login" style={{background:'transparent',color:'#6e6e73',padding:'6px 12px',borderRadius:'8px',fontSize:'12px',fontWeight:'600',border:'1px solid rgba(0,0,0,0.08)',whiteSpace:'nowrap'}}>Venue Login</a>
           {fanSession ? (
             <button onClick={() => setFanPanelOpen(p => !p)}

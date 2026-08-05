@@ -31,8 +31,10 @@ export default function FanLogin() {
         * { box-sizing: border-box; }
         .auth-input:focus { border-color: #e8732a !important; box-shadow: 0 0 0 3px rgba(232,115,42,0.12); }
         .auth-submit { transition: all 0.25s cubic-bezier(0.22,1,0.36,1); }
-        .auth-submit:hover:not(:disabled) { transform: scale(1.015); box-shadow: 0 8px 28px rgba(232,115,42,0.35) !important; }
-        .auth-link:hover { text-decoration: underline; }
+        @media (hover: hover) and (pointer: fine) {
+          .auth-submit:hover:not(:disabled) { transform: scale(1.015); box-shadow: 0 8px 28px rgba(232,115,42,0.35) !important; }
+          .auth-link:hover { text-decoration: underline; }
+        }
         @media (max-width: 768px) {
           .auth-card { border-radius: 24px !important; padding: 32px 24px !important; }
           .auth-wrap { align-items: flex-start !important; padding: 24px 20px !important; }
@@ -82,8 +84,9 @@ export default function FanLogin() {
           <p style={{textAlign:'center',fontSize:'13px',color:'#6e6e73'}}>
             No account? <a href="/fan/register" className="auth-link" style={{color:'#e8732a',fontWeight:'600'}}>Create one free</a>
           </p>
-          <div style={{borderTop:'1px solid rgba(0,0,0,0.08)',marginTop:'20px',paddingTop:'16px',textAlign:'center'}}>
+          <div style={{borderTop:'1px solid rgba(0,0,0,0.08)',marginTop:'20px',paddingTop:'16px',textAlign:'center',display:'flex',flexDirection:'column',gap:'10px'}}>
             <a href="/login" className="auth-link" style={{color:'#aeaeb2',fontSize:'12px'}}>Pub manager? Sign in here →</a>
+            <a href="/" className="auth-link" style={{color:'#aeaeb2',fontSize:'12px'}}>← Return to Home Page</a>
           </div>
         </div>
       </div>

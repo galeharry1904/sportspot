@@ -115,11 +115,13 @@ export default function FanProfile() {
         @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
         .tab-btn { transition: all 0.2s ease; }
         .team-pill { transition: all 0.15s ease; }
-        .team-pill:hover { transform: translateY(-1px); }
         .sport-card { transition: all 0.2s ease; }
-        .sport-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
         .input-field:focus { border-color: #e8732a !important; outline: none; box-shadow: 0 0 0 3px rgba(232,115,42,0.1); }
-        .nav-link:hover { background: rgba(0,0,0,0.04) !important; }
+        @media (hover: hover) and (pointer: fine) {
+          .team-pill:hover { transform: translateY(-1px); }
+          .sport-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
+          .nav-link:hover { background: rgba(0,0,0,0.04) !important; }
+        }
         @media (max-width: 768px) {
           .profile-hero { padding: 24px 16px !important; }
           .profile-body { padding: 0 16px 120px !important; }

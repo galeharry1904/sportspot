@@ -185,53 +185,61 @@ export default function Home() {
         .step-card {
           transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease;
         }
-        .step-card:hover {
-          transform: translateY(-6px);
-          box-shadow: 0 24px 64px rgba(0,0,0,0.1) !important;
-        }
         .feature-card {
           transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease;
-        }
-        .feature-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 16px 48px rgba(0,0,0,0.07) !important;
         }
         .table-preview-card {
           transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease;
         }
-        .table-preview-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 16px 48px rgba(0,0,0,0.07) !important;
-        }
         .news-card {
           transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease;
-        }
-        .news-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 16px 48px rgba(0,0,0,0.07) !important;
         }
         .cta-btn-primary {
           transition: all 0.25s cubic-bezier(0.22,1,0.36,1);
           display: inline-block;
           text-decoration: none;
         }
-        .cta-btn-primary:hover {
-          transform: scale(1.03);
-          box-shadow: 0 12px 40px rgba(232,115,42,0.45) !important;
-        }
         .cta-btn-secondary {
           transition: all 0.25s ease;
           display: inline-block;
           text-decoration: none;
         }
-        .cta-btn-secondary:hover {
-          background: rgba(255,255,255,0.75) !important;
-        }
         .nav-link {
           transition: color 0.2s ease;
           text-decoration: none;
         }
-        .nav-link:hover { color: #152238 !important; }
+
+        /* Hover effects scoped to devices with a real pointer (mouse/trackpad).
+           Without this, WebKit on touch devices treats the first tap on any
+           element with a :hover rule as "activate hover" rather than "click",
+           so links like Create Fan Account silently ate the first tap and
+           only worked on the second. */
+        @media (hover: hover) and (pointer: fine) {
+          .step-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 24px 64px rgba(0,0,0,0.1) !important;
+          }
+          .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.07) !important;
+          }
+          .table-preview-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.07) !important;
+          }
+          .news-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.07) !important;
+          }
+          .cta-btn-primary:hover {
+            transform: scale(1.03);
+            box-shadow: 0 12px 40px rgba(232,115,42,0.45) !important;
+          }
+          .cta-btn-secondary:hover {
+            background: rgba(255,255,255,0.75) !important;
+          }
+          .nav-link:hover { color: #152238 !important; }
+        }
 
         @media (max-width: 768px) {
           .nav-desktop { display: none !important; }
