@@ -16,6 +16,7 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('fixtures')
   const [venueForm, setVenueForm] = useState({})
   const [venueSaved, setVenueSaved] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
   const router = useRouter()
 
   useEffect(() => { loadData() }, [])
@@ -23,9 +24,12 @@ export default function Dashboard() {
   async function loadData() {
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) { router.push('/login'); return }
+    const { data: adminCheck } = await supabase.rpc('is_admin')
+    setIsAdmin(!!adminCheck)
     const { data: pubData } = await supabase.from('pubs').select('*').eq('owner_id', session.user.id).single()
     if (!pubData) { router.push('/setup'); return }
     setPub(pubData)
+    if (pubData.status !== 'approved') { setLoading(false); return }
     setVenueForm({ name: pubData.name || '', address: pubData.address || '', has_sky: pubData.has_sky || false, has_tnt: pubData.has_tnt || false })
     const today = new Date().toISOString().split('T')[0]
     const { data: fixtureData } = await supabase.from('fixtures').select('*').eq('fixture_date', today).order('kickoff_time')
@@ -71,6 +75,41 @@ export default function Dashboard() {
     <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',color:'#6e6e73',background:'#f5f5f7'}}>Loading...</div>
   )
 
+  if (pub && pub.status !== 'approved') {
+    const rejected = pub.status === 'rejected'
+    return (
+      <div style={{minHeight:'100vh',position:'relative',overflow:'hidden',background:'linear-gradient(135deg, #fff8f3 0%, #ffffff 25%, #f0f4ff 55%, #f8f0ff 80%, #fff5f0 100%)',display:'flex',alignItems:'center',justifyContent:'center',padding:'24px',fontFamily:"-apple-system,'SF Pro Display','SF Pro Text',BlinkMacSystemFont,'Helvetica Neue',sans-serif"}}>
+        <div style={{
+          background:'rgba(255,255,255,0.55)',
+          backdropFilter:'saturate(200%) blur(32px)',
+          WebkitBackdropFilter:'saturate(200%) blur(32px)',
+          border:'1px solid rgba(255,255,255,0.7)',
+          boxShadow:'0 8px 64px rgba(0,0,0,0.08), 0 2px 0 rgba(255,255,255,0.8) inset',
+          borderRadius:'28px',
+          padding:'48px 40px',
+          width:'100%',
+          maxWidth:'440px',
+          textAlign:'center',
+        }}>
+          <div style={{display:'inline-flex',alignItems:'center',gap:'6px',background: rejected ? 'rgba(239,68,68,0.1)' : 'rgba(232,115,42,0.1)',border:`1px solid ${rejected ? 'rgba(239,68,68,0.25)' : 'rgba(232,115,42,0.25)'}`,borderRadius:'980px',padding:'5px 14px',marginBottom:'20px'}}>
+            <div style={{width:'6px',height:'6px',borderRadius:'50%',background: rejected ? '#dc2626' : '#e8732a'}}/>
+            <span style={{fontSize:'12px',color: rejected ? '#dc2626' : '#e8732a',fontWeight:'600',letterSpacing:'0.2px'}}>{rejected ? 'Application not approved' : 'Application under review'}</span>
+          </div>
+          <h1 style={{color:'#152238',fontSize:'24px',fontWeight:'700',letterSpacing:'-0.5px',marginBottom:'12px'}}>{pub.name}</h1>
+          <p style={{color:'#6e6e73',fontSize:'14px',lineHeight:'1.6',marginBottom:'28px'}}>
+            {rejected
+              ? "We weren't able to approve this application. If you think this is a mistake, get in touch and we'll take another look."
+              : "Thanks for applying — we're reviewing your venue's details now. You'll get an email as soon as it's approved, usually within a day or two."}
+          </p>
+          <button onClick={async () => { await supabase.auth.signOut(); router.push('/login') }}
+            style={{width:'100%',background:'none',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'980px',padding:'13px',fontSize:'14px',fontWeight:'600',color:'#6e6e73',cursor:'pointer'}}>
+            Sign Out
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div style={{minHeight:'100vh',background:'#f5f5f7',fontFamily:"-apple-system,'SF Pro Display','SF Pro Text',BlinkMacSystemFont,'Helvetica Neue',sans-serif"}}>
       <style>{`
@@ -106,6 +145,9 @@ export default function Dashboard() {
           <span className="dash-nav-pub" style={{background:'rgba(0,0,0,0.05)',color:'#6e6e73',fontSize:'12px',padding:'3px 10px',borderRadius:'20px'}}>{pub?.name}</span>
         </div>
         <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
+          {isAdmin && (
+            <a href="/admin" className="nav-link" style={{fontSize:'13px',color:'#e8732a',padding:'6px 12px',borderRadius:'6px',border:'1px solid rgba(232,115,42,0.3)',background:'rgba(232,115,42,0.06)',fontWeight:'600',whiteSpace:'nowrap'}}>Admin</a>
+          )}
           <a href="/map" className="nav-link" style={{fontSize:'13px',color:'#6e6e73',padding:'6px 12px',borderRadius:'6px',border:'1px solid rgba(0,0,0,0.1)',whiteSpace:'nowrap'}}>Fan Map</a>
           <button onClick={async () => { await supabase.auth.signOut(); router.push('/login') }} className="nav-link"
             style={{fontSize:'13px',color:'#6e6e73',background:'none',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'6px',padding:'6px 12px',cursor:'pointer',whiteSpace:'nowrap'}}>

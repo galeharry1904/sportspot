@@ -173,7 +173,7 @@ export default function FanMap() {
   }, [])
 
   async function loadData() {
-    const { data: pubData } = await supabase.from('pubs').select('*')
+    const { data: pubData } = await supabase.from('pubs').select('*').eq('status', 'approved')
     setPubs(pubData || [])
     const { data: showingData } = await supabase.from('showings').select('*, fixtures(*), pubs(*)').eq('is_showing', true)
     setShowings(showingData || [])

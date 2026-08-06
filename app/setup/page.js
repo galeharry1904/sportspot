@@ -10,6 +10,10 @@ export default function SetupPage() {
   const [lng, setLng] = useState('')
   const [hasSky, setHasSky] = useState(false)
   const [hasTnt, setHasTnt] = useState(false)
+  const [phone, setPhone] = useState('')
+  const [contactEmail, setContactEmail] = useState('')
+  const [submitterName, setSubmitterName] = useState('')
+  const [submitterPosition, setSubmitterPosition] = useState('')
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -36,6 +40,10 @@ export default function SetupPage() {
       longitude: parseFloat(lng),
       has_sky: hasSky,
       has_tnt: hasTnt,
+      phone,
+      contact_email: contactEmail,
+      submitter_name: submitterName,
+      submitter_position: submitterPosition,
       owner_id: userId
     })
 
@@ -94,8 +102,8 @@ export default function SetupPage() {
           <div style={{width:'6px',height:'6px',borderRadius:'50%',background:'#e8732a'}}/>
           <span style={{fontSize:'12px',color:'#e8732a',fontWeight:'600',letterSpacing:'0.2px'}}>Venue setup</span>
         </div>
-        <h1 style={{color:'#152238',fontSize:'28px',fontWeight:'700',letterSpacing:'-1px',marginBottom:'4px'}}>Set up your venue</h1>
-        <p style={{color:'#6e6e73',marginBottom:'28px',fontSize:'14px'}}>This information appears on the fan map</p>
+        <h1 style={{color:'#152238',fontSize:'28px',fontWeight:'700',letterSpacing:'-1px',marginBottom:'4px'}}>Apply to list your venue</h1>
+        <p style={{color:'#6e6e73',marginBottom:'28px',fontSize:'14px'}}>We review every application before it goes live on the fan map — usually within a day or two</p>
         <input className="auth-input" style={inputStyle} placeholder="Pub name" value={name} onChange={e=>setName(e.target.value)}/>
         <input className="auth-input" style={inputStyle} placeholder="Full address" value={address} onChange={e=>setAddress(e.target.value)}/>
         <p style={{color:'#aeaeb2',fontSize:'12px',marginBottom:'8px'}}>Find coordinates at maps.google.com — right-click your pub and copy the numbers</p>
@@ -108,12 +116,19 @@ export default function SetupPage() {
         <label style={{display:'flex',alignItems:'center',gap:'10px',color:'#3a3a3c',marginBottom:'24px',cursor:'pointer',fontSize:'14px'}}>
           <input className="setup-check" type="checkbox" checked={hasTnt} onChange={e=>setHasTnt(e.target.checked)}/> TNT Sports
         </label>
+        <p style={{color:'#152238',fontSize:'14px',marginBottom:'12px',fontWeight:'600'}}>Contact details</p>
+        <input className="auth-input" style={inputStyle} placeholder="Venue phone number" value={phone} onChange={e=>setPhone(e.target.value)}/>
+        <input className="auth-input" style={inputStyle} type="email" placeholder="Venue contact email" value={contactEmail} onChange={e=>setContactEmail(e.target.value)}/>
+        <p style={{color:'#152238',fontSize:'14px',marginBottom:'4px',marginTop:'20px',fontWeight:'600'}}>Who's applying?</p>
+        <p style={{color:'#aeaeb2',fontSize:'12px',marginBottom:'12px'}}>So we know who to contact about this application</p>
+        <input className="auth-input" style={inputStyle} placeholder="Your name" value={submitterName} onChange={e=>setSubmitterName(e.target.value)}/>
+        <input className="auth-input" style={{...inputStyle, marginBottom:'24px'}} placeholder="Your position at the venue (e.g. Manager, Owner)" value={submitterPosition} onChange={e=>setSubmitterPosition(e.target.value)}/>
         {error && (
           <p style={{background:'rgba(239,68,68,0.08)',border:'1px solid rgba(239,68,68,0.25)',borderRadius:'8px',padding:'10px 12px',color:'#dc2626',fontSize:'13px',marginBottom:'12px'}}>{error}</p>
         )}
         <button className="auth-submit" onClick={handleSetup} disabled={loading}
           style={{width:'100%',background:'#e8732a',color:'white',border:'none',borderRadius:'980px',padding:'15px',fontSize:'16px',fontWeight:'600',letterSpacing:'-0.2px',cursor:'pointer',boxShadow:'0 4px 20px rgba(232,115,42,0.3)'}}>
-          {loading ? 'Saving...' : 'Save & Go to Dashboard'}
+          {loading ? 'Submitting...' : 'Submit Application'}
         </button>
       </div>
     </div>
