@@ -5,6 +5,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const SITE_URL = 'http://localhost:3000'
 const ADMIN_PATH = '/admin'
 const LOGO_URL = 'https://prlrakhymwfuffazjtxm.supabase.co/storage/v1/object/public/assets/SportSpot-Logo-Light.png'
+const ADMIN_NOTIFICATION_EMAIL = 'sportspotadmin@gmail.com'
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
@@ -140,35 +141,6 @@ Deno.serve(async (req) => {
     })
   }
 
-  const { data: admins, error: adminsError } = await supabase.from('admins').select('user_id')
-  if (adminsError) {
-    console.error('notify-admin-new-venue: failed to load admins', adminsError)
-    return new Response(JSON.stringify({ success: false, error: adminsError.message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    })
-  }
-
-  if (!admins?.length) {
-    console.log('notify-admin-new-venue: no admins registered, skipping send')
-    return new Response(JSON.stringify({ success: true, sent: 0, reason: 'no admins registered' }), {
-      headers: { 'Content-Type': 'application/json' },
-    })
-  }
-
-  const adminEmails = []
-  for (const admin of admins) {
-    const { data: userData, error: userError } = await supabase.auth.admin.getUserById(admin.user_id)
-    if (!userError && userData?.user?.email) adminEmails.push(userData.user.email)
-  }
-
-  if (!adminEmails.length) {
-    console.warn('notify-admin-new-venue: no resolvable admin emails')
-    return new Response(JSON.stringify({ success: true, sent: 0, reason: 'no resolvable admin emails' }), {
-      headers: { 'Content-Type': 'application/json' },
-    })
-  }
-
   const resendRes = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
@@ -177,7 +149,7 @@ Deno.serve(async (req) => {
     },
     body: JSON.stringify({
       from: 'SportSpot <onboarding@resend.dev>',
-      to: adminEmails,
+      to: ADMIN_NOTIFICATION_EMAIL,
       subject: `New venue application — ${pub.name || 'unnamed venue'}`,
       html: buildEmailHtml(pub),
     }),
@@ -192,8 +164,8 @@ Deno.serve(async (req) => {
     })
   }
 
-  console.log(`notify-admin-new-venue: sent to ${adminEmails.length} admin(s) for "${pub.name}" (${pub.id})`)
-  return new Response(JSON.stringify({ success: true, sent: adminEmails.length }), {
+  console.log(`notify-admin-new-venue: sent to ${ADMIN_NOTIFICATION_EMAIL} for "${pub.name}" (${pub.id})`)
+  return new Response(JSON.stringify({ success: true, sent: 1 }), {
     headers: { 'Content-Type': 'application/json' },
   })
 })

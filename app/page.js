@@ -563,6 +563,10 @@ export default function Home() {
 
       {/* ── FOOTER ── */}
       <div style={{background:'white',borderTop:'1px solid rgba(0,0,0,0.06)',padding:'32px 24px'}}>
+        <div style={{maxWidth:'1080px',margin:'0 auto',paddingBottom:'24px',marginBottom:'24px',borderBottom:'1px solid rgba(0,0,0,0.06)',textAlign:'center'}}>
+          <p style={{fontSize:'11px',fontWeight:'700',letterSpacing:'0.6px',textTransform:'uppercase',color:'#aeaeb2',marginBottom:'8px'}}>Contact Us</p>
+          <a href="mailto:sportspotadmin@gmail.com" className="nav-link" style={{color:'#152238',fontSize:'14px',fontWeight:'600'}}>sportspotadmin@gmail.com</a>
+        </div>
         <div className="footer-inner" style={{maxWidth:'1080px',margin:'0 auto',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'12px'}}>
           <img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'28px',width:'auto'}}/>
           <p style={{color:'#aeaeb2',fontSize:'13px',fontWeight:'400'}}>© 2026 SportSpot. All rights reserved.</p>
