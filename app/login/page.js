@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { supabase } from '../../lib/supabase'
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -48,9 +49,9 @@ export default function LoginPage() {
         position:'relative',
         zIndex:1,
       }}>
-        <a href="/" style={{display:'block',marginBottom:'24px'}}>
+        <Link href="/" style={{display:'block',marginBottom:'24px'}}>
           <img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'44px',width:'auto'}}/>
-        </a>
+        </Link>
         <p style={{color:'#6e6e73',marginBottom:'28px',fontSize:'14px',letterSpacing:'-0.1px'}}>Venue Manager Login</p>
         <input
           className="auth-input"
@@ -82,7 +83,7 @@ export default function LoginPage() {
           No account? <a href="/register" className="auth-link" style={{color:'#e8732a',fontWeight:'600'}}>Register your venue</a>
         </p>
         <div style={{borderTop:'1px solid rgba(0,0,0,0.08)',marginTop:'20px',paddingTop:'16px',textAlign:'center'}}>
-          <a href="/" className="auth-link" style={{color:'#aeaeb2',fontSize:'12px'}}>← Return to Home Page</a>
+          <Link href="/" className="auth-link" style={{color:'#aeaeb2',fontSize:'12px'}}>← Return to Home Page</Link>
         </div>
       </div>
     </div>

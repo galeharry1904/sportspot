@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { supabase } from '../../lib/supabase'
 
 function formatDate(dateStr) {
@@ -269,11 +270,11 @@ export default function AdminPage() {
       {/* Nav */}
       <div style={{background:'rgba(245,245,247,0.72)',borderBottom:'1px solid rgba(0,0,0,0.08)',backdropFilter:'saturate(200%) blur(28px)',WebkitBackdropFilter:'saturate(200%) blur(28px)',padding:'0 32px',display:'flex',alignItems:'center',justifyContent:'space-between',height:'60px',position:'sticky',top:0,zIndex:100}}>
         <div style={{display:'flex',alignItems:'center',gap:'12px'}}>
-          <a href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'50px',width:'auto'}}/></a>
+          <Link href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'50px',width:'auto'}}/></Link>
           <span style={{background:'rgba(0,0,0,0.05)',color:'#6e6e73',fontSize:'12px',padding:'3px 10px',borderRadius:'20px'}}>Admin</span>
         </div>
         <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
-          <a href="/" className="nav-link" style={{fontSize:'13px',color:'#6e6e73',padding:'6px 12px',borderRadius:'6px',border:'1px solid rgba(0,0,0,0.1)',whiteSpace:'nowrap'}}>Return to Home Page</a>
+          <Link href="/" className="nav-link" style={{fontSize:'13px',color:'#6e6e73',padding:'6px 12px',borderRadius:'6px',border:'1px solid rgba(0,0,0,0.1)',whiteSpace:'nowrap'}}>Return to Home Page</Link>
           <button onClick={async () => { await supabase.auth.signOut(); router.push('/login') }} className="nav-link"
             style={{fontSize:'13px',color:'#6e6e73',background:'none',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'6px',padding:'6px 12px',cursor:'pointer',whiteSpace:'nowrap'}}>
             Sign Out
@@ -315,7 +316,7 @@ export default function AdminPage() {
           <div style={{color:'#6e6e73',fontSize:'14px',padding:'40px 0',textAlign:'center'}}>Loading applications...</div>
         ) : pending.length === 0 ? (
           <div style={{background:'white',border:'1px solid rgba(0,0,0,0.06)',borderRadius:'16px',padding:'48px 24px',textAlign:'center',color:'#aeaeb2',fontSize:'14px'}}>
-            No applications waiting — you're all caught up.
+            No applications waiting — you&apos;re all caught up.
           </div>
         ) : (
           <div style={{display:'flex',flexDirection:'column',gap:'16px'}}>

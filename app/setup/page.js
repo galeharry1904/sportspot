@@ -119,7 +119,7 @@ export default function SetupPage() {
         <p style={{color:'#152238',fontSize:'14px',marginBottom:'12px',fontWeight:'600'}}>Contact details</p>
         <input className="auth-input" style={inputStyle} placeholder="Venue phone number" value={phone} onChange={e=>setPhone(e.target.value)}/>
         <input className="auth-input" style={inputStyle} type="email" placeholder="Venue contact email" value={contactEmail} onChange={e=>setContactEmail(e.target.value)}/>
-        <p style={{color:'#152238',fontSize:'14px',marginBottom:'4px',marginTop:'20px',fontWeight:'600'}}>Who's applying?</p>
+        <p style={{color:'#152238',fontSize:'14px',marginBottom:'4px',marginTop:'20px',fontWeight:'600'}}>Who&apos;s applying?</p>
         <p style={{color:'#aeaeb2',fontSize:'12px',marginBottom:'12px'}}>So we know who to contact about this application</p>
         <input className="auth-input" style={inputStyle} placeholder="Your name" value={submitterName} onChange={e=>setSubmitterName(e.target.value)}/>
         <input className="auth-input" style={{...inputStyle, marginBottom:'24px'}} placeholder="Your position at the venue (e.g. Manager, Owner)" value={submitterPosition} onChange={e=>setSubmitterPosition(e.target.value)}/>

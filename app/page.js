@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lenis from 'lenis'
+import Link from 'next/link'
 import { User, ClipboardList, MapPin, Beer, CheckCircle2, Tv, FootballIcon, Menu, X, ArrowRight, Star, Calendar } from '../lib/icons'
 import { supabase } from '../lib/supabase'
 import { CURRENT_SEASON, CURRENT_SEASON_LABEL } from '../lib/season'
@@ -318,9 +319,9 @@ export default function Home() {
         transition: 'background 0.4s ease, border-color 0.4s ease',
         display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 24px',
       }}>
-        <a href="/">
+        <Link href="/">
           <img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'60px',width:'auto'}}/>
-        </a>
+        </Link>
 
         <div className="nav-desktop" style={{display:'flex',gap:'4px',alignItems:'center'}}>
           {[{href:'/map',label:'Find Pubs'},{href:'/leagues',label:'Leagues'},{href:'/login',label:'Venue Login'}].map(item => (
@@ -638,7 +639,7 @@ export default function Home() {
         </div>
         <span>
           <span style={{display:'block',fontSize:'13px',fontWeight:'800',letterSpacing:'0.2px',lineHeight:'1.3',textTransform:'uppercase'}}>Plan Your Day</span>
-          <span style={{display:'block',fontSize:'11px',fontWeight:'500',opacity:0.92,marginTop:'2px',lineHeight:'1.3'}}>Tell us your plans — we'll find a pub wherever you'll be</span>
+          <span style={{display:'block',fontSize:'11px',fontWeight:'500',opacity:0.92,marginTop:'2px',lineHeight:'1.3'}}>Tell us your plans — we&apos;ll find a pub wherever you&apos;ll be</span>
         </span>
       </a>
 

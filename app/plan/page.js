@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps'
 import { supabase } from '../../lib/supabase'
 import { Clock, MapPin, X, Navigation } from '../../lib/icons'
@@ -163,9 +164,9 @@ export default function PlanPage() {
 
       {/* Nav */}
       <nav style={{background:'rgba(245,245,247,0.72)',borderBottom:'1px solid rgba(0,0,0,0.08)',padding:'0 32px',height:'76px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:100,backdropFilter:'saturate(200%) blur(28px)',WebkitBackdropFilter:'saturate(200%) blur(28px)'}}>
-        <a href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'60px',width:'auto'}}/></a>
+        <Link href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'60px',width:'auto'}}/></Link>
         <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
-          <a href="/" className="nav-link" style={{color:'#3a3a3c',fontSize:'13px',padding:'7px 14px',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'8px',fontWeight:'500'}}>Return to Home Page</a>
+          <Link href="/" className="nav-link" style={{color:'#3a3a3c',fontSize:'13px',padding:'7px 14px',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'8px',fontWeight:'500'}}>Return to Home Page</Link>
           <a href="/map" className="nav-link" style={{color:'#3a3a3c',fontSize:'13px',padding:'7px 14px',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'8px',fontWeight:'500'}}>Fan Map</a>
           <button onClick={async () => { await supabase.auth.signOut(); window.location.href='/' }} className="nav-link"
             style={{color:'#3a3a3c',fontSize:'13px',background:'none',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'8px',padding:'7px 14px',cursor:'pointer',fontWeight:'500'}}>
@@ -177,7 +178,7 @@ export default function PlanPage() {
       <div className="reveal-1" style={{background:'linear-gradient(135deg, #fff8f3 0%, #ffffff 40%, #f0f4ff 100%)',borderBottom:'1px solid rgba(0,0,0,0.06)',padding:'40px 24px'}}>
         <div style={{maxWidth:'720px',margin:'0 auto'}}>
           <h1 style={{fontSize:'24px',fontWeight:'700',color:'#152238',letterSpacing:'-0.5px',marginBottom:'4px'}}>Plan your day</h1>
-          <p style={{color:'#6e6e73',fontSize:'14px',margin:0}}>Tell us where you'll be — let us find you a pub.</p>
+          <p style={{color:'#6e6e73',fontSize:'14px',margin:0}}>Tell us where you&apos;ll be — let us find you a pub.</p>
         </div>
       </div>
 
@@ -185,7 +186,7 @@ export default function PlanPage() {
 
         {/* Today's stops */}
         <div style={{background:'white',border:'1px solid rgba(0,0,0,0.06)',borderRadius:'16px',padding:'24px',marginBottom:'20px',boxShadow:'0 2px 12px rgba(0,0,0,0.03)'}}>
-          <h2 style={{fontSize:'15px',fontWeight:'700',color:'#152238',marginBottom:'14px'}}>Today's stops</h2>
+          <h2 style={{fontSize:'15px',fontWeight:'700',color:'#152238',marginBottom:'14px'}}>Today&apos;s stops</h2>
 
           {stops.length === 0 ? (
             <p style={{color:'#aeaeb2',fontSize:'13px',marginBottom:'16px'}}>No stops added yet — drop a pin below for your first one.</p>
@@ -278,7 +279,7 @@ export default function PlanPage() {
             <div style={{marginTop:'20px',borderTop:'1px solid rgba(0,0,0,0.06)',paddingTop:'20px'}}>
               <p style={{fontSize:'13px',color:'#6e6e73',marginBottom:'14px'}}>
                 For <strong style={{color:'#152238'}}>{suggestions.fixture.home_team} vs {suggestions.fixture.away_team}</strong> at {formatKickoff(suggestions.fixture.kickoff_time)},
-                closest to where you'll be (<strong style={{color:'#152238'}}>{suggestions.nearestStop.label}</strong> at {formatStopTime(suggestions.nearestStop.stop_time)}):
+                closest to where you&apos;ll be (<strong style={{color:'#152238'}}>{suggestions.nearestStop.label}</strong> at {formatStopTime(suggestions.nearestStop.stop_time)}):
               </p>
 
               {suggestions.ranked.length === 0 ? (

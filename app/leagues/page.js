@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import { supabase } from '../../lib/supabase'
 import { Award, TrendingUp, Clock, Star } from '../../lib/icons'
 import { CURRENT_SEASON as SEASON, CURRENT_SEASON_LABEL as SEASON_LABEL, LAST_SEASON, LAST_SEASON_LABEL } from '../../lib/season'
@@ -112,7 +113,7 @@ function LeaguesContent() {
 
       {/* Nav */}
       <nav style={{background:'rgba(245,245,247,0.72)',borderBottom:'1px solid rgba(0,0,0,0.08)',padding:'0 24px',height:'76px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:100,backdropFilter:'saturate(200%) blur(28px)',WebkitBackdropFilter:'saturate(200%) blur(28px)'}}>
-        <a href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'60px',width:'auto'}}/></a>
+        <Link href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'60px',width:'auto'}}/></Link>
         <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
           <a href="/map" style={{fontSize:'13px',color:'#6e6e73',padding:'7px 14px',borderRadius:'8px',border:'1px solid rgba(0,0,0,0.08)',fontWeight:'600',textDecoration:'none'}}>Fan Map</a>
           <a href="/login" style={{fontSize:'13px',color:'#6e6e73',padding:'7px 14px',borderRadius:'8px',border:'1px solid rgba(0,0,0,0.08)',fontWeight:'600',textDecoration:'none'}}>Venue Login</a>
