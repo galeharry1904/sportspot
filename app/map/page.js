@@ -4,6 +4,16 @@ import { useRouter } from 'next/navigation'
 import { APIProvider, Map, AdvancedMarker, AdvancedMarkerAnchorPoint, InfoWindow } from '@vis.gl/react-google-maps'
 import { supabase } from '../../lib/supabase'
 import { SportIcon, Star, Tv, MapPin, X, Check, ChevronDown, ChevronUp, ArrowRight, PubPin } from '../../lib/icons'
+import { getFanInitials } from '../../lib/fanProfile'
+
+function UserLocationDot() {
+  return (
+    <div style={{position:'relative',width:'16px',height:'16px'}}>
+      <div style={{position:'absolute',inset:'-8px',borderRadius:'50%',background:'rgba(66,133,244,0.25)',animation:'userLocationPulse 2s ease-out infinite'}}/>
+      <div style={{position:'absolute',inset:0,borderRadius:'50%',background:'#4285f4',border:'2px solid white',boxShadow:'0 1px 4px rgba(0,0,0,0.35)'}}/>
+    </div>
+  )
+}
 
 function getDistance(lat1, lon1, lat2, lon2) {
   const R = 6371
@@ -142,8 +152,11 @@ export default function FanMap() {
   const dragStartY = useRef(null)
   const dragStartState = useRef(null)
   const router = useRouter()
+  const [focusPub, setFocusPub] = useState(null)
 
-  const mapCenter = userLocation || { lat: 51.5074, lng: -0.1278 }
+  const mapCenter = focusPub
+    ? { lat: focusPub.latitude, lng: focusPub.longitude }
+    : userLocation || { lat: 51.5074, lng: -0.1278 }
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth <= 768)
@@ -182,6 +195,13 @@ export default function FanMap() {
     setFanSession(fanSess)
     const { data: fp } = await supabase.from('fan_profiles').select('*').eq('user_id', fanSess.user.id).single()
     setFanProfile(fp)
+
+    const focusId = new URLSearchParams(window.location.search).get('pub')
+    if (focusId) {
+      const match = (pubData || []).find(p => String(p.id) === focusId)
+      if (match) { setFocusPub(match); selectPub(match) }
+    }
+
     setLoading(false)
   }
 
@@ -475,7 +495,7 @@ export default function FanMap() {
     const sheetH = getSheetHeight()
     return (
       <div style={{height:'100vh',display:'flex',flexDirection:'column',background:'#f5f5f7',overflow:'hidden'}}>
-        <style>{`@keyframes spin{to{transform:rotate(360deg)}} @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}`}</style>
+        <style>{`@keyframes spin{to{transform:rotate(360deg)}} @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}} @keyframes userLocationPulse{0%{transform:scale(0.6);opacity:1}100%{transform:scale(1);opacity:0}}`}</style>
 
         {/* Mobile nav */}
         <div style={{background:'rgba(255,255,255,0.75)',backdropFilter:'saturate(200%) blur(20px)',WebkitBackdropFilter:'saturate(200%) blur(20px)',borderBottom:'1px solid rgba(0,0,0,0.06)',padding:'0 16px',height:'52px',display:'flex',alignItems:'center',justifyContent:'space-between',flexShrink:0,zIndex:10}}>
@@ -489,8 +509,8 @@ export default function FanMap() {
             )}
             {fanSession && (
               <button onClick={() => setFanPanelOpen(p => !p)}
-                style={{width:'32px',height:'32px',borderRadius:'50%',background:'linear-gradient(135deg,#e8732a,#c45e1a)',border:'none',color:'white',fontWeight:'800',fontSize:'13px',cursor:'pointer',boxShadow:'0 2px 8px rgba(232,115,42,0.3)'}}>
-                {fanSession.user.email[0].toUpperCase()}
+                style={{width:'32px',height:'32px',borderRadius:'50%',background:'linear-gradient(135deg,#e8732a,#c45e1a)',border:'none',color:'white',fontWeight:'800',fontSize:'11px',letterSpacing:'-0.2px',cursor:'pointer',boxShadow:'0 2px 8px rgba(232,115,42,0.3)'}}>
+                {getFanInitials(fanProfile, fanSession)}
               </button>
             )}
           </div>
@@ -499,8 +519,13 @@ export default function FanMap() {
         {/* Map */}
         <div style={{flex:1,position:'relative'}}>
           <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}>
-            <Map defaultCenter={mapCenter} defaultZoom={13} mapId={process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}
+            <Map defaultCenter={mapCenter} defaultZoom={13} mapId="DEMO_MAP_ID"
               style={{width:'100%',height:'100%'}} colorScheme="LIGHT" gestureHandling="greedy">
+              {userLocation && (
+                <AdvancedMarker position={userLocation} zIndex={10}>
+                  <UserLocationDot/>
+                </AdvancedMarker>
+              )}
               {activePubs.map(pub => (
                 <AdvancedMarker key={pub.id} position={{lat:pub.latitude,lng:pub.longitude}} onClick={() => selectPub(pub)}
                   anchorPoint={AdvancedMarkerAnchorPoint.BOTTOM_CENTER}>
@@ -752,8 +777,8 @@ export default function FanMap() {
             <div style={{position:'absolute',top:0,right:0,width:'290px',height:'100vh',background:'rgba(255,255,255,0.95)',backdropFilter:'saturate(200%) blur(24px)',WebkitBackdropFilter:'saturate(200%) blur(24px)',borderLeft:'1px solid rgba(0,0,0,0.06)',padding:'28px 20px',overflowY:'auto'}}>
               <button onClick={() => setFanPanelOpen(false)} style={{position:'absolute',top:'14px',right:'14px',background:'#f5f5f7',border:'none',borderRadius:'50%',width:'28px',height:'28px',color:'#8e8e93',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}><X size={14} strokeWidth={2}/></button>
               <div style={{display:'flex',alignItems:'center',gap:'12px',marginBottom:'24px',paddingTop:'8px'}}>
-                <div style={{width:'44px',height:'44px',borderRadius:'50%',background:'linear-gradient(135deg,#e8732a,#c45e1a)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'18px',fontWeight:'800',color:'white',flexShrink:0,boxShadow:'0 4px 12px rgba(232,115,42,0.3)'}}>
-                  {fanSession.user.email[0].toUpperCase()}
+                <div style={{width:'44px',height:'44px',borderRadius:'50%',background:'linear-gradient(135deg,#e8732a,#c45e1a)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'15px',letterSpacing:'-0.2px',fontWeight:'800',color:'white',flexShrink:0,boxShadow:'0 4px 12px rgba(232,115,42,0.3)'}}>
+                  {getFanInitials(fanProfile, fanSession)}
                 </div>
                 <div>
                   <div style={{fontWeight:'700',fontSize:'14px',color:'#152238'}}>Fan Account</div>
@@ -780,7 +805,7 @@ export default function FanMap() {
   // ─── DESKTOP ─────────────────────────────────────────────────────────────────
   return (
     <div style={{height:'100vh',display:'flex',flexDirection:'column',background:'#f5f5f7'}}>
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}} @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}} @keyframes dropdownIn{from{opacity:0;transform:translateY(-6px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}} @media (hover: hover) and (pointer: fine){ .pub-hover:hover{border-color:rgba(0,0,0,0.12)!important;background:#fafafa!important} .filter-option:hover{background:rgba(0,0,0,0.045)!important} }`}</style>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}} @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}} @keyframes dropdownIn{from{opacity:0;transform:translateY(-6px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}} @keyframes userLocationPulse{0%{transform:scale(0.6);opacity:1}100%{transform:scale(1);opacity:0}} @media (hover: hover) and (pointer: fine){ .pub-hover:hover{border-color:rgba(0,0,0,0.12)!important;background:#fafafa!important} .filter-option:hover{background:rgba(0,0,0,0.045)!important} }`}</style>
 
       {/* Top nav bar */}
       <div style={{position:'relative',zIndex:100,background:'rgba(255,255,255,0.75)',borderBottom:'1px solid rgba(0,0,0,0.06)',padding:'0 24px',height:'56px',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'16px',flexShrink:0,backdropFilter:'saturate(200%) blur(20px)',WebkitBackdropFilter:'saturate(200%) blur(20px)'}}>
@@ -793,8 +818,8 @@ export default function FanMap() {
           <a href="/login" style={{background:'transparent',color:'#6e6e73',padding:'6px 12px',borderRadius:'8px',fontSize:'12px',fontWeight:'600',border:'1px solid rgba(0,0,0,0.08)',whiteSpace:'nowrap'}}>Venue Login</a>
           {fanSession ? (
             <button onClick={() => setFanPanelOpen(p => !p)}
-              style={{width:'32px',height:'32px',borderRadius:'50%',background:'linear-gradient(135deg,#e8732a,#c45e1a)',border:'none',color:'white',fontWeight:'800',fontSize:'13px',cursor:'pointer',flexShrink:0,boxShadow:'0 2px 8px rgba(232,115,42,0.25)'}}>
-              {fanSession.user.email[0].toUpperCase()}
+              style={{width:'32px',height:'32px',borderRadius:'50%',background:'linear-gradient(135deg,#e8732a,#c45e1a)',border:'none',color:'white',fontWeight:'800',fontSize:'11px',letterSpacing:'-0.2px',cursor:'pointer',flexShrink:0,boxShadow:'0 2px 8px rgba(232,115,42,0.25)'}}>
+              {getFanInitials(fanProfile, fanSession)}
             </button>
           ) : (
             <a href="/fan/register" style={{background:'#e8732a',color:'white',padding:'6px 14px',borderRadius:'8px',fontSize:'12px',fontWeight:'700',whiteSpace:'nowrap'}}>Sign Up</a>
@@ -953,7 +978,12 @@ export default function FanMap() {
         {/* Map */}
         <div style={{flex:'1',position:'relative'}}>
           <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}>
-            <Map defaultCenter={mapCenter} defaultZoom={13} mapId={process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY} style={{width:'100%',height:'100%'}} colorScheme="LIGHT">
+            <Map defaultCenter={mapCenter} defaultZoom={13} mapId="DEMO_MAP_ID" style={{width:'100%',height:'100%'}} colorScheme="LIGHT">
+              {userLocation && (
+                <AdvancedMarker position={userLocation} zIndex={10}>
+                  <UserLocationDot/>
+                </AdvancedMarker>
+              )}
               {activePubs.map(pub => (
                 <AdvancedMarker key={pub.id} position={{lat:pub.latitude,lng:pub.longitude}} onClick={() => selectPub(pub)}
                   anchorPoint={AdvancedMarkerAnchorPoint.BOTTOM_CENTER}>
@@ -975,8 +1005,8 @@ export default function FanMap() {
         <div style={{position:'fixed',top:0,right:fanPanelOpen?0:'-340px',width:'320px',height:'100vh',background:'rgba(255,255,255,0.95)',backdropFilter:'saturate(200%) blur(24px)',WebkitBackdropFilter:'saturate(200%) blur(24px)',borderLeft:'1px solid rgba(0,0,0,0.06)',zIndex:1000,transition:'right 0.3s cubic-bezier(0.4,0,0.2,1)',padding:'32px 24px',overflowY:'auto',boxShadow:'-8px 0 40px rgba(0,0,0,0.08)'}}>
           <button onClick={() => setFanPanelOpen(false)} style={{position:'absolute',top:'16px',right:'16px',background:'#f5f5f7',border:'none',borderRadius:'50%',width:'28px',height:'28px',color:'#8e8e93',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}><X size={14} strokeWidth={2}/></button>
           <div style={{display:'flex',alignItems:'center',gap:'14px',marginBottom:'28px',paddingTop:'8px'}}>
-            <div style={{width:'48px',height:'48px',borderRadius:'50%',background:'linear-gradient(135deg,#e8732a,#c45e1a)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'20px',fontWeight:'800',color:'white',flexShrink:0,boxShadow:'0 4px 16px rgba(232,115,42,0.3)'}}>
-              {fanSession.user.email[0].toUpperCase()}
+            <div style={{width:'48px',height:'48px',borderRadius:'50%',background:'linear-gradient(135deg,#e8732a,#c45e1a)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'16px',letterSpacing:'-0.2px',fontWeight:'800',color:'white',flexShrink:0,boxShadow:'0 4px 16px rgba(232,115,42,0.3)'}}>
+              {getFanInitials(fanProfile, fanSession)}
             </div>
             <div>
               <div style={{fontWeight:'700',fontSize:'14px',color:'#152238',letterSpacing:'-0.1px'}}>Fan Account</div>
