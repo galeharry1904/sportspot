@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { supabase } from '../../../lib/supabase'
 
 export default function FanLogin() {
@@ -47,7 +48,7 @@ export default function FanLogin() {
 
       {/* Nav */}
       <nav style={{padding:'0 24px',height:'60px',display:'flex',alignItems:'center',borderBottom:'1px solid rgba(0,0,0,0.08)',background:'rgba(255,255,255,0.5)',backdropFilter:'saturate(200%) blur(28px)',WebkitBackdropFilter:'saturate(200%) blur(28px)',flexShrink:0,position:'relative',zIndex:1}}>
-        <Link href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'48px',width:'auto'}}/></Link>
+        <Link href="/"><Image src="/SportSpot-Logo-Light.png" alt="SportSpot" width={676} height={184} style={{height:'48px',width:'auto'}}/></Link>
       </nav>
 
       {/* Card */}

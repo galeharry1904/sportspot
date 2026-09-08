@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { supabase } from '../../../lib/supabase'
 import { Award, CheckCircle2, ChevronDown, FootballIcon, RugbyIcon, CricketIcon, F1Icon, TennisIcon } from '../../../lib/icons'
 
@@ -53,6 +54,9 @@ export default function FanProfile() {
   const [expandedLeague, setExpandedLeague] = useState('Premier League')
   const router = useRouter()
 
+  // Runs once on mount; loadProfile is re-created every render but isn't
+  // meant to re-trigger this effect.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { loadProfile() }, [])
 
   async function loadProfile() {
@@ -138,7 +142,7 @@ export default function FanProfile() {
 
       {/* Nav */}
       <nav style={{background:'rgba(245,245,247,0.72)',borderBottom:'1px solid rgba(0,0,0,0.08)',padding:'0 32px',height:'76px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:100,backdropFilter:'saturate(200%) blur(28px)',WebkitBackdropFilter:'saturate(200%) blur(28px)'}}>
-        <Link href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'60px',width:'auto'}}/></Link>
+        <Link href="/"><Image src="/SportSpot-Logo-Light.png" alt="SportSpot" width={676} height={184} style={{height:'60px',width:'auto'}}/></Link>
         <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
           <Link href="/" className="nav-link" style={{color:'#3a3a3c',fontSize:'13px',padding:'7px 14px',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'8px',fontWeight:'500',transition:'all 0.2s'}}>
             Return to Home Page

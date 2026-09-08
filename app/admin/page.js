@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { supabase } from '../../lib/supabase'
 
 function formatDate(dateStr) {
@@ -175,6 +176,9 @@ export default function AdminPage() {
   const [drilldown, setDrilldown] = useState(null)
   const router = useRouter()
 
+  // Runs once on mount; init/loadPending/loadStats/loadGrowth are re-created
+  // every render but aren't meant to re-trigger this effect.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { init() }, [])
 
   async function init() {
@@ -270,7 +274,7 @@ export default function AdminPage() {
       {/* Nav */}
       <div style={{background:'rgba(245,245,247,0.72)',borderBottom:'1px solid rgba(0,0,0,0.08)',backdropFilter:'saturate(200%) blur(28px)',WebkitBackdropFilter:'saturate(200%) blur(28px)',padding:'0 32px',display:'flex',alignItems:'center',justifyContent:'space-between',height:'60px',position:'sticky',top:0,zIndex:100}}>
         <div style={{display:'flex',alignItems:'center',gap:'12px'}}>
-          <Link href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'50px',width:'auto'}}/></Link>
+          <Link href="/"><Image src="/SportSpot-Logo-Light.png" alt="SportSpot" width={676} height={184} style={{height:'50px',width:'auto'}}/></Link>
           <span style={{background:'rgba(0,0,0,0.05)',color:'#6e6e73',fontSize:'12px',padding:'3px 10px',borderRadius:'20px'}}>Admin</span>
         </div>
         <div style={{display:'flex',gap:'8px',alignItems:'center'}}>

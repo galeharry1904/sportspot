@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { supabase } from '../../lib/supabase'
 
 export default function RegisterPage() {
@@ -54,7 +55,7 @@ export default function RegisterPage() {
         zIndex:1,
       }}>
         <Link href="/" style={{display:'block',marginBottom:'24px'}}>
-          <img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'44px',width:'auto'}}/>
+          <Image src="/SportSpot-Logo-Light.png" alt="SportSpot" width={676} height={184} style={{height:'44px',width:'auto'}}/>
         </Link>
         <p style={{color:'#6e6e73',marginBottom:'28px',fontSize:'14px',letterSpacing:'-0.1px'}}>Register your venue</p>
         <input

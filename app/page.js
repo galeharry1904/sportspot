@@ -4,6 +4,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lenis from 'lenis'
 import Link from 'next/link'
+import Image from 'next/image'
 import { User, ClipboardList, MapPin, Beer, CheckCircle2, Tv, FootballIcon, Menu, X, ArrowRight, Star, Calendar } from '../lib/icons'
 import { supabase } from '../lib/supabase'
 import { CURRENT_SEASON, CURRENT_SEASON_LABEL } from '../lib/season'
@@ -27,6 +28,10 @@ function NewsCard({ item }) {
       style={{display:'block',background:'white',borderRadius:'16px',overflow:'hidden',border:'1px solid rgba(0,0,0,0.06)',boxShadow:'0 2px 12px rgba(0,0,0,0.03)',textDecoration:'none'}}>
       <div style={{aspectRatio:'16/10',background:'#f5f5f7',overflow:'hidden'}}>
         {item.image_url && (
+          // Comes from whichever news outlet sourced the story — next/image would
+          // need every outlet's domain whitelisted in next.config.js's
+          // remotePatterns, which isn't worth the maintenance burden here.
+          // eslint-disable-next-line @next/next/no-img-element
           <img src={item.image_url} alt="" style={{width:'100%',height:'100%',objectFit:'cover',display:'block'}}/>
         )}
       </div>
@@ -320,7 +325,7 @@ export default function Home() {
         display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 24px',
       }}>
         <Link href="/">
-          <img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'60px',width:'auto'}}/>
+          <Image src="/SportSpot-Logo-Light.png" alt="SportSpot" width={676} height={184} style={{height:'60px',width:'auto'}}/>
         </Link>
 
         <div className="nav-desktop" style={{display:'flex',gap:'4px',alignItems:'center'}}>
@@ -623,7 +628,7 @@ export default function Home() {
           <a href="mailto:sportspotadmin@gmail.com" className="nav-link" style={{color:'#152238',fontSize:'14px',fontWeight:'600'}}>sportspotadmin@gmail.com</a>
         </div>
         <div className="footer-inner" style={{maxWidth:'1080px',margin:'0 auto',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'12px'}}>
-          <img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'28px',width:'auto'}}/>
+          <Image src="/SportSpot-Logo-Light.png" alt="SportSpot" width={676} height={184} style={{height:'28px',width:'auto'}}/>
           <p style={{color:'#aeaeb2',fontSize:'13px',fontWeight:'400'}}>© 2026 SportSpot. All rights reserved.</p>
           <div className="footer-links" style={{display:'flex',gap:'24px'}}>
             {[{href:'/map',label:'Find Pubs'},{href:'/leagues',label:'Leagues'},{href:'/login',label:'Venue Login'},{href:'/register',label:'Register'}].map(item => (

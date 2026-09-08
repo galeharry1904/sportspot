@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { supabase } from '../../lib/supabase'
 import { CheckCircle2, ClipboardList, TrendingUp, Clock } from '../../lib/icons'
 
@@ -21,6 +22,9 @@ export default function Dashboard() {
   const [isAdmin, setIsAdmin] = useState(false)
   const router = useRouter()
 
+  // Runs once on mount; loadData is re-created every render but isn't
+  // meant to re-trigger this effect.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { loadData() }, [])
 
   async function loadData() {
@@ -148,7 +152,7 @@ export default function Dashboard() {
       {/* Nav */}
       <div className="dash-nav" style={{background:'rgba(245,245,247,0.72)',borderBottom:'1px solid rgba(0,0,0,0.08)',backdropFilter:'saturate(200%) blur(28px)',WebkitBackdropFilter:'saturate(200%) blur(28px)',padding:'0 32px',display:'flex',alignItems:'center',justifyContent:'space-between',height:'76px',position:'sticky',top:0,zIndex:100}}>
         <div style={{display:'flex',alignItems:'center',gap:'12px'}}>
-          <Link href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'60px',width:'auto'}}/></Link>
+          <Link href="/"><Image src="/SportSpot-Logo-Light.png" alt="SportSpot" width={676} height={184} style={{height:'60px',width:'auto'}}/></Link>
           <span className="dash-nav-pub" style={{background:'rgba(0,0,0,0.05)',color:'#6e6e73',fontSize:'12px',padding:'3px 10px',borderRadius:'20px'}}>{pub?.name}</span>
         </div>
         <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
