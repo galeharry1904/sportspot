@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { supabase } from '../../lib/supabase'
 import { CheckCircle2, ClipboardList, TrendingUp, Clock } from '../../lib/icons'
+import { FACILITIES } from '../../lib/facilities'
 
 const SPORTS = ['All', 'Football', 'Rugby', 'Cricket', 'Tennis']
 const SUPPORTED_SPORTS = ['All', 'Football']
@@ -36,7 +37,7 @@ export default function Dashboard() {
     if (!pubData) { router.push('/setup'); return }
     setPub(pubData)
     if (pubData.status !== 'approved') { setLoading(false); return }
-    setVenueForm({ name: pubData.name || '', address: pubData.address || '', has_sky: pubData.has_sky || false, has_tnt: pubData.has_tnt || false })
+    setVenueForm({ name: pubData.name || '', address: pubData.address || '', has_sky: pubData.has_sky || false, has_tnt: pubData.has_tnt || false, facilities: pubData.facilities || [] })
     const today = new Date().toISOString().split('T')[0]
     const { data: fixtureData } = await supabase.from('fixtures').select('*').eq('fixture_date', today).order('kickoff_time')
     setFixtures(fixtureData || [])
@@ -65,10 +66,18 @@ export default function Dashboard() {
     await supabase.from('pubs').update({
       name: venueForm.name, address: venueForm.address,
       has_sky: venueForm.has_sky, has_tnt: venueForm.has_tnt,
+      facilities: venueForm.facilities,
     }).eq('id', pub.id)
     setPub(p => ({...p, ...venueForm}))
     setVenueSaved(true)
     setTimeout(() => setVenueSaved(false), 2000)
+  }
+
+  function toggleFacility(id) {
+    setVenueForm(p => {
+      const current = p.facilities || []
+      return { ...p, facilities: current.includes(id) ? current.filter(f => f !== id) : [...current, id] }
+    })
   }
 
   const filteredFixtures = fixtures.filter(f => sportFilter === 'All' || f.sport?.toLowerCase() === sportFilter.toLowerCase())
@@ -146,6 +155,7 @@ export default function Dashboard() {
           .stats-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
           .stats-grid > div:last-child { grid-column: 1 / -1 !important; }
           .venue-grid { grid-template-columns: 1fr !important; }
+          .facilities-grid { grid-template-columns: 1fr 1fr !important; }
         }
       `}</style>
 
@@ -345,6 +355,27 @@ export default function Dashboard() {
                   </div>
                 </div>
               ))}
+            </div>
+
+            {/* Facilities */}
+            <div style={{gridColumn:'1 / -1',background:'white',border:'1px solid rgba(0,0,0,0.06)',borderRadius:'12px',padding:'24px',boxShadow:'0 2px 12px rgba(0,0,0,0.03)'}}>
+              <h2 style={{fontSize:'16px',fontWeight:'700',color:'#152238',marginBottom:'4px'}}>Facilities</h2>
+              <p style={{fontSize:'13px',color:'#6e6e73',marginBottom:'20px'}}>What can fans expect at your venue? Shown on your listing on the fan map.</p>
+              <div className="facilities-grid" style={{display:'grid',gridTemplateColumns:'repeat(3, 1fr)',gap:'10px'}}>
+                {FACILITIES.map(facility => {
+                  const isActive = (venueForm.facilities || []).includes(facility.id)
+                  const Icon = facility.icon
+                  return (
+                    <button key={facility.id} type="button" onClick={() => toggleFacility(facility.id)}
+                      style={{display:'flex',alignItems:'center',gap:'10px',padding:'12px 14px',borderRadius:'10px',cursor:'pointer',textAlign:'left',
+                        background: isActive ? 'rgba(232,115,42,0.08)' : '#f5f5f7',
+                        border:`1px solid ${isActive ? 'rgba(232,115,42,0.35)' : 'rgba(0,0,0,0.08)'}`}}>
+                      <Icon size={18} strokeWidth={1.75} color={isActive ? '#e8732a' : '#6e6e73'} style={{flexShrink:0}}/>
+                      <span style={{fontSize:'13px',fontWeight:'600',color: isActive ? '#e8732a' : '#152238'}}>{facility.label}</span>
+                    </button>
+                  )
+                })}
+              </div>
             </div>
 
             {/* Save button */}

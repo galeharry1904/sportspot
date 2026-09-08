@@ -7,6 +7,7 @@ import { APIProvider, Map, AdvancedMarker, AdvancedMarkerAnchorPoint, InfoWindow
 import { supabase } from '../../lib/supabase'
 import { SportIcon, Star, Tv, MapPin, X, Check, ChevronDown, ChevronUp, ArrowRight, PubPin } from '../../lib/icons'
 import { getFanInitials } from '../../lib/fanProfile'
+import { FACILITIES } from '../../lib/facilities'
 
 function UserLocationDot() {
   return (
@@ -483,10 +484,12 @@ export default function FanMap() {
         {infoTab === 'info' && (
           <div style={{background:'white',padding:'14px 16px'}}>
             <div style={{fontSize:'9px',fontWeight:'700',letterSpacing:'2px',textTransform:'uppercase',color:'#aeaeb2',marginBottom:'12px'}}>Facilities</div>
-            {['Bar','Outdoor Seating','Pool Table','Food Served'].map(item => (
-              <div key={item} style={{display:'flex',alignItems:'center',gap:'10px',padding:'6px 0',borderBottom:'1px solid rgba(0,0,0,0.06)'}}>
-                <div style={{width:'4px',height:'4px',borderRadius:'50%',background:'#e8732a',flexShrink:0}}/>
-                <span style={{fontSize:'13px',color:'#6e6e73',fontWeight:'500'}}>{item}</span>
+            {(pub.facilities || []).length === 0 ? (
+              <p style={{fontSize:'13px',color:'#aeaeb2'}}>This venue hasn&apos;t listed any facilities yet.</p>
+            ) : FACILITIES.filter(f => pub.facilities.includes(f.id)).map(f => (
+              <div key={f.id} style={{display:'flex',alignItems:'center',gap:'10px',padding:'6px 0',borderBottom:'1px solid rgba(0,0,0,0.06)'}}>
+                <f.icon size={14} strokeWidth={1.75} color="#e8732a" style={{flexShrink:0}}/>
+                <span style={{fontSize:'13px',color:'#6e6e73',fontWeight:'500'}}>{f.label}</span>
               </div>
             ))}
           </div>
@@ -665,10 +668,12 @@ export default function FanMap() {
                       {infoTab === 'info' && (
                         <div style={{padding:'12px 16px 16px'}}>
                           <div style={{fontSize:'9px',fontWeight:'700',letterSpacing:'2px',textTransform:'uppercase',color:'#aeaeb2',marginBottom:'10px'}}>Facilities</div>
-                          {['Bar','Outdoor Seating','Pool Table','Food Served'].map(item => (
-                            <div key={item} style={{display:'flex',alignItems:'center',gap:'8px',padding:'6px 0',borderBottom:'1px solid rgba(0,0,0,0.06)'}}>
-                              <div style={{width:'4px',height:'4px',borderRadius:'50%',background:'#e8732a',flexShrink:0}}/>
-                              <span style={{fontSize:'13px',color:'#6e6e73',fontWeight:'500'}}>{item}</span>
+                          {(mobilePubDetail.facilities || []).length === 0 ? (
+                            <p style={{fontSize:'13px',color:'#aeaeb2'}}>This venue hasn&apos;t listed any facilities yet.</p>
+                          ) : FACILITIES.filter(f => mobilePubDetail.facilities.includes(f.id)).map(f => (
+                            <div key={f.id} style={{display:'flex',alignItems:'center',gap:'8px',padding:'6px 0',borderBottom:'1px solid rgba(0,0,0,0.06)'}}>
+                              <f.icon size={14} strokeWidth={1.75} color="#e8732a" style={{flexShrink:0}}/>
+                              <span style={{fontSize:'13px',color:'#6e6e73',fontWeight:'500'}}>{f.label}</span>
                             </div>
                           ))}
                         </div>
