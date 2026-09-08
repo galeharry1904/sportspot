@@ -94,6 +94,12 @@ function LeaguesContent() {
     <div style={{minHeight:'100vh',background:'#f5f5f7',color:'#152238',fontFamily:"-apple-system,'SF Pro Display','SF Pro Text',BlinkMacSystemFont,'Helvetica Neue',sans-serif"}}>
       <style>{`
         * { box-sizing: border-box; }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+        .reveal-1 { animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+        .reveal-2 { animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.08s both; }
+        @media (prefers-reduced-motion: reduce) {
+          .reveal-1, .reveal-2 { animation: none !important; }
+        }
         @media (hover: hover) and (pointer: fine) {
           .comp-pill:hover { background: rgba(0,0,0,0.04) !important; }
           .tab-btn:hover { color: #e8732a; }
@@ -105,8 +111,8 @@ function LeaguesContent() {
       `}</style>
 
       {/* Nav */}
-      <nav style={{background:'rgba(245,245,247,0.85)',borderBottom:'1px solid rgba(0,0,0,0.06)',padding:'0 24px',height:'60px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:100,backdropFilter:'saturate(200%) blur(20px)',WebkitBackdropFilter:'saturate(200%) blur(20px)'}}>
-        <a href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'44px',width:'auto'}}/></a>
+      <nav style={{background:'rgba(245,245,247,0.72)',borderBottom:'1px solid rgba(0,0,0,0.08)',padding:'0 24px',height:'76px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:100,backdropFilter:'saturate(200%) blur(28px)',WebkitBackdropFilter:'saturate(200%) blur(28px)'}}>
+        <a href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'60px',width:'auto'}}/></a>
         <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
           <a href="/map" style={{fontSize:'13px',color:'#6e6e73',padding:'7px 14px',borderRadius:'8px',border:'1px solid rgba(0,0,0,0.08)',fontWeight:'600',textDecoration:'none'}}>Fan Map</a>
           <a href="/login" style={{fontSize:'13px',color:'#6e6e73',padding:'7px 14px',borderRadius:'8px',border:'1px solid rgba(0,0,0,0.08)',fontWeight:'600',textDecoration:'none'}}>Venue Login</a>
@@ -114,7 +120,7 @@ function LeaguesContent() {
       </nav>
 
       {/* Header */}
-      <div style={{background:'linear-gradient(135deg, #fff8f3 0%, #ffffff 40%, #f0f4ff 100%)',borderBottom:'1px solid rgba(0,0,0,0.06)',padding:'44px 24px'}}>
+      <div className="reveal-1" style={{background:'linear-gradient(135deg, #fff8f3 0%, #ffffff 40%, #f0f4ff 100%)',borderBottom:'1px solid rgba(0,0,0,0.06)',padding:'44px 24px'}}>
         <div style={{maxWidth:'980px',margin:'0 auto'}}>
           <div style={{display:'inline-flex',alignItems:'center',gap:'6px',background:'rgba(232,115,42,0.1)',border:'1px solid rgba(232,115,42,0.25)',borderRadius:'980px',padding:'6px 16px',marginBottom:'18px'}}>
             <div style={{width:'6px',height:'6px',borderRadius:'50%',background:'#e8732a'}}/>
@@ -127,7 +133,7 @@ function LeaguesContent() {
         </div>
       </div>
 
-      <div style={{maxWidth:'980px',margin:'0 auto',padding:'32px 24px 80px'}}>
+      <div className="reveal-2" style={{maxWidth:'980px',margin:'0 auto',padding:'32px 24px 80px'}}>
 
         {/* Competition pills */}
         <div style={{display:'flex',gap:'8px',flexWrap:'wrap',marginBottom:'24px'}}>

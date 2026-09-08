@@ -808,8 +808,8 @@ export default function FanMap() {
       <style>{`@keyframes spin{to{transform:rotate(360deg)}} @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}} @keyframes dropdownIn{from{opacity:0;transform:translateY(-6px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}} @keyframes userLocationPulse{0%{transform:scale(0.6);opacity:1}100%{transform:scale(1);opacity:0}} @media (hover: hover) and (pointer: fine){ .pub-hover:hover{border-color:rgba(0,0,0,0.12)!important;background:#fafafa!important} .filter-option:hover{background:rgba(0,0,0,0.045)!important} }`}</style>
 
       {/* Top nav bar */}
-      <div style={{position:'relative',zIndex:100,background:'rgba(255,255,255,0.75)',borderBottom:'1px solid rgba(0,0,0,0.06)',padding:'0 24px',height:'56px',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'16px',flexShrink:0,backdropFilter:'saturate(200%) blur(20px)',WebkitBackdropFilter:'saturate(200%) blur(20px)'}}>
-        <a href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'46px',width:'auto'}}/></a>
+      <div style={{position:'relative',zIndex:100,background:'rgba(255,255,255,0.75)',borderBottom:'1px solid rgba(0,0,0,0.06)',padding:'0 24px',height:'64px',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'16px',flexShrink:0,backdropFilter:'saturate(200%) blur(20px)',WebkitBackdropFilter:'saturate(200%) blur(20px)'}}>
+        <a href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'52px',width:'auto'}}/></a>
 
         {/* Right controls */}
         <div style={{display:'flex',gap:'8px',alignItems:'center',flexShrink:0}}>

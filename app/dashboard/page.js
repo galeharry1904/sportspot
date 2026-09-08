@@ -115,6 +115,11 @@ export default function Dashboard() {
     <div style={{minHeight:'100vh',background:'#f5f5f7',fontFamily:"-apple-system,'SF Pro Display','SF Pro Text',BlinkMacSystemFont,'Helvetica Neue',sans-serif"}}>
       <style>{`
         * { box-sizing: border-box; }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+        .reveal-1 { animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+        @media (prefers-reduced-motion: reduce) {
+          .reveal-1 { animation: none !important; }
+        }
         .input-field:focus { border-color: #e8732a !important; box-shadow: 0 0 0 3px rgba(232,115,42,0.1); outline: none; }
         @media (hover: hover) and (pointer: fine) {
           .nav-link:hover { background: rgba(0,0,0,0.04) !important; }
@@ -140,9 +145,9 @@ export default function Dashboard() {
       `}</style>
 
       {/* Nav */}
-      <div className="dash-nav" style={{background:'rgba(245,245,247,0.72)',borderBottom:'1px solid rgba(0,0,0,0.08)',backdropFilter:'saturate(200%) blur(28px)',WebkitBackdropFilter:'saturate(200%) blur(28px)',padding:'0 32px',display:'flex',alignItems:'center',justifyContent:'space-between',height:'60px',position:'sticky',top:0,zIndex:100}}>
+      <div className="dash-nav" style={{background:'rgba(245,245,247,0.72)',borderBottom:'1px solid rgba(0,0,0,0.08)',backdropFilter:'saturate(200%) blur(28px)',WebkitBackdropFilter:'saturate(200%) blur(28px)',padding:'0 32px',display:'flex',alignItems:'center',justifyContent:'space-between',height:'76px',position:'sticky',top:0,zIndex:100}}>
         <div style={{display:'flex',alignItems:'center',gap:'12px'}}>
-          <a href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'50px',width:'auto'}}/></a>
+          <a href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'60px',width:'auto'}}/></a>
           <span className="dash-nav-pub" style={{background:'rgba(0,0,0,0.05)',color:'#6e6e73',fontSize:'12px',padding:'3px 10px',borderRadius:'20px'}}>{pub?.name}</span>
         </div>
         <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
@@ -157,7 +162,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="dash-content" style={{maxWidth:'1000px',margin:'0 auto',padding:'32px 24px'}}>
+      <div className="dash-content reveal-1" style={{maxWidth:'1000px',margin:'0 auto',padding:'32px 24px'}}>
 
         <h1 className="dash-title" style={{fontSize:'24px',fontWeight:'700',letterSpacing:'-0.5px',marginBottom:'4px',color:'#152238'}}>Manager Dashboard</h1>
         <p style={{color:'#6e6e73',fontSize:'14px',marginBottom:'20px'}}>Control which sporting events are showcased on your screens today.</p>

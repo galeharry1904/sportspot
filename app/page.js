@@ -310,7 +310,7 @@ export default function Home() {
       {/* ── NAV ── */}
       <nav style={{
         position:'fixed', top:0, left:0, right:0, zIndex:100,
-        height:'52px',
+        height:'76px',
         background: scrolled ? 'rgba(245,245,247,0.72)' : 'rgba(245,245,247,0.4)',
         backdropFilter: 'saturate(200%) blur(28px)',
         WebkitBackdropFilter: 'saturate(200%) blur(28px)',
@@ -319,7 +319,7 @@ export default function Home() {
         display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 24px',
       }}>
         <a href="/">
-          <img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'40px',width:'auto'}}/>
+          <img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'60px',width:'auto'}}/>
         </a>
 
         <div className="nav-desktop" style={{display:'flex',gap:'4px',alignItems:'center'}}>
@@ -349,7 +349,7 @@ export default function Home() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div style={{position:'fixed',top:'52px',left:0,right:0,zIndex:99,background:'rgba(245,245,247,0.92)',backdropFilter:'blur(28px)',WebkitBackdropFilter:'blur(28px)',borderBottom:'1px solid rgba(0,0,0,0.08)',padding:'12px 24px 20px',display:'flex',flexDirection:'column',gap:'2px'}}>
+        <div style={{position:'fixed',top:'76px',left:0,right:0,zIndex:99,background:'rgba(245,245,247,0.92)',backdropFilter:'blur(28px)',WebkitBackdropFilter:'blur(28px)',borderBottom:'1px solid rgba(0,0,0,0.08)',padding:'12px 24px 20px',display:'flex',flexDirection:'column',gap:'2px'}}>
           {[{href:'/map',label:'Find Pubs'},{href:'/leagues',label:'Leagues'},fanSession ? {href:'/fan/profile',label:'My Profile'} : {href:'/fan/login',label:'Fan Sign In'},{href:'/login',label:'Venue Login'}].map(item => (
             <a key={item.href} href={item.href} onClick={() => setMenuOpen(false)}
               style={{color:'#152238',fontSize:'17px',fontWeight:'400',padding:'14px 0',borderBottom:'1px solid rgba(0,0,0,0.06)',letterSpacing:'-0.2px',textDecoration:'none',display:'block'}}>
@@ -365,7 +365,7 @@ export default function Home() {
 
       {/* ── HERO ── */}
       <div style={{
-        paddingTop:'52px',
+        paddingTop:'76px',
         position:'relative',
         overflow:'hidden',
         minHeight:'100vh',

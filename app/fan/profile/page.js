@@ -114,6 +114,9 @@ export default function FanProfile() {
         @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+        @media (prefers-reduced-motion: reduce) {
+          .profile-hero, .profile-body { animation: none !important; }
+        }
         .tab-btn { transition: all 0.2s ease; }
         .team-pill { transition: all 0.15s ease; }
         .sport-card { transition: all 0.2s ease; }
@@ -133,8 +136,8 @@ export default function FanProfile() {
       `}</style>
 
       {/* Nav */}
-      <nav style={{background:'rgba(245,245,247,0.72)',borderBottom:'1px solid rgba(0,0,0,0.08)',padding:'0 32px',height:'60px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:100,backdropFilter:'saturate(200%) blur(28px)',WebkitBackdropFilter:'saturate(200%) blur(28px)'}}>
-        <a href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'48px',width:'auto'}}/></a>
+      <nav style={{background:'rgba(245,245,247,0.72)',borderBottom:'1px solid rgba(0,0,0,0.08)',padding:'0 32px',height:'76px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:100,backdropFilter:'saturate(200%) blur(28px)',WebkitBackdropFilter:'saturate(200%) blur(28px)'}}>
+        <a href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'60px',width:'auto'}}/></a>
         <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
           <a href="/" className="nav-link" style={{color:'#3a3a3c',fontSize:'13px',padding:'7px 14px',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'8px',fontWeight:'500',transition:'all 0.2s'}}>
             Return to Home Page

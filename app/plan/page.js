@@ -149,6 +149,12 @@ export default function PlanPage() {
     <div style={{minHeight:'100vh',background:'#f5f5f7',fontFamily:"-apple-system,'SF Pro Display','SF Pro Text',BlinkMacSystemFont,'Helvetica Neue',sans-serif"}}>
       <style>{`
         * { box-sizing: border-box; }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+        .reveal-1 { animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+        .reveal-2 { animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.08s both; }
+        @media (prefers-reduced-motion: reduce) {
+          .reveal-1, .reveal-2 { animation: none !important; }
+        }
         @media (hover: hover) and (pointer: fine) {
           .nav-link:hover { background: rgba(0,0,0,0.04) !important; }
           .find-btn:hover:not(:disabled) { transform: scale(1.01); }
@@ -156,8 +162,8 @@ export default function PlanPage() {
       `}</style>
 
       {/* Nav */}
-      <nav style={{background:'rgba(245,245,247,0.72)',borderBottom:'1px solid rgba(0,0,0,0.08)',padding:'0 32px',height:'60px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:100,backdropFilter:'saturate(200%) blur(28px)',WebkitBackdropFilter:'saturate(200%) blur(28px)'}}>
-        <a href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'48px',width:'auto'}}/></a>
+      <nav style={{background:'rgba(245,245,247,0.72)',borderBottom:'1px solid rgba(0,0,0,0.08)',padding:'0 32px',height:'76px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:100,backdropFilter:'saturate(200%) blur(28px)',WebkitBackdropFilter:'saturate(200%) blur(28px)'}}>
+        <a href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'60px',width:'auto'}}/></a>
         <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
           <a href="/" className="nav-link" style={{color:'#3a3a3c',fontSize:'13px',padding:'7px 14px',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'8px',fontWeight:'500'}}>Return to Home Page</a>
           <a href="/map" className="nav-link" style={{color:'#3a3a3c',fontSize:'13px',padding:'7px 14px',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'8px',fontWeight:'500'}}>Fan Map</a>
@@ -168,9 +174,14 @@ export default function PlanPage() {
         </div>
       </nav>
 
-      <div style={{maxWidth:'720px',margin:'0 auto',padding:'32px 24px'}}>
-        <h1 style={{fontSize:'24px',fontWeight:'700',color:'#152238',letterSpacing:'-0.5px',marginBottom:'4px'}}>Plan your day</h1>
-        <p style={{color:'#6e6e73',fontSize:'14px',marginBottom:'28px'}}>Tell us where you'll be — let us find you a pub.</p>
+      <div className="reveal-1" style={{background:'linear-gradient(135deg, #fff8f3 0%, #ffffff 40%, #f0f4ff 100%)',borderBottom:'1px solid rgba(0,0,0,0.06)',padding:'40px 24px'}}>
+        <div style={{maxWidth:'720px',margin:'0 auto'}}>
+          <h1 style={{fontSize:'24px',fontWeight:'700',color:'#152238',letterSpacing:'-0.5px',marginBottom:'4px'}}>Plan your day</h1>
+          <p style={{color:'#6e6e73',fontSize:'14px',margin:0}}>Tell us where you'll be — let us find you a pub.</p>
+        </div>
+      </div>
+
+      <div className="reveal-2" style={{maxWidth:'720px',margin:'0 auto',padding:'28px 24px 32px'}}>
 
         {/* Today's stops */}
         <div style={{background:'white',border:'1px solid rgba(0,0,0,0.06)',borderRadius:'16px',padding:'24px',marginBottom:'20px',boxShadow:'0 2px 12px rgba(0,0,0,0.03)'}}>
