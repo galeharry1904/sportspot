@@ -3,10 +3,11 @@ import { useState, useEffect } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lenis from 'lenis'
-import { User, ClipboardList, MapPin, Beer, CheckCircle2, Tv, FootballIcon, Menu, X, ArrowRight } from '../lib/icons'
+import { User, ClipboardList, MapPin, Beer, CheckCircle2, Tv, FootballIcon, Menu, X, ArrowRight, Star, Calendar } from '../lib/icons'
 import { supabase } from '../lib/supabase'
 import { CURRENT_SEASON, CURRENT_SEASON_LABEL } from '../lib/season'
 import { standingsRowAccent, COMPETITION_SIZE } from '../lib/leagueTable'
+import { getFanInitials } from '../lib/fanProfile'
 
 const PREVIEW_COMPETITIONS = ['Premier League', 'Championship']
 
@@ -47,6 +48,8 @@ export default function Home() {
   const [previewTables, setPreviewTables] = useState({})
   const [news, setNews] = useState([])
   const [transferNews, setTransferNews] = useState([])
+  const [fanProfile, setFanProfile] = useState(null)
+  const [fanSession, setFanSession] = useState(null)
 
   useEffect(() => {
     async function loadPreviewTables() {
@@ -74,7 +77,22 @@ export default function Home() {
       setTransferNews(data || [])
     }
     loadTransferNews()
+
+    // Homepage is public — don't redirect if there's no session, just skip
+    // the "your team" highlight in the standings preview below.
+    async function loadFan() {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) return
+      setFanSession(session)
+      const { data: fp } = await supabase.from('fan_profiles').select('*').eq('user_id', session.user.id).single()
+      setFanProfile(fp)
+    }
+    loadFan()
   }, [])
+
+  function isFavouriteTeam(team) {
+    return fanProfile?.favourite_teams?.some(t => team?.includes(t)) || false
+  }
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -239,6 +257,27 @@ export default function Home() {
             background: rgba(255,255,255,0.75) !important;
           }
           .nav-link:hover { color: #152238 !important; }
+          .plan-fab:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.16), 0 18px 44px rgba(232,115,42,0.48) !important;
+          }
+        }
+
+        @keyframes planFabIn {
+          from { opacity: 0; transform: translateY(16px) scale(0.94); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .plan-fab {
+          transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s cubic-bezier(0.22,1,0.36,1);
+          animation: planFabIn 0.7s cubic-bezier(0.22,1,0.36,1) 0.5s both;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .plan-fab { animation: none; }
+        }
+
+        @media (max-width: 480px) {
+          .plan-fab { padding: 10px 16px 10px 10px !important; max-width: 210px !important; bottom: 16px !important; right: 16px !important; gap: 10px !important; }
+          .plan-fab span span:last-child { display: none !important; }
         }
 
         @media (max-width: 768px) {
@@ -294,6 +333,12 @@ export default function Home() {
             style={{background:'#e8732a',color:'white',fontSize:'13px',fontWeight:'600',padding:'7px 18px',borderRadius:'980px',marginLeft:'4px',letterSpacing:'-0.1px',textDecoration:'none',transition:'opacity 0.2s'}}>
             Register Venue
           </a>
+          {fanSession && (
+            <a href="/fan/profile" title="View Profile"
+              style={{width:'32px',height:'32px',borderRadius:'50%',background:'linear-gradient(135deg,#e8732a,#c45e1a)',color:'white',fontWeight:'800',fontSize:'11px',letterSpacing:'-0.2px',display:'flex',alignItems:'center',justifyContent:'center',marginLeft:'8px',textDecoration:'none',boxShadow:'0 2px 8px rgba(232,115,42,0.3)',flexShrink:0}}>
+              {getFanInitials(fanProfile, fanSession)}
+            </a>
+          )}
         </div>
 
         <button className="nav-hamburger" onClick={() => setMenuOpen(p => !p)}
@@ -305,7 +350,7 @@ export default function Home() {
       {/* Mobile menu */}
       {menuOpen && (
         <div style={{position:'fixed',top:'52px',left:0,right:0,zIndex:99,background:'rgba(245,245,247,0.92)',backdropFilter:'blur(28px)',WebkitBackdropFilter:'blur(28px)',borderBottom:'1px solid rgba(0,0,0,0.08)',padding:'12px 24px 20px',display:'flex',flexDirection:'column',gap:'2px'}}>
-          {[{href:'/map',label:'Find Pubs'},{href:'/leagues',label:'Leagues'},{href:'/fan/login',label:'Fan Sign In'},{href:'/login',label:'Venue Login'}].map(item => (
+          {[{href:'/map',label:'Find Pubs'},{href:'/leagues',label:'Leagues'},fanSession ? {href:'/fan/profile',label:'My Profile'} : {href:'/fan/login',label:'Fan Sign In'},{href:'/login',label:'Venue Login'}].map(item => (
             <a key={item.href} href={item.href} onClick={() => setMenuOpen(false)}
               style={{color:'#152238',fontSize:'17px',fontWeight:'400',padding:'14px 0',borderBottom:'1px solid rgba(0,0,0,0.06)',letterSpacing:'-0.2px',textDecoration:'none',display:'block'}}>
               {item.label}
@@ -430,7 +475,7 @@ export default function Home() {
           <div className="features-grid" style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'16px'}}>
             {[
               {icon:CheckCircle2,title:'Verified every match day',desc:'Pub managers confirm their lineup daily. Outdated data never appears on the map.'},
-              {icon:FootballIcon,title:'Every sport covered',desc:'Football, rugby, F1, cricket, tennis and more. Filter by sport to find exactly what you need.'},
+              {icon:FootballIcon,title:'Every sport covered (soon...)',desc:'Football, rugby, F1, cricket, tennis and more. Filter by sport to find exactly what you need.'},
               {icon:Tv,title:'Sky and TNT Sports',desc:'See exactly which pubs have which subscriptions so you never miss a game on a specific channel.'},
               {icon:MapPin,title:'Near you, right now',desc:'The fan map uses your location to show confirmed pubs sorted by distance.'},
             ].map(f => (
@@ -514,10 +559,19 @@ export default function Home() {
                       </div>
                       {rows.map(row => {
                         const accent = standingsRowAccent(comp, row.position, total)
+                        const isYours = isFavouriteTeam(row.team)
                         return (
-                          <div key={row.id} style={{display:'grid',gridTemplateColumns:'28px 1fr 32px 36px',gap:'6px',padding:'9px 24px',alignItems:'center',borderLeft:`3px solid ${accent}`,borderTop:'1px solid rgba(0,0,0,0.04)'}}>
+                          <div key={row.id} style={{display:'grid',gridTemplateColumns:'28px 1fr 32px 36px',gap:'6px',padding:'9px 24px',alignItems:'center',borderLeft:`3px solid ${accent}`,borderTop:'1px solid rgba(0,0,0,0.04)',background: isYours ? 'rgba(232,115,42,0.05)' : 'transparent'}}>
                             <span style={{fontSize:'12px',fontWeight:'700',color:'#152238',textAlign:'center'}}>{row.position}</span>
-                            <span style={{fontSize:'13px',fontWeight:'600',color:'#152238',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{row.team}</span>
+                            <span style={{display:'flex',alignItems:'center',gap:'5px',overflow:'hidden'}}>
+                              <span style={{fontSize:'13px',fontWeight:'600',color:'#152238',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{row.team}</span>
+                              {isYours && (
+                                <span style={{display:'flex',alignItems:'center',gap:'3px',flexShrink:0,background:'#e8732a',borderRadius:'9px',padding:'2px 6px'}}>
+                                  <Star size={7} color="white" fill="white"/>
+                                  <span style={{fontSize:'7px',fontWeight:'800',color:'white',letterSpacing:'0.2px',whiteSpace:'nowrap'}}>YOUR TEAM</span>
+                                </span>
+                              )}
+                            </span>
                             <span style={{fontSize:'11px',color:'#8e8e93',textAlign:'center'}}>{row.goal_difference > 0 ? `+${row.goal_difference}` : row.goal_difference}</span>
                             <span style={{fontSize:'13px',fontWeight:'800',color:'#152238',textAlign:'center'}}>{row.points}</span>
                           </div>
@@ -577,6 +631,16 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      <a href="/plan" className="plan-fab" style={{position:'fixed',bottom:'24px',right:'24px',zIndex:80,display:'flex',alignItems:'center',gap:'12px',background:'#e8732a',color:'white',textDecoration:'none',borderRadius:'20px',padding:'12px 20px 12px 12px',maxWidth:'270px',border:'1px solid rgba(255,255,255,0.15)',boxShadow:'0 2px 8px rgba(0,0,0,0.12), 0 14px 36px rgba(232,115,42,0.38)'}}>
+        <div style={{width:'36px',height:'36px',borderRadius:'50%',background:'rgba(255,255,255,0.18)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+          <Calendar size={18} strokeWidth={2}/>
+        </div>
+        <span>
+          <span style={{display:'block',fontSize:'13px',fontWeight:'800',letterSpacing:'0.2px',lineHeight:'1.3',textTransform:'uppercase'}}>Plan Your Day</span>
+          <span style={{display:'block',fontSize:'11px',fontWeight:'500',opacity:0.92,marginTop:'2px',lineHeight:'1.3'}}>Tell us your plans — we'll find a pub wherever you'll be</span>
+        </span>
+      </a>
 
     </div>
   )

@@ -2,8 +2,8 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { supabase } from '../../lib/supabase'
-import { Award, TrendingUp, Clock } from '../../lib/icons'
-import { CURRENT_SEASON as SEASON, CURRENT_SEASON_LABEL as SEASON_LABEL } from '../../lib/season'
+import { Award, TrendingUp, Clock, Star } from '../../lib/icons'
+import { CURRENT_SEASON as SEASON, CURRENT_SEASON_LABEL as SEASON_LABEL, LAST_SEASON, LAST_SEASON_LABEL } from '../../lib/season'
 import { standingsRowAccent } from '../../lib/leagueTable'
 
 // A full year starting each July safely brackets one football season
@@ -42,8 +42,10 @@ function LeaguesContent() {
   const [selectedCompetition, setSelectedCompetition] = useState(initialCompetition)
   const [activeTab, setActiveTab] = useState('table')
   const [standings, setStandings] = useState([])
+  const [lastSeasonStandings, setLastSeasonStandings] = useState([])
   const [fixtures, setFixtures] = useState([])
   const [loading, setLoading] = useState(true)
+  const [fanProfile, setFanProfile] = useState(null)
 
   const competition = COMPETITIONS.find(c => c.name === selectedCompetition)
 
@@ -55,15 +57,32 @@ function LeaguesContent() {
     loadData(selectedCompetition)
   }, [selectedCompetition])
 
+  // /leagues is public — a fan doesn't need to be logged in to view it, so
+  // this looks up their favourite teams without redirecting if there's no session.
+  useEffect(() => {
+    async function loadFan() {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) return
+      const { data: fp } = await supabase.from('fan_profiles').select('*').eq('user_id', session.user.id).single()
+      setFanProfile(fp)
+    }
+    loadFan()
+  }, [])
+
+  function isFavouriteTeam(team) {
+    return fanProfile?.favourite_teams?.some(t => team?.includes(t)) || false
+  }
+
   async function loadData(comp) {
     setLoading(true)
     const [{ data: standingsData }, { data: fixturesData }] = await Promise.all([
-      supabase.from('standings').select('*').eq('competition', comp).eq('season', SEASON).order('position'),
+      supabase.from('standings').select('*').eq('competition', comp).in('season', [SEASON, LAST_SEASON]).order('position'),
       supabase.from('fixtures').select('*').eq('competition', comp)
         .gte('fixture_date', SEASON_START).lt('fixture_date', SEASON_END)
         .order('kickoff_time'),
     ])
-    setStandings(standingsData || [])
+    setStandings((standingsData || []).filter(r => r.season === SEASON))
+    setLastSeasonStandings((standingsData || []).filter(r => r.season === LAST_SEASON))
     setFixtures(fixturesData || [])
     setLoading(false)
   }
@@ -79,6 +98,9 @@ function LeaguesContent() {
           .comp-pill:hover { background: rgba(0,0,0,0.04) !important; }
           .tab-btn:hover { color: #e8732a; }
           .table-row:hover { background: rgba(0,0,0,0.02) !important; }
+        }
+        @media (max-width: 720px) {
+          .tables-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
 
@@ -143,45 +165,24 @@ function LeaguesContent() {
           <>
             {/* TABLE */}
             {activeTab === 'table' && competition.hasTable && (
-              standings.length === 0 ? (
+              standings.length === 0 && lastSeasonStandings.length === 0 ? (
                 <EmptyState text={`No table data for ${selectedCompetition} yet.`}/>
               ) : (
-                <div style={{background:'white',border:'1px solid rgba(0,0,0,0.06)',borderRadius:'16px',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.03)'}}>
-                  <div style={{display:'grid',gridTemplateColumns:'40px 1fr 36px 36px 36px 36px 48px 52px',gap:'8px',padding:'12px 20px',borderBottom:'1px solid rgba(0,0,0,0.06)',background:'#fafafa'}}>
-                    {['#','Club','P','W','D','L','GD','Pts'].map(h => (
-                      <span key={h} style={{fontSize:'10px',fontWeight:'800',letterSpacing:'0.5px',color:'#aeaeb2',textAlign: h==='Club' ? 'left':'center'}}>{h}</span>
-                    ))}
-                  </div>
-                  {standings.map((row, i) => {
-                    const accent = standingsRowAccent(selectedCompetition, row.position, standings.length)
-                    return (
-                      <div key={row.id} className="table-row" style={{display:'grid',gridTemplateColumns:'40px 1fr 36px 36px 36px 36px 48px 52px',gap:'8px',padding:'12px 20px',alignItems:'center',borderBottom: i < standings.length-1 ? '1px solid rgba(0,0,0,0.05)' : 'none',borderLeft:`3px solid ${accent}`,transition:'background 0.1s'}}>
-                        <span style={{fontSize:'13px',fontWeight:'700',color:'#152238',textAlign:'center'}}>{row.position}</span>
-                        <span style={{fontSize:'13px',fontWeight:'700',color:'#152238',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{row.team}</span>
-                        <span style={{fontSize:'12px',color:'#6e6e73',textAlign:'center'}}>{row.played}</span>
-                        <span style={{fontSize:'12px',color:'#6e6e73',textAlign:'center'}}>{row.won}</span>
-                        <span style={{fontSize:'12px',color:'#6e6e73',textAlign:'center'}}>{row.drawn}</span>
-                        <span style={{fontSize:'12px',color:'#6e6e73',textAlign:'center'}}>{row.lost}</span>
-                        <span style={{fontSize:'12px',color:'#6e6e73',textAlign:'center'}}>{row.goal_difference > 0 ? `+${row.goal_difference}` : row.goal_difference}</span>
-                        <span style={{fontSize:'13px',fontWeight:'800',color:'#152238',textAlign:'center'}}>{row.points}</span>
-                      </div>
-                    )
-                  })}
-                  <div style={{display:'flex',flexWrap:'wrap',gap:'16px',padding:'14px 20px',borderTop:'1px solid rgba(0,0,0,0.06)',background:'#fafafa'}}>
-                    {selectedCompetition === 'Premier League' && (
-                      <>
-                        <LegendDot color="#0ea5e9" label="Champions League"/>
-                        <LegendDot color="#dc2626" label="Relegation"/>
-                      </>
-                    )}
-                    {selectedCompetition === 'Championship' && (
-                      <>
-                        <LegendDot color="#22c55e" label="Automatic promotion"/>
-                        <LegendDot color="#e8732a" label="Play-offs"/>
-                        <LegendDot color="#dc2626" label="Relegation"/>
-                      </>
-                    )}
-                  </div>
+                <div className="tables-grid" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'20px',alignItems:'start'}}>
+                  <StandingsTable
+                    standings={standings}
+                    competition={selectedCompetition}
+                    seasonLabel={SEASON_LABEL}
+                    emptyText={`No table data for ${selectedCompetition} yet.`}
+                    isFavouriteTeam={isFavouriteTeam}
+                  />
+                  <StandingsTable
+                    standings={lastSeasonStandings}
+                    competition={selectedCompetition}
+                    seasonLabel={LAST_SEASON_LABEL}
+                    emptyText={`No table data for ${selectedCompetition} in ${LAST_SEASON_LABEL}.`}
+                    isFavouriteTeam={isFavouriteTeam}
+                  />
                 </div>
               )
             )}
@@ -205,6 +206,67 @@ function LeaguesContent() {
             )}
           </>
         )}
+      </div>
+    </div>
+  )
+}
+
+function StandingsTable({ standings, competition, seasonLabel, emptyText, isFavouriteTeam }) {
+  if (standings.length === 0) return (
+    <div>
+      <div style={{fontSize:'12px',fontWeight:'800',letterSpacing:'0.3px',color:'#6e6e73',marginBottom:'10px'}}>{seasonLabel}</div>
+      <EmptyState text={emptyText}/>
+    </div>
+  )
+
+  return (
+    <div>
+      <div style={{fontSize:'12px',fontWeight:'800',letterSpacing:'0.3px',color:'#6e6e73',marginBottom:'10px'}}>{seasonLabel}</div>
+      <div style={{background:'white',border:'1px solid rgba(0,0,0,0.06)',borderRadius:'16px',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.03)'}}>
+        <div style={{display:'grid',gridTemplateColumns:'32px 1fr 28px 28px 28px 28px 40px 44px',gap:'6px',padding:'12px 16px',borderBottom:'1px solid rgba(0,0,0,0.06)',background:'#fafafa'}}>
+          {['#','Club','P','W','D','L','GD','Pts'].map(h => (
+            <span key={h} style={{fontSize:'10px',fontWeight:'800',letterSpacing:'0.5px',color:'#aeaeb2',textAlign: h==='Club' ? 'left':'center'}}>{h}</span>
+          ))}
+        </div>
+        {standings.map((row, i) => {
+          const accent = standingsRowAccent(competition, row.position, standings.length)
+          const isYours = isFavouriteTeam?.(row.team)
+          return (
+            <div key={row.id} className="table-row" style={{display:'grid',gridTemplateColumns:'32px 1fr 28px 28px 28px 28px 40px 44px',gap:'6px',padding:'12px 16px',alignItems:'center',borderBottom: i < standings.length-1 ? '1px solid rgba(0,0,0,0.05)' : 'none',borderLeft:`3px solid ${accent}`,background: isYours ? 'rgba(232,115,42,0.05)' : 'transparent',transition:'background 0.1s'}}>
+              <span style={{fontSize:'12px',fontWeight:'700',color:'#152238',textAlign:'center'}}>{row.position}</span>
+              <span style={{display:'flex',alignItems:'center',gap:'6px',overflow:'hidden'}}>
+                <span style={{fontSize:'12px',fontWeight:'700',color:'#152238',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{row.team}</span>
+                {isYours && (
+                  <span style={{display:'flex',alignItems:'center',gap:'3px',flexShrink:0,background:'#e8732a',borderRadius:'10px',padding:'2px 7px'}}>
+                    <Star size={8} color="white" fill="white"/>
+                    <span style={{fontSize:'8px',fontWeight:'800',color:'white',letterSpacing:'0.3px',whiteSpace:'nowrap'}}>YOUR TEAM</span>
+                  </span>
+                )}
+              </span>
+              <span style={{fontSize:'11px',color:'#6e6e73',textAlign:'center'}}>{row.played}</span>
+              <span style={{fontSize:'11px',color:'#6e6e73',textAlign:'center'}}>{row.won}</span>
+              <span style={{fontSize:'11px',color:'#6e6e73',textAlign:'center'}}>{row.drawn}</span>
+              <span style={{fontSize:'11px',color:'#6e6e73',textAlign:'center'}}>{row.lost}</span>
+              <span style={{fontSize:'11px',color:'#6e6e73',textAlign:'center'}}>{row.goal_difference > 0 ? `+${row.goal_difference}` : row.goal_difference}</span>
+              <span style={{fontSize:'12px',fontWeight:'800',color:'#152238',textAlign:'center'}}>{row.points}</span>
+            </div>
+          )
+        })}
+        <div style={{display:'flex',flexWrap:'wrap',gap:'12px',padding:'12px 16px',borderTop:'1px solid rgba(0,0,0,0.06)',background:'#fafafa'}}>
+          {competition === 'Premier League' && (
+            <>
+              <LegendDot color="#0ea5e9" label="Champions League"/>
+              <LegendDot color="#dc2626" label="Relegation"/>
+            </>
+          )}
+          {competition === 'Championship' && (
+            <>
+              <LegendDot color="#22c55e" label="Automatic promotion"/>
+              <LegendDot color="#e8732a" label="Play-offs"/>
+              <LegendDot color="#dc2626" label="Relegation"/>
+            </>
+          )}
+        </div>
       </div>
     </div>
   )
