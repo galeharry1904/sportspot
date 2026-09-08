@@ -29,6 +29,7 @@ const FOOTBALL_TEAMS = {
 }
 
 const ALL_SPORTS = ['Football','Rugby','Cricket','Formula 1','Tennis']
+const SUPPORTED_SPORTS = ['Football']
 
 function formatMemberSince(dateStr) {
   if (!dateStr) return null
@@ -135,6 +136,9 @@ export default function FanProfile() {
       <nav style={{background:'rgba(245,245,247,0.72)',borderBottom:'1px solid rgba(0,0,0,0.08)',padding:'0 32px',height:'60px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:100,backdropFilter:'saturate(200%) blur(28px)',WebkitBackdropFilter:'saturate(200%) blur(28px)'}}>
         <a href="/"><img src="/SportSpot-Logo-Light.png" alt="SportSpot" style={{height:'48px',width:'auto'}}/></a>
         <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
+          <a href="/" className="nav-link" style={{color:'#3a3a3c',fontSize:'13px',padding:'7px 14px',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'8px',fontWeight:'500',transition:'all 0.2s'}}>
+            Return to Home Page
+          </a>
           <a href="/map" className="nav-link" style={{color:'#3a3a3c',fontSize:'13px',padding:'7px 14px',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'8px',fontWeight:'500',transition:'all 0.2s'}}>
             Fan Map
           </a>
@@ -285,6 +289,14 @@ export default function FanProfile() {
                 {ALL_SPORTS.map(sport => {
                   const Icon = SPORT_ICON_MAP[sport]
                   const isActive = sports.includes(sport)
+                  const isSupported = SUPPORTED_SPORTS.includes(sport)
+                  if (!isSupported) return (
+                    <div key={sport} title="Coming soon" style={{position:'relative',padding:'16px 12px',borderRadius:'12px',border:'1px solid rgba(0,0,0,0.06)',background:'#fafafa',display:'flex',flexDirection:'column',alignItems:'center',gap:'8px',opacity:0.55}}>
+                      <Icon size={22} strokeWidth={1.75} color="#aeaeb2"/>
+                      <span style={{fontSize:'13px',fontWeight:'700',color:'#aeaeb2'}}>{sport}</span>
+                      <span style={{fontSize:'9px',fontWeight:'800',letterSpacing:'0.4px',textTransform:'uppercase',color:'#aeaeb2',background:'rgba(0,0,0,0.05)',borderRadius:'20px',padding:'2px 8px'}}>Coming soon…</span>
+                    </div>
+                  )
                   return (
                     <button key={sport} className="sport-card" onClick={() => toggleSport(sport)}
                       style={{padding:'16px 12px',borderRadius:'12px',border:`1px solid ${isActive ? 'rgba(232,115,42,0.4)' : 'rgba(0,0,0,0.08)'}`,background: isActive ? 'linear-gradient(135deg, rgba(232,115,42,0.14), rgba(232,115,42,0.05))' : 'white',cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'center',gap:'8px',boxShadow: isActive ? '0 4px 16px rgba(232,115,42,0.14)' : '0 2px 8px rgba(0,0,0,0.03)',color: isActive ? '#e8732a' : '#6e6e73'}}>

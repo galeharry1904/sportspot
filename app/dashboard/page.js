@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabase'
 import { CheckCircle2, ClipboardList, TrendingUp, Clock } from '../../lib/icons'
 
 const SPORTS = ['All', 'Football', 'Rugby', 'Cricket', 'Tennis']
+const SUPPORTED_SPORTS = ['All', 'Football']
 
 export default function Dashboard() {
   const [pub, setPub] = useState(null)
@@ -198,12 +199,20 @@ export default function Dashboard() {
           <>
             {/* Sport filters */}
             <div className="sport-filters" style={{display:'flex',gap:'8px',marginBottom:'16px',flexWrap:'wrap'}}>
-              {SPORTS.map(s => (
-                <button key={s} onClick={() => setSportFilter(s)}
-                  style={{background: sportFilter===s ? '#e8732a' : 'white',color: sportFilter===s ? 'white' : '#6e6e73',border:'1px solid',borderColor: sportFilter===s ? '#e8732a' : 'rgba(0,0,0,0.08)',borderRadius:'8px',padding:'8px 16px',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>
-                  {s}
-                </button>
-              ))}
+              {SPORTS.map(s => {
+                const isSupported = SUPPORTED_SPORTS.includes(s)
+                if (!isSupported) return (
+                  <div key={s} title="Coming soon" style={{display:'flex',alignItems:'center',gap:'6px',background:'#fafafa',color:'#c7c7cc',border:'1px solid rgba(0,0,0,0.06)',borderRadius:'8px',padding:'8px 16px',fontSize:'13px',fontWeight:'600',opacity:0.6}}>
+                    {s} <span style={{fontSize:'9px',fontWeight:'800',letterSpacing:'0.3px',textTransform:'uppercase',color:'#aeaeb2'}}>Coming soon…</span>
+                  </div>
+                )
+                return (
+                  <button key={s} onClick={() => setSportFilter(s)}
+                    style={{background: sportFilter===s ? '#e8732a' : 'white',color: sportFilter===s ? 'white' : '#6e6e73',border:'1px solid',borderColor: sportFilter===s ? '#e8732a' : 'rgba(0,0,0,0.08)',borderRadius:'8px',padding:'8px 16px',fontSize:'13px',fontWeight:'600',cursor:'pointer'}}>
+                    {s}
+                  </button>
+                )
+              })}
             </div>
 
             {/* Fixture table — desktop */}
