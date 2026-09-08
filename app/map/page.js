@@ -366,6 +366,13 @@ export default function FanMap() {
                 <span style={{whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{pub.address}</span>
                 {dist && <span style={{flexShrink:0,color:'#6e6e73',fontWeight:'600',marginLeft:'2px'}}>· {dist} mi</span>}
               </div>
+              {pub.facilities?.length > 0 && (
+                <div style={{display:'flex',gap:'6px',marginTop:'5px',flexWrap:'wrap'}}>
+                  {FACILITIES.filter(f => pub.facilities.includes(f.id)).slice(0, compact ? 4 : 6).map(f => (
+                    <f.icon key={f.id} size={12} strokeWidth={2} color="#8e8e93" title={f.label}/>
+                  ))}
+                </div>
+              )}
             </div>
             <div style={{display:'flex',gap:'4px',flexShrink:0,alignItems:'center'}}>
               {pub.has_sky && <span style={{fontSize:'9px',fontWeight:'800',background:'#0ea5e912',color:'#0ea5e9',border:'1px solid #0ea5e930',borderRadius:'5px',padding:'2px 6px',letterSpacing:'0.3px'}}>SKY</span>}

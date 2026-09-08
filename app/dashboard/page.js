@@ -20,6 +20,7 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('fixtures')
   const [venueForm, setVenueForm] = useState({})
   const [venueSaved, setVenueSaved] = useState(false)
+  const [venueError, setVenueError] = useState(null)
   const [isAdmin, setIsAdmin] = useState(false)
   const router = useRouter()
 
@@ -63,11 +64,13 @@ export default function Dashboard() {
   }
 
   async function saveVenueDetails() {
-    await supabase.from('pubs').update({
+    setVenueError(null)
+    const { error } = await supabase.from('pubs').update({
       name: venueForm.name, address: venueForm.address,
       has_sky: venueForm.has_sky, has_tnt: venueForm.has_tnt,
       facilities: venueForm.facilities,
     }).eq('id', pub.id)
+    if (error) { setVenueError(error.message); return }
     setPub(p => ({...p, ...venueForm}))
     setVenueSaved(true)
     setTimeout(() => setVenueSaved(false), 2000)
@@ -380,6 +383,11 @@ export default function Dashboard() {
 
             {/* Save button */}
             <div style={{gridColumn:'1 / -1'}}>
+              {venueError && (
+                <div style={{background:'rgba(239,68,68,0.08)',border:'1px solid rgba(239,68,68,0.25)',borderRadius:'8px',padding:'10px 14px',color:'#dc2626',fontSize:'13px',marginBottom:'12px'}}>
+                  Couldn&apos;t save: {venueError}
+                </div>
+              )}
               <button onClick={saveVenueDetails}
                 style={{width:'100%',background: venueSaved ? '#22c55e' : '#e8732a',color:'white',border:'none',borderRadius:'10px',padding:'16px',fontSize:'16px',fontWeight:'700',cursor:'pointer',transition:'background 0.2s',boxShadow:'0 4px 20px rgba(232,115,42,0.25)',display:'flex',alignItems:'center',justifyContent:'center',gap:'8px'}}>
                 {venueSaved && <CheckCircle2 size={18} strokeWidth={2}/>}
