@@ -465,7 +465,7 @@ export default function Home() {
               <div key={s.title} className="step-card" style={{position:'relative',textAlign:'center'}}>
                 <div className="step-icon" style={{width:'56px',height:'56px',borderRadius:'50%',background:'white',border:'2px solid rgba(232,115,42,0.3)',display:'flex',alignItems:'center',justifyContent:'center',color:'#e8732a',margin:'0 auto 24px',position:'relative',flexShrink:0}}>
                   <s.icon size={22} strokeWidth={1.75}/>
-                  <div style={{position:'absolute',top:'-6px',right:'-6px',width:'20px',height:'20px',borderRadius:'50%',background:'#152238',color:'white',fontSize:'10px',fontWeight:'800',display:'flex',alignItems:'center',justifyContent:'center'}}>{i + 1}</div>
+                  <div style={{position:'absolute',top:'-6px',right:'-6px',width:'20px',height:'20px',borderRadius:'50%',background:'#e8732a',color:'white',fontSize:'10px',fontWeight:'800',display:'flex',alignItems:'center',justifyContent:'center'}}>{i + 1}</div>
                 </div>
                 <div className="step-copy" style={{maxWidth:'220px',margin:'0 auto'}}>
                   <div style={{fontWeight:'600',fontSize:'16px',marginBottom:'8px',color:'#152238',letterSpacing:'-0.3px'}}>{s.title}</div>
