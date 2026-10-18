@@ -201,12 +201,6 @@ export default function Home() {
         .hero-btns { animation: fadeUp 0.9s cubic-bezier(0.22,1,0.36,1) 0.4s both; }
         .hero-glass { animation: scaleIn 0.8s cubic-bezier(0.22,1,0.36,1) 0.05s both; }
 
-        .step-card {
-          transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease;
-        }
-        .feature-card {
-          transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease;
-        }
         .table-preview-card {
           transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease;
         }
@@ -234,14 +228,6 @@ export default function Home() {
            so links like Create Fan Account silently ate the first tap and
            only worked on the second. */
         @media (hover: hover) and (pointer: fine) {
-          .step-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 24px 64px rgba(0,0,0,0.1) !important;
-          }
-          .feature-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 16px 48px rgba(0,0,0,0.07) !important;
-          }
           .table-preview-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 16px 48px rgba(0,0,0,0.07) !important;
@@ -298,8 +284,12 @@ export default function Home() {
           .hero-sub { font-size: 17px !important; }
           .hero-btns { flex-direction: column !important; align-items: stretch !important; gap: 10px !important; }
           .hero-btns a { text-align: center !important; padding: 15px 24px !important; }
-          .steps-grid { grid-template-columns: 1fr !important; }
-          .features-grid { grid-template-columns: 1fr !important; }
+          .steps-grid { grid-template-columns: 1fr !important; gap: 36px !important; }
+          .steps-line { display: none !important; }
+          .step-card { text-align: left !important; display: flex !important; gap: 16px !important; }
+          .step-card .step-icon { margin: 0 !important; flex-shrink: 0 !important; }
+          .step-card .step-copy { max-width: none !important; margin: 0 !important; }
+          .feature-card { gap: 16px !important; }
           .tables-grid { grid-template-columns: 1fr !important; }
           .news-grid { grid-template-columns: repeat(2,1fr) !important; gap: 10px !important; }
           .section-title { font-size: 34px !important; letter-spacing: -1.5px !important; }
@@ -446,22 +436,26 @@ export default function Home() {
       <div className="hiw-section" style={{padding:'120px 24px',background:'#f5f5f7'}}>
         <div style={{maxWidth:'1080px',margin:'0 auto'}}>
           <div style={{textAlign:'center',marginBottom:'64px'}}>
-            <div style={{fontSize:'13px',fontWeight:'600',letterSpacing:'0.5px',textTransform:'uppercase',color:'#e8732a',marginBottom:'12px'}}>How it works</div>
             <h2 className="section-title" style={{fontSize:'48px',fontWeight:'700',letterSpacing:'-2px',color:'#152238',marginBottom:'16px'}}>Find your pub in 4 steps</h2>
             <p className="section-sub" style={{fontSize:'19px',color:'#6e6e73',fontWeight:'400',letterSpacing:'-0.3px'}}>Designed to get you to the right pub, fast.</p>
           </div>
-          <div className="steps-grid" style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'16px'}}>
+          <div className="steps-grid" style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'16px',position:'relative'}}>
+            <div className="steps-line" style={{position:'absolute',top:'28px',left:'12.5%',right:'12.5%',height:'2px',background:'repeating-linear-gradient(to right, rgba(232,115,42,0.25) 0 6px, transparent 6px 12px)'}}/>
             {[
-              {step:'01',icon:User,title:'Create your account',desc:'Sign up and tell SportSpot which sports and teams you follow. We do the rest.'},
-              {step:'02',icon:ClipboardList,title:'Venues confirm daily',desc:'Pub managers log in each match day and confirm exactly which games they are showing.'},
-              {step:'03',icon:MapPin,title:'Open the fan map',desc:'See every confirmed venue near you on a live map, sorted by distance.'},
-              {step:'04',icon:Beer,title:'Head to the right pub',desc:'Pick a venue, check the kick-off time, and walk in knowing exactly what is on screen.'},
-            ].map((s) => (
-              <div key={s.step} className="step-card" style={{background:'white',borderRadius:'20px',padding:'32px 28px',position:'relative',boxShadow:'0 4px 24px rgba(0,0,0,0.04)',border:'1px solid rgba(0,0,0,0.04)'}}>
-                <div style={{position:'absolute',top:'20px',right:'24px',fontSize:'13px',fontWeight:'700',color:'rgba(0,0,0,0.08)',letterSpacing:'1px'}}>{s.step}</div>
-                <div style={{width:'48px',height:'48px',borderRadius:'14px',background:'rgba(232,115,42,0.08)',display:'flex',alignItems:'center',justifyContent:'center',color:'#e8732a',marginBottom:'20px'}}><s.icon size={22} strokeWidth={1.75}/></div>
-                <div style={{fontWeight:'600',fontSize:'16px',marginBottom:'10px',color:'#152238',letterSpacing:'-0.3px'}}>{s.title}</div>
-                <div style={{fontSize:'14px',color:'#6e6e73',lineHeight:'1.6',fontWeight:'400'}}>{s.desc}</div>
+              {icon:User,title:'Create your account',desc:'Sign up and tell SportSpot which sports and teams you follow. We do the rest.'},
+              {icon:ClipboardList,title:'Venues confirm daily',desc:'Pub managers log in each match day and confirm exactly which games they are showing.'},
+              {icon:MapPin,title:'Open the fan map',desc:'See every confirmed venue near you on a live map, sorted by distance.'},
+              {icon:Beer,title:'Head to the right pub',desc:'Pick a venue, check the kick-off time, and walk in knowing exactly what is on screen.'},
+            ].map((s, i) => (
+              <div key={s.title} className="step-card" style={{position:'relative',textAlign:'center'}}>
+                <div className="step-icon" style={{width:'56px',height:'56px',borderRadius:'50%',background:'white',border:'2px solid rgba(232,115,42,0.3)',display:'flex',alignItems:'center',justifyContent:'center',color:'#e8732a',margin:'0 auto 24px',position:'relative',flexShrink:0}}>
+                  <s.icon size={22} strokeWidth={1.75}/>
+                  <div style={{position:'absolute',top:'-6px',right:'-6px',width:'20px',height:'20px',borderRadius:'50%',background:'#152238',color:'white',fontSize:'10px',fontWeight:'800',display:'flex',alignItems:'center',justifyContent:'center'}}>{i + 1}</div>
+                </div>
+                <div className="step-copy" style={{maxWidth:'220px',margin:'0 auto'}}>
+                  <div style={{fontWeight:'600',fontSize:'16px',marginBottom:'8px',color:'#152238',letterSpacing:'-0.3px'}}>{s.title}</div>
+                  <div style={{fontSize:'14px',color:'#6e6e73',lineHeight:'1.6',fontWeight:'400'}}>{s.desc}</div>
+                </div>
               </div>
             ))}
           </div>
@@ -470,26 +464,23 @@ export default function Home() {
 
       {/* ── FEATURES ── */}
       <div className="features-section" style={{padding:'120px 24px',background:'white'}}>
-        <div style={{maxWidth:'900px',margin:'0 auto'}}>
+        <div style={{maxWidth:'760px',margin:'0 auto'}}>
           <div style={{textAlign:'center',marginBottom:'64px'}}>
-            <div style={{fontSize:'13px',fontWeight:'600',letterSpacing:'0.5px',textTransform:'uppercase',color:'#e8732a',marginBottom:'12px'}}>Why SportSpot</div>
             <h2 className="section-title" style={{fontSize:'48px',fontWeight:'700',letterSpacing:'-2px',color:'#152238',marginBottom:'16px'}}>No more wasted trips.</h2>
             <p className="section-sub" style={{fontSize:'19px',color:'#6e6e73',fontWeight:'400',letterSpacing:'-0.3px',maxWidth:'500px',margin:'0 auto'}}>Every feature built around one goal — getting you to the right pub.</p>
           </div>
-          <div className="features-grid" style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'16px'}}>
+          <div className="features-grid">
             {[
               {icon:CheckCircle2,title:'Verified every match day',desc:'Pub managers confirm their lineup daily. Outdated data never appears on the map.'},
               {icon:FootballIcon,title:'Every sport covered (soon...)',desc:'Football, rugby, F1, cricket, tennis and more. Filter by sport to find exactly what you need.'},
               {icon:Tv,title:'Sky and TNT Sports',desc:'See exactly which pubs have which subscriptions so you never miss a game on a specific channel.'},
               {icon:MapPin,title:'Near you, right now',desc:'The fan map uses your location to show confirmed pubs sorted by distance.'},
-            ].map(f => (
+            ].map((f, i) => (
               <div key={f.title} className="feature-card"
-                style={{background:'#f5f5f7',border:'1px solid rgba(0,0,0,0.04)',borderRadius:'20px',padding:'32px',display:'flex',gap:'20px',alignItems:'flex-start',boxShadow:'0 2px 12px rgba(0,0,0,0.03)'}}>
-                <div style={{width:'44px',height:'44px',borderRadius:'12px',background:'white',display:'flex',alignItems:'center',justifyContent:'center',color:'#e8732a',flexShrink:0,boxShadow:'0 2px 8px rgba(0,0,0,0.06)'}}>
-                  <f.icon size={20} strokeWidth={1.75}/>
-                </div>
+                style={{display:'flex',gap:'24px',alignItems:'flex-start',padding:'28px 0',borderTop: i === 0 ? 'none' : '1px solid rgba(0,0,0,0.06)'}}>
+                <f.icon size={26} strokeWidth={1.5} color="#e8732a" style={{flexShrink:0,marginTop:'2px'}}/>
                 <div>
-                  <div style={{fontWeight:'600',fontSize:'16px',marginBottom:'8px',color:'#152238',letterSpacing:'-0.3px'}}>{f.title}</div>
+                  <div style={{fontWeight:'600',fontSize:'17px',marginBottom:'6px',color:'#152238',letterSpacing:'-0.3px'}}>{f.title}</div>
                   <div style={{fontSize:'14px',color:'#6e6e73',lineHeight:'1.6',fontWeight:'400'}}>{f.desc}</div>
                 </div>
               </div>
@@ -502,7 +493,6 @@ export default function Home() {
       <div className="news-section" style={{padding:'120px 24px',background:'white'}}>
         <div style={{maxWidth:'1080px',margin:'0 auto'}}>
           <div style={{textAlign:'center',marginBottom:'56px'}}>
-            <div style={{fontSize:'13px',fontWeight:'600',letterSpacing:'0.5px',textTransform:'uppercase',color:'#e8732a',marginBottom:'12px'}}>Latest News</div>
             <h2 className="section-title" style={{fontSize:'48px',fontWeight:'700',letterSpacing:'-2px',color:'#152238',marginBottom:'16px'}}>From the world of football.</h2>
             <p className="section-sub" style={{fontSize:'19px',color:'#6e6e73',fontWeight:'400',letterSpacing:'-0.3px',maxWidth:'500px',margin:'0 auto'}}>Headlines from six major outlets, side by side — no need to leave SportSpot.</p>
           </div>
@@ -520,7 +510,6 @@ export default function Home() {
       <div className="news-section" style={{padding:'120px 24px',background:'#f5f5f7',borderTop:'1px solid rgba(0,0,0,0.04)'}}>
         <div style={{maxWidth:'1080px',margin:'0 auto'}}>
           <div style={{textAlign:'center',marginBottom:'56px'}}>
-            <div style={{fontSize:'13px',fontWeight:'600',letterSpacing:'0.5px',textTransform:'uppercase',color:'#e8732a',marginBottom:'12px'}}>Transfer News</div>
             <h2 className="section-title" style={{fontSize:'48px',fontWeight:'700',letterSpacing:'-2px',color:'#152238',marginBottom:'16px'}}>Deals, done and rumoured.</h2>
             <p className="section-sub" style={{fontSize:'19px',color:'#6e6e73',fontWeight:'400',letterSpacing:'-0.3px',maxWidth:'500px',margin:'0 auto'}}>Transfer gossip and confirmed signings from BBC Sport, The Guardian and Mirror Football.</p>
           </div>
@@ -538,7 +527,6 @@ export default function Home() {
       <div className="tables-section" style={{padding:'120px 24px',background:'#f5f5f7',borderTop:'1px solid rgba(0,0,0,0.04)'}}>
         <div style={{maxWidth:'1080px',margin:'0 auto'}}>
           <div style={{textAlign:'center',marginBottom:'56px'}}>
-            <div style={{fontSize:'13px',fontWeight:'600',letterSpacing:'0.5px',textTransform:'uppercase',color:'#e8732a',marginBottom:'12px'}}>Live Standings</div>
             <h2 className="section-title" style={{fontSize:'48px',fontWeight:'700',letterSpacing:'-2px',color:'#152238',marginBottom:'16px'}}>This season&apos;s tables.</h2>
             <p className="section-sub" style={{fontSize:'19px',color:'#6e6e73',fontWeight:'400',letterSpacing:'-0.3px',maxWidth:'500px',margin:'0 auto'}}>Premier League and Championship, synced automatically — no need to leave SportSpot.</p>
           </div>
