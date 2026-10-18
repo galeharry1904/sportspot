@@ -211,6 +211,12 @@ export default function Home() {
         .feature-icon {
           transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
         }
+        .step-icon {
+          transition: transform 0.25s cubic-bezier(0.22,1,0.36,1), border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+        .step-badge {
+          transition: transform 0.25s cubic-bezier(0.22,1,0.36,1);
+        }
         .news-card {
           transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease;
         }
@@ -246,6 +252,14 @@ export default function Home() {
           }
           .feature-card:hover .feature-icon {
             transform: scale(1.08);
+          }
+          .step-card:hover .step-icon {
+            transform: scale(1.1);
+            border-color: #e8732a;
+            box-shadow: 0 8px 20px rgba(232,115,42,0.25);
+          }
+          .step-card:hover .step-badge {
+            transform: scale(1.15);
           }
           .news-card:hover {
             transform: translateY(-4px);
@@ -465,7 +479,7 @@ export default function Home() {
               <div key={s.title} className="step-card" style={{position:'relative',textAlign:'center'}}>
                 <div className="step-icon" style={{width:'56px',height:'56px',borderRadius:'50%',background:'white',border:'2px solid rgba(232,115,42,0.3)',display:'flex',alignItems:'center',justifyContent:'center',color:'#e8732a',margin:'0 auto 24px',position:'relative',flexShrink:0}}>
                   <s.icon size={22} strokeWidth={1.75}/>
-                  <div style={{position:'absolute',top:'-6px',right:'-6px',width:'20px',height:'20px',borderRadius:'50%',background:'#e8732a',color:'white',fontSize:'10px',fontWeight:'800',display:'flex',alignItems:'center',justifyContent:'center'}}>{i + 1}</div>
+                  <div className="step-badge" style={{position:'absolute',top:'-6px',right:'-6px',width:'20px',height:'20px',borderRadius:'50%',background:'#e8732a',color:'white',fontSize:'10px',fontWeight:'800',display:'flex',alignItems:'center',justifyContent:'center'}}>{i + 1}</div>
                 </div>
                 <div className="step-copy" style={{maxWidth:'220px',margin:'0 auto'}}>
                   <div style={{fontWeight:'600',fontSize:'16px',marginBottom:'8px',color:'#152238',letterSpacing:'-0.3px'}}>{s.title}</div>
