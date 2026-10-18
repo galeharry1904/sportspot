@@ -27,11 +27,12 @@ export default function RegisterPage() {
   const inputStyle = {width:'100%',background:'rgba(255,255,255,0.6)',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'10px',padding:'13px 14px',color:'#152238',marginBottom:'12px',fontSize:'15px',outline:'none',backdropFilter:'blur(8px)',WebkitBackdropFilter:'blur(8px)',transition:'border-color 0.2s, box-shadow 0.2s'}
 
   return (
-    <div style={{minHeight:'100vh',position:'relative',overflow:'hidden',background:'linear-gradient(135deg, #fff8f3 0%, #ffffff 25%, #f0f4ff 55%, #f8f0ff 80%, #fff5f0 100%)',display:'flex',alignItems:'center',justifyContent:'center',padding:'24px',fontFamily:"-apple-system,'SF Pro Display','SF Pro Text',BlinkMacSystemFont,'Helvetica Neue',sans-serif"}}>
+    <div style={{minHeight:'100vh',position:'relative',overflow:'hidden',background:'linear-gradient(135deg, #fff8f3 0%, #ffffff 25%, #f0f4ff 55%, #f8f0ff 80%, #fff5f0 100%)',display:'flex',alignItems:'center',justifyContent:'center',padding:'24px'}}>
       <style>{`
         * { box-sizing: border-box; }
         .auth-input:focus { border-color: #e8732a !important; box-shadow: 0 0 0 3px rgba(232,115,42,0.12); }
-        .auth-submit { transition: all 0.25s cubic-bezier(0.22,1,0.36,1); }
+        .auth-submit { transition: transform 0.25s cubic-bezier(0.22,1,0.36,1), box-shadow 0.25s cubic-bezier(0.22,1,0.36,1); }
+        .auth-submit:active:not(:disabled) { transform: scale(0.97); }
         @media (hover: hover) and (pointer: fine) {
           .auth-submit:hover:not(:disabled) { transform: scale(1.015); box-shadow: 0 8px 28px rgba(232,115,42,0.35) !important; }
           .auth-link:hover { text-decoration: underline; }

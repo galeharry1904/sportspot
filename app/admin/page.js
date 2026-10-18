@@ -23,7 +23,7 @@ function StatTile({ label, value, accent, onClick }) {
   return (
     <div onClick={onClick} className={onClick ? 'clickable-tile' : undefined}
       style={{flex:1,minWidth:'120px',background:'white',border:'1px solid rgba(0,0,0,0.06)',borderRadius:'14px',padding:'18px 20px',boxShadow:'0 2px 12px rgba(0,0,0,0.03)',cursor: onClick ? 'pointer' : 'default',transition:'transform 0.15s ease, box-shadow 0.15s ease'}}>
-      <div style={{fontSize:'26px',fontWeight:'800',color: accent || '#152238',letterSpacing:'-0.5px',marginBottom:'4px'}}>{value}</div>
+      <div style={{fontSize:'26px',fontWeight:'800',color: accent || '#152238',letterSpacing:'-0.5px',marginBottom:'4px',fontVariantNumeric:'tabular-nums'}}>{value}</div>
       <div style={{fontSize:'12px',color:'#6e6e73',fontWeight:'600'}}>{label}{onClick && ' →'}</div>
     </div>
   )
@@ -113,7 +113,7 @@ function GrowthPanel({ title, data, color, onClick }) {
     <div style={{flex:1,minWidth:'280px',background:'white',border:'1px solid rgba(0,0,0,0.06)',borderRadius:'16px',padding:'22px 24px',boxShadow:'0 2px 12px rgba(0,0,0,0.03)'}}>
       <div onClick={onClick} className={onClick ? 'clickable-tile' : undefined} style={{display:'inline-block',cursor: onClick ? 'pointer' : 'default',marginBottom:'12px'}}>
         <div style={{fontSize:'13px',color:'#6e6e73',fontWeight:'600',marginBottom:'2px'}}>{title}{onClick && ' →'}</div>
-        <div style={{fontSize:'32px',fontWeight:'800',color:'#152238',letterSpacing:'-0.8px'}}>{data ? current.toLocaleString() : '—'}</div>
+        <div style={{fontSize:'32px',fontWeight:'800',color:'#152238',letterSpacing:'-0.8px',fontVariantNumeric:'tabular-nums'}}>{data ? current.toLocaleString() : '—'}</div>
       </div>
       <GrowthChart data={data} color={color}/>
     </div>
@@ -261,7 +261,7 @@ export default function AdminPage() {
   )
 
   return (
-    <div style={{minHeight:'100vh',background:'#f5f5f7',fontFamily:"-apple-system,'SF Pro Display','SF Pro Text',BlinkMacSystemFont,'Helvetica Neue',sans-serif"}}>
+    <div style={{minHeight:'100vh',background:'#f5f5f7'}}>
       <style>{`
         * { box-sizing: border-box; }
         @media (hover: hover) and (pointer: fine) {

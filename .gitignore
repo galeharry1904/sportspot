@@ -52,3 +52,8 @@ next-env.d.ts
 
 # repomix codebase dumps generated for LLM context — not source
 repomix-output.*
+
+# Claude Code local tooling — installed skills/settings, not app code
+/.claude
+/.agents
+skills-lock.json

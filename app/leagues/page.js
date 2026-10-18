@@ -93,7 +93,7 @@ function LeaguesContent() {
   const upcoming = fixtures.filter(f => f.status !== 'FINISHED').slice().sort((a, b) => new Date(a.kickoff_time) - new Date(b.kickoff_time))
 
   return (
-    <div style={{minHeight:'100vh',background:'#f5f5f7',color:'#152238',fontFamily:"-apple-system,'SF Pro Display','SF Pro Text',BlinkMacSystemFont,'Helvetica Neue',sans-serif"}}>
+    <div style={{minHeight:'100vh',background:'#f5f5f7',color:'#152238'}}>
       <style>{`
         * { box-sizing: border-box; }
         @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
@@ -124,10 +124,6 @@ function LeaguesContent() {
       {/* Header */}
       <div className="reveal-1" style={{background:'linear-gradient(135deg, #fff8f3 0%, #ffffff 40%, #f0f4ff 100%)',borderBottom:'1px solid rgba(0,0,0,0.06)',padding:'44px 24px'}}>
         <div style={{maxWidth:'980px',margin:'0 auto'}}>
-          <div style={{display:'inline-flex',alignItems:'center',gap:'6px',background:'rgba(232,115,42,0.1)',border:'1px solid rgba(232,115,42,0.25)',borderRadius:'980px',padding:'6px 16px',marginBottom:'18px'}}>
-            <div style={{width:'6px',height:'6px',borderRadius:'50%',background:'#e8732a'}}/>
-            <span style={{fontSize:'12px',color:'#e8732a',fontWeight:'700',letterSpacing:'0.3px'}}>{SEASON_LABEL} SEASON</span>
-          </div>
           <h1 style={{fontSize:'38px',fontWeight:'800',letterSpacing:'-1px',margin:'0 0 8px'}}>Leagues, Tables &amp; Results</h1>
           <p style={{fontSize:'16px',color:'#6e6e73',margin:0,maxWidth:'560px',lineHeight:'1.6'}}>
             Full standings and every result from the {SEASON_LABEL} season, synced automatically from live football data.
@@ -143,7 +139,7 @@ function LeaguesContent() {
             const active = selectedCompetition === c.name
             return (
               <button key={c.name} className="comp-pill" onClick={() => setSelectedCompetition(c.name)}
-                style={{padding:'9px 18px',borderRadius:'980px',border:`1px solid ${active ? '#e8732a' : 'rgba(0,0,0,0.09)'}`,background: active ? '#e8732a' : 'white',color: active ? 'white' : '#6e6e73',fontSize:'13px',fontWeight:'700',cursor:'pointer',whiteSpace:'nowrap',transition:'all 0.15s'}}>
+                style={{padding:'9px 18px',borderRadius:'980px',border:`1px solid ${active ? '#e8732a' : 'rgba(0,0,0,0.09)'}`,background: active ? '#e8732a' : 'white',color: active ? 'white' : '#6e6e73',fontSize:'13px',fontWeight:'700',cursor:'pointer',whiteSpace:'nowrap',transition:'background 0.15s ease, color 0.15s ease, border-color 0.15s ease'}}>
                 {c.name}
               </button>
             )
@@ -230,7 +226,7 @@ function StandingsTable({ standings, competition, seasonLabel, emptyText, isFavo
   return (
     <div>
       <div style={{fontSize:'12px',fontWeight:'800',letterSpacing:'0.3px',color:'#6e6e73',marginBottom:'10px'}}>{seasonLabel}</div>
-      <div style={{background:'white',border:'1px solid rgba(0,0,0,0.06)',borderRadius:'16px',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.03)'}}>
+      <div style={{background:'white',border:'1px solid rgba(0,0,0,0.06)',borderRadius:'16px',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.03)',fontVariantNumeric:'tabular-nums'}}>
         <div style={{display:'grid',gridTemplateColumns:'32px 1fr 28px 28px 28px 28px 40px 44px',gap:'6px',padding:'12px 16px',borderBottom:'1px solid rgba(0,0,0,0.06)',background:'#fafafa'}}>
           {['#','Club','P','W','D','L','GD','Pts'].map(h => (
             <span key={h} style={{fontSize:'10px',fontWeight:'800',letterSpacing:'0.5px',color:'#aeaeb2',textAlign: h==='Club' ? 'left':'center'}}>{h}</span>

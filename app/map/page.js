@@ -66,7 +66,7 @@ function FilterDropdown({ label, displayValue, isOpen, onToggle, disabled, disab
           background: disabled ? 'rgba(0,0,0,0.02)' : displayValue ? 'rgba(232,115,42,0.06)' : 'white',
           boxShadow: isOpen ? '0 6px 20px rgba(232,115,42,0.16)' : '0 1px 3px rgba(0,0,0,0.04)',
           cursor: disabled ? 'not-allowed' : 'pointer',
-          transition:'all 0.15s ease',
+          transition:'background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease',
         }}>
         <span style={{
           fontSize:'12.5px', fontWeight:'700', letterSpacing:'0.1px',
@@ -346,7 +346,7 @@ export default function FanMap() {
           background: isSelected ? 'rgba(232,115,42,0.05)' : 'white',
           border: `1px solid ${isSelected ? '#e8732a55' : isFav ? '#16a34a33' : 'rgba(0,0,0,0.06)'}`,
           borderRadius: '14px', marginBottom: compact ? '8px' : '10px',
-          cursor: 'pointer', overflow: 'hidden', transition: 'all 0.15s ease',
+          cursor: 'pointer', overflow: 'hidden', transition: 'background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease',
           boxShadow: isSelected ? '0 0 0 1px #e8732a33, 0 4px 20px rgba(232,115,42,0.1)' :
                      isFav ? '0 0 0 1px #16a34a22, 0 2px 10px rgba(0,0,0,0.03)' : '0 2px 10px rgba(0,0,0,0.03)'
         }}>
@@ -704,7 +704,7 @@ export default function FanMap() {
                     <div style={{textAlign:'center',padding:'40px 20px'}}>
                       <div style={{display:'flex',justifyContent:'center',marginBottom:'12px',color:'#e8732a'}}><Star size={30} strokeWidth={1.5}/></div>
                       <div style={{fontSize:'14px',fontWeight:'700',color:'#6e6e73',marginBottom:'8px'}}>No favourite teams set</div>
-                      <a href="/fan/profile" style={{display:'inline-block',background:'#e8732a',color:'white',borderRadius:'8px',padding:'10px 20px',fontSize:'13px',fontWeight:'700'}}>Set Favourite Teams</a>
+                      <a href="/fan/profile" className="btn-press" style={{display:'inline-block',background:'#e8732a',color:'white',borderRadius:'8px',padding:'10px 20px',fontSize:'13px',fontWeight:'700'}}>Set Favourite Teams</a>
                     </div>
                   ) : favouritePubs.length === 0 ? (
                     <div style={{textAlign:'center',padding:'40px 20px',color:'#aeaeb2'}}>
@@ -839,7 +839,7 @@ export default function FanMap() {
               {getFanInitials(fanProfile, fanSession)}
             </button>
           ) : (
-            <a href="/fan/register" style={{background:'#e8732a',color:'white',padding:'6px 14px',borderRadius:'8px',fontSize:'12px',fontWeight:'700',whiteSpace:'nowrap'}}>Sign Up</a>
+            <a href="/fan/register" className="btn-press" style={{background:'#e8732a',color:'white',padding:'6px 14px',borderRadius:'8px',fontSize:'12px',fontWeight:'700',whiteSpace:'nowrap'}}>Sign Up</a>
           )}
         </div>
       </div>
@@ -944,7 +944,7 @@ export default function FanMap() {
                 style={{flex:1,padding:'14px 8px',fontSize:'12px',fontWeight:'700',border:'none',cursor:'pointer',background:'transparent',
                   color: desktopListTab===tab.id?'#e8732a':'#aeaeb2',
                   borderBottom: desktopListTab===tab.id?'2px solid #e8732a':'2px solid transparent',
-                  letterSpacing:'0.2px',transition:'all 0.15s'}}>
+                  letterSpacing:'0.2px',transition:'color 0.15s ease, border-color 0.15s ease'}}>
                 {tab.label}
                 {tab.count > 0 && <span style={{marginLeft:'6px',fontSize:'10px',background:desktopListTab===tab.id?'#e8732a22':'rgba(0,0,0,0.05)',color:desktopListTab===tab.id?'#e8732a':'#aeaeb2',padding:'1px 6px',borderRadius:'10px',fontWeight:'700'}}>{tab.count}</span>}
               </button>
@@ -972,7 +972,7 @@ export default function FanMap() {
               <div style={{textAlign:'center',padding:'48px 16px'}}>
                 <div style={{display:'flex',justifyContent:'center',marginBottom:'12px',color:'#e8732a'}}><Star size={26} strokeWidth={1.5}/></div>
                 <div style={{fontSize:'13px',fontWeight:'600',color:'#6e6e73',marginBottom:'12px'}}>No favourite teams set</div>
-                <a href="/fan/profile" style={{display:'inline-block',background:'#e8732a',color:'white',borderRadius:'8px',padding:'9px 18px',fontSize:'12px',fontWeight:'700'}}>Set Favourite Teams</a>
+                <a href="/fan/profile" className="btn-press" style={{display:'inline-block',background:'#e8732a',color:'white',borderRadius:'8px',padding:'9px 18px',fontSize:'12px',fontWeight:'700'}}>Set Favourite Teams</a>
               </div>
             ) : desktopListTab === 'favourites' && favouritePubs.length === 0 ? (
               <div style={{textAlign:'center',padding:'48px 16px',color:'#aeaeb2'}}>

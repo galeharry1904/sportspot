@@ -144,16 +144,17 @@ export default function PlanPage() {
     setFinding(false)
   }
 
-  const inputStyle = { width:'100%', padding:'10px 12px', background:'white', border:'1px solid rgba(0,0,0,0.1)', borderRadius:'8px', color:'#152238', fontSize:'14px', outline:'none' }
+  const inputStyle = { width:'100%', padding:'10px 12px', background:'white', border:'1px solid rgba(0,0,0,0.1)', borderRadius:'8px', color:'#152238', fontSize:'14px' }
 
   if (loading) return (
     <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',color:'#6e6e73',background:'#f5f5f7'}}>Loading...</div>
   )
 
   return (
-    <div style={{minHeight:'100vh',background:'#f5f5f7',fontFamily:"-apple-system,'SF Pro Display','SF Pro Text',BlinkMacSystemFont,'Helvetica Neue',sans-serif"}}>
+    <div style={{minHeight:'100vh',background:'#f5f5f7'}}>
       <style>{`
         * { box-sizing: border-box; }
+        .plan-input:focus { border-color: #e8732a !important; box-shadow: 0 0 0 3px rgba(232,115,42,0.12); outline: none; }
         @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
         .reveal-1 { animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both; }
         .reveal-2 { animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.08s both; }
@@ -164,6 +165,8 @@ export default function PlanPage() {
           .nav-link:hover { background: rgba(0,0,0,0.04) !important; }
           .find-btn:hover:not(:disabled) { transform: scale(1.01); }
         }
+        .find-btn { transition: transform 150ms cubic-bezier(0.23,1,0.32,1); }
+        .find-btn:active:not(:disabled) { transform: scale(0.97); }
       `}</style>
 
       {/* Nav */}
@@ -236,9 +239,9 @@ export default function PlanPage() {
               </APIProvider>
             </div>
             <div style={{display:'flex',gap:'8px'}}>
-              <input style={{...inputStyle, flex:1}} placeholder="Label (e.g. Greenwich)" value={newLabel} onChange={e => setNewLabel(e.target.value)}/>
-              <input style={{...inputStyle, width:'110px'}} type="time" value={newTime} onChange={e => setNewTime(e.target.value)}/>
-              <button onClick={addStop} disabled={!pendingPin || !newLabel.trim() || !newTime || saving}
+              <input className="plan-input" style={{...inputStyle, flex:1}} placeholder="Label (e.g. Greenwich)" value={newLabel} onChange={e => setNewLabel(e.target.value)}/>
+              <input className="plan-input" style={{...inputStyle, width:'110px'}} type="time" value={newTime} onChange={e => setNewTime(e.target.value)}/>
+              <button onClick={addStop} disabled={!pendingPin || !newLabel.trim() || !newTime || saving} className="btn-press"
                 style={{background:'#e8732a',color:'white',border:'none',borderRadius:'8px',padding:'0 18px',fontSize:'13px',fontWeight:'700',cursor:'pointer',opacity:(!pendingPin || !newLabel.trim() || !newTime || saving) ? 0.5 : 1,whiteSpace:'nowrap'}}>
                 {saving ? 'Adding...' : 'Add Stop'}
               </button>
@@ -261,7 +264,7 @@ export default function PlanPage() {
             <p style={{color:'#aeaeb2',fontSize:'13px'}}>No fixtures today.</p>
           ) : (
             <>
-              <select value={selectedFixtureId} onChange={e => setSelectedFixtureId(e.target.value)} style={{...inputStyle, marginBottom:'12px'}}>
+              <select className="plan-input" value={selectedFixtureId} onChange={e => setSelectedFixtureId(e.target.value)} style={{...inputStyle, marginBottom:'12px'}}>
                 <option value="">Select a fixture...</option>
                 {fixtures.map(f => (
                   <option key={f.id} value={f.id}>{formatKickoff(f.kickoff_time)} — {f.home_team} vs {f.away_team} ({f.competition})</option>

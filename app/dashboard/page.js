@@ -96,7 +96,7 @@ export default function Dashboard() {
   if (pub && pub.status !== 'approved') {
     const rejected = pub.status === 'rejected'
     return (
-      <div style={{minHeight:'100vh',position:'relative',overflow:'hidden',background:'linear-gradient(135deg, #fff8f3 0%, #ffffff 25%, #f0f4ff 55%, #f8f0ff 80%, #fff5f0 100%)',display:'flex',alignItems:'center',justifyContent:'center',padding:'24px',fontFamily:"-apple-system,'SF Pro Display','SF Pro Text',BlinkMacSystemFont,'Helvetica Neue',sans-serif"}}>
+      <div style={{minHeight:'100vh',position:'relative',overflow:'hidden',background:'linear-gradient(135deg, #fff8f3 0%, #ffffff 25%, #f0f4ff 55%, #f8f0ff 80%, #fff5f0 100%)',display:'flex',alignItems:'center',justifyContent:'center',padding:'24px'}}>
         <div style={{
           background:'rgba(255,255,255,0.55)',
           backdropFilter:'saturate(200%) blur(32px)',
@@ -129,7 +129,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div style={{minHeight:'100vh',background:'#f5f5f7',fontFamily:"-apple-system,'SF Pro Display','SF Pro Text',BlinkMacSystemFont,'Helvetica Neue',sans-serif"}}>
+    <div style={{minHeight:'100vh',background:'#f5f5f7'}}>
       <style>{`
         * { box-sizing: border-box; }
         @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
@@ -195,7 +195,7 @@ export default function Dashboard() {
             <p style={{color:'#6e6e73',fontSize:'13px',margin:0}}>Unconfirmed venues rank lower in fan searches.</p>
           </div>
           {!confirmed && (
-            <button onClick={confirmLineup}
+            <button onClick={confirmLineup} className="btn-press"
               style={{background:'#e8732a',color:'white',border:'none',borderRadius:'8px',padding:'10px 20px',fontWeight:'700',fontSize:'14px',cursor:'pointer',flexShrink:0,whiteSpace:'nowrap',boxShadow:'0 4px 14px rgba(232,115,42,0.25)'}}>
               Confirm Now
             </button>
@@ -388,8 +388,8 @@ export default function Dashboard() {
                   Couldn&apos;t save: {venueError}
                 </div>
               )}
-              <button onClick={saveVenueDetails}
-                style={{width:'100%',background: venueSaved ? '#22c55e' : '#e8732a',color:'white',border:'none',borderRadius:'10px',padding:'16px',fontSize:'16px',fontWeight:'700',cursor:'pointer',transition:'background 0.2s',boxShadow:'0 4px 20px rgba(232,115,42,0.25)',display:'flex',alignItems:'center',justifyContent:'center',gap:'8px'}}>
+              <button onClick={saveVenueDetails} className="btn-press"
+                style={{width:'100%',background: venueSaved ? '#22c55e' : '#e8732a',color:'white',border:'none',borderRadius:'10px',padding:'16px',fontSize:'16px',fontWeight:'700',cursor:'pointer',transition:'background 0.2s, transform 150ms cubic-bezier(0.23,1,0.32,1)',boxShadow:'0 4px 20px rgba(232,115,42,0.25)',display:'flex',alignItems:'center',justifyContent:'center',gap:'8px'}}>
                 {venueSaved && <CheckCircle2 size={18} strokeWidth={2}/>}
                 {venueSaved ? 'Venue Details Saved!' : 'Save Venue Details'}
               </button>

@@ -375,8 +375,8 @@ export default function FanProfile() {
 
         {/* Save button */}
         <div className="save-btn-wrap" style={{marginTop:'24px'}}>
-          <button onClick={saveProfile} disabled={saving}
-            style={{width:'100%',background: saved ? '#22c55e' : saving ? '#e8a374' : '#e8732a',color:'white',border:'none',borderRadius:'12px',padding:'17px',fontSize:'16px',fontWeight:'700',cursor: saving ? 'default' : 'pointer',transition:'all 0.25s',letterSpacing:'0.3px',boxShadow: saved ? '0 4px 20px rgba(34,197,94,0.3)' : '0 4px 20px rgba(232,115,42,0.25)',display:'flex',alignItems:'center',justifyContent:'center',gap:'8px'}}>
+          <button onClick={saveProfile} disabled={saving} className="btn-press"
+            style={{width:'100%',background: saved ? '#22c55e' : saving ? '#e8a374' : '#e8732a',color:'white',border:'none',borderRadius:'12px',padding:'17px',fontSize:'16px',fontWeight:'700',cursor: saving ? 'default' : 'pointer',transition:'background 0.25s ease, box-shadow 0.25s ease, transform 150ms cubic-bezier(0.23,1,0.32,1)',letterSpacing:'0.3px',boxShadow: saved ? '0 4px 20px rgba(34,197,94,0.3)' : '0 4px 20px rgba(232,115,42,0.25)',display:'flex',alignItems:'center',justifyContent:'center',gap:'8px'}}>
             {saving ? (
               <>
                 <div style={{width:'16px',height:'16px',border:'2px solid white',borderTopColor:'transparent',borderRadius:'50%',animation:'spin 0.8s linear infinite'}}/>

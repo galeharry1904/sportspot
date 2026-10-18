@@ -171,17 +171,13 @@ export default function Home() {
   }, [])
 
   return (
-    <div style={{background:'#f5f5f7',minHeight:'100vh',color:'#152238',fontFamily:"-apple-system,'SF Pro Display','SF Pro Text',BlinkMacSystemFont,'Helvetica Neue',sans-serif"}}>
+    <div style={{background:'#f5f5f7',minHeight:'100vh',color:'#152238'}}>
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         @keyframes fadeUp {
           from { opacity: 0; transform: translateY(24px); }
           to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
         }
         @keyframes scaleIn {
           from { opacity: 0; transform: scale(0.96); }
@@ -203,7 +199,6 @@ export default function Home() {
         .hero-headline { animation: fadeUp 0.9s cubic-bezier(0.22,1,0.36,1) 0.1s both; }
         .hero-sub { animation: fadeUp 0.9s cubic-bezier(0.22,1,0.36,1) 0.25s both; }
         .hero-btns { animation: fadeUp 0.9s cubic-bezier(0.22,1,0.36,1) 0.4s both; }
-        .hero-badge { animation: fadeIn 0.8s ease 0.05s both; }
         .hero-glass { animation: scaleIn 0.8s cubic-bezier(0.22,1,0.36,1) 0.05s both; }
 
         .step-card {
@@ -219,12 +214,12 @@ export default function Home() {
           transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease;
         }
         .cta-btn-primary {
-          transition: all 0.25s cubic-bezier(0.22,1,0.36,1);
+          transition: transform 0.25s cubic-bezier(0.22,1,0.36,1), box-shadow 0.25s cubic-bezier(0.22,1,0.36,1);
           display: inline-block;
           text-decoration: none;
         }
         .cta-btn-secondary {
-          transition: all 0.25s ease;
+          transition: background 0.25s ease;
           display: inline-block;
           text-decoration: none;
         }
@@ -262,6 +257,14 @@ export default function Home() {
           .cta-btn-secondary:hover {
             background: rgba(255,255,255,0.75) !important;
           }
+        }
+        .cta-btn-primary:active {
+          transform: scale(0.97);
+        }
+        .cta-btn-secondary:active {
+          transform: scale(0.97);
+        }
+        @media (hover: hover) and (pointer: fine) {
           .nav-link:hover { color: #152238 !important; }
           .plan-fab:hover {
             transform: translateY(-3px) scale(1.02);
@@ -335,8 +338,8 @@ export default function Home() {
               {item.label}
             </a>
           ))}
-          <a href="/register"
-            style={{background:'#e8732a',color:'white',fontSize:'13px',fontWeight:'600',padding:'7px 18px',borderRadius:'980px',marginLeft:'4px',letterSpacing:'-0.1px',textDecoration:'none',transition:'opacity 0.2s'}}>
+          <a href="/register" className="btn-press"
+            style={{background:'#e8732a',color:'white',fontSize:'13px',fontWeight:'600',padding:'7px 18px',borderRadius:'980px',marginLeft:'4px',letterSpacing:'-0.1px',textDecoration:'none',transition:'opacity 0.2s, transform 150ms cubic-bezier(0.23,1,0.32,1)'}}>
             Register Venue
           </a>
           {fanSession && (
@@ -362,7 +365,7 @@ export default function Home() {
               {item.label}
             </a>
           ))}
-          <a href="/register" onClick={() => setMenuOpen(false)}
+          <a href="/register" onClick={() => setMenuOpen(false)} className="btn-press"
             style={{marginTop:'12px',background:'#e8732a',color:'white',fontSize:'16px',fontWeight:'600',padding:'14px',borderRadius:'14px',textAlign:'center',letterSpacing:'-0.2px',textDecoration:'none',display:'block'}}>
             Register Venue
           </a>
@@ -398,11 +401,6 @@ export default function Home() {
             padding:'64px 56px',
           }}>
             <div className="hero-glass-pad">
-
-              <div className="hero-badge" style={{display:'inline-flex',alignItems:'center',gap:'6px',background:'rgba(232,115,42,0.1)',border:'1px solid rgba(232,115,42,0.25)',borderRadius:'980px',padding:'6px 16px',marginBottom:'28px'}}>
-                <div style={{width:'6px',height:'6px',borderRadius:'50%',background:'#e8732a'}}/>
-                <span style={{fontSize:'13px',color:'#e8732a',fontWeight:'500',letterSpacing:'0.1px'}}>Live in London</span>
-              </div>
 
               <h1 className="hero-headline" style={{fontSize:'68px',fontWeight:'700',lineHeight:'1.03',letterSpacing:'-3px',color:'#152238',marginBottom:'20px'}}>
                 Find a pub showing<br/>
