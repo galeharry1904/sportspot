@@ -204,6 +204,13 @@ export default function Home() {
         .table-preview-card {
           transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease;
         }
+        .feature-card {
+          box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+          transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        .feature-icon {
+          transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
+        }
         .news-card {
           transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease;
         }
@@ -231,6 +238,14 @@ export default function Home() {
           .table-preview-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 16px 48px rgba(0,0,0,0.07) !important;
+          }
+          .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(232,115,42,0.2) !important;
+            box-shadow: 0 16px 40px rgba(232,115,42,0.1) !important;
+          }
+          .feature-card:hover .feature-icon {
+            transform: scale(1.08);
           }
           .news-card:hover {
             transform: translateY(-4px);
@@ -289,7 +304,7 @@ export default function Home() {
           .step-card { text-align: left !important; display: flex !important; gap: 16px !important; }
           .step-card .step-icon { margin: 0 !important; flex-shrink: 0 !important; }
           .step-card .step-copy { max-width: none !important; margin: 0 !important; }
-          .feature-card { gap: 16px !important; }
+          .features-grid { grid-template-columns: 1fr !important; }
           .tables-grid { grid-template-columns: 1fr !important; }
           .news-grid { grid-template-columns: repeat(2,1fr) !important; gap: 10px !important; }
           .section-title { font-size: 34px !important; letter-spacing: -1.5px !important; }
@@ -464,25 +479,25 @@ export default function Home() {
 
       {/* ── FEATURES ── */}
       <div className="features-section" style={{padding:'120px 24px',background:'white'}}>
-        <div style={{maxWidth:'760px',margin:'0 auto'}}>
+        <div style={{maxWidth:'960px',margin:'0 auto'}}>
           <div style={{textAlign:'center',marginBottom:'64px'}}>
             <h2 className="section-title" style={{fontSize:'48px',fontWeight:'700',letterSpacing:'-2px',color:'#152238',marginBottom:'16px'}}>No more wasted trips.</h2>
             <p className="section-sub" style={{fontSize:'19px',color:'#6e6e73',fontWeight:'400',letterSpacing:'-0.3px',maxWidth:'500px',margin:'0 auto'}}>Every feature built around one goal — getting you to the right pub.</p>
           </div>
-          <div className="features-grid">
+          <div className="features-grid" style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'20px'}}>
             {[
               {icon:CheckCircle2,title:'Verified every match day',desc:'Pub managers confirm their lineup daily. Outdated data never appears on the map.'},
               {icon:FootballIcon,title:'Every sport covered (soon...)',desc:'Football, rugby, F1, cricket, tennis and more. Filter by sport to find exactly what you need.'},
               {icon:Tv,title:'Sky and TNT Sports',desc:'See exactly which pubs have which subscriptions so you never miss a game on a specific channel.'},
               {icon:MapPin,title:'Near you, right now',desc:'The fan map uses your location to show confirmed pubs sorted by distance.'},
-            ].map((f, i) => (
-              <div key={f.title} className="feature-card"
-                style={{display:'flex',gap:'24px',alignItems:'flex-start',padding:'28px 0',borderTop: i === 0 ? 'none' : '1px solid rgba(0,0,0,0.06)'}}>
-                <f.icon size={26} strokeWidth={1.5} color="#e8732a" style={{flexShrink:0,marginTop:'2px'}}/>
-                <div>
-                  <div style={{fontWeight:'600',fontSize:'17px',marginBottom:'6px',color:'#152238',letterSpacing:'-0.3px'}}>{f.title}</div>
-                  <div style={{fontSize:'14px',color:'#6e6e73',lineHeight:'1.6',fontWeight:'400'}}>{f.desc}</div>
+            ].map(f => (
+              <div key={f.title} className="feature-card" style={{position:'relative',overflow:'hidden',background:'white',border:'1px solid rgba(0,0,0,0.06)',borderRadius:'20px',padding:'32px'}}>
+                <div style={{position:'absolute',top:'-60px',right:'-60px',width:'160px',height:'160px',background:'radial-gradient(circle, rgba(232,115,42,0.07) 0%, transparent 70%)',pointerEvents:'none'}}/>
+                <div className="feature-icon" style={{width:'52px',height:'52px',borderRadius:'15px',background:'linear-gradient(135deg, rgba(232,115,42,0.14), rgba(232,115,42,0.05))',border:'1px solid rgba(232,115,42,0.12)',display:'flex',alignItems:'center',justifyContent:'center',color:'#e8732a',marginBottom:'22px',position:'relative'}}>
+                  <f.icon size={23} strokeWidth={1.75}/>
                 </div>
+                <div style={{fontWeight:'600',fontSize:'17px',marginBottom:'8px',color:'#152238',letterSpacing:'-0.3px',position:'relative'}}>{f.title}</div>
+                <div style={{fontSize:'14px',color:'#6e6e73',lineHeight:'1.6',fontWeight:'400',position:'relative'}}>{f.desc}</div>
               </div>
             ))}
           </div>
