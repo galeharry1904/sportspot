@@ -11,6 +11,17 @@ const supabase = createClient(
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 )
 
+// This is the only edge function called directly from the browser (the
+// others run server-side via cron/webhooks, where CORS never applies) —
+// without these headers the admin page's approve button fails with a
+// generic "Failed to send a request to the Edge Function" before the
+// request body is even read, since the browser blocks it at the preflight.
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+}
+
 function escapeHtml(str) {
   return String(str ?? '')
     .replace(/&/g, '&amp;')
@@ -99,6 +110,10 @@ function buildEmailHtml({ pubName, magicLink }) {
 }
 
 Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: corsHeaders })
+  }
+
   const authHeader = req.headers.get('Authorization') || ''
   const callerJwt = authHeader.replace(/^Bearer\s+/i, '')
 
@@ -106,7 +121,7 @@ Deno.serve(async (req) => {
   if (callerError || !caller) {
     return new Response(JSON.stringify({ success: false, error: 'not signed in' }), {
       status: 401,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   }
 
@@ -114,7 +129,7 @@ Deno.serve(async (req) => {
   if (!adminRow) {
     return new Response(JSON.stringify({ success: false, error: 'not an admin' }), {
       status: 403,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   }
 
@@ -125,7 +140,7 @@ Deno.serve(async (req) => {
   } catch {
     return new Response(JSON.stringify({ success: false, error: 'missing pub_id' }), {
       status: 400,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   }
 
@@ -134,7 +149,7 @@ Deno.serve(async (req) => {
     console.error('notify-venue-approved: failed to approve pub', pubId, pubError)
     return new Response(JSON.stringify({ success: false, error: pubError?.message || 'pub not found' }), {
       status: 404,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   }
 
@@ -144,7 +159,7 @@ Deno.serve(async (req) => {
   if (userError || !ownerEmail) {
     console.warn(`notify-venue-approved: approved "${pub.name}" (${pub.id}) but no owner email — skipping email`, userError)
     return new Response(JSON.stringify({ success: true, approved: true, emailed: false }), {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   }
 
@@ -157,7 +172,7 @@ Deno.serve(async (req) => {
   if (linkError || !linkData?.properties?.action_link) {
     console.error(`notify-venue-approved: failed to generate magic link for "${pub.name}" (${pub.id})`, linkError)
     return new Response(JSON.stringify({ success: true, approved: true, emailed: false, error: linkError?.message }), {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   }
 
@@ -180,12 +195,12 @@ Deno.serve(async (req) => {
     const body = await resendRes.text()
     console.error(`notify-venue-approved: Resend send failed for "${pub.name}" (${pub.id})`, resendRes.status, body)
     return new Response(JSON.stringify({ success: true, approved: true, emailed: false, error: body }), {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   }
 
   console.log(`notify-venue-approved: approved and emailed "${pub.name}" (${pub.id}) <${ownerEmail}>`)
   return new Response(JSON.stringify({ success: true, approved: true, emailed: true }), {
-    headers: { 'Content-Type': 'application/json' },
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   })
 })
