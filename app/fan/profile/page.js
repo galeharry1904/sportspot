@@ -113,7 +113,7 @@ export default function FanProfile() {
   )
 
   return (
-    <div style={{minHeight:'100vh',background:'#f5f5f7',color:'#152238',fontFamily:"-apple-system,'SF Pro Display','SF Pro Text',BlinkMacSystemFont,'Helvetica Neue',sans-serif"}}>
+    <div style={{minHeight:'100vh',background:'#f5f5f7',color:'#152238'}}>
       <style>{`
         * { box-sizing: border-box; }
         @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
@@ -122,9 +122,9 @@ export default function FanProfile() {
         @media (prefers-reduced-motion: reduce) {
           .profile-hero, .profile-body { animation: none !important; }
         }
-        .tab-btn { transition: all 0.2s ease; }
-        .team-pill { transition: all 0.15s ease; }
-        .sport-card { transition: all 0.2s ease; }
+        .tab-btn { transition: color 0.2s ease, border-color 0.2s ease; }
+        .team-pill { transition: transform 0.15s ease; }
+        .sport-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
         .input-field:focus { border-color: #e8732a !important; outline: none; box-shadow: 0 0 0 3px rgba(232,115,42,0.1); }
         @media (hover: hover) and (pointer: fine) {
           .team-pill:hover { transform: translateY(-1px); }
@@ -144,10 +144,10 @@ export default function FanProfile() {
       <nav style={{background:'rgba(245,245,247,0.72)',borderBottom:'1px solid rgba(0,0,0,0.08)',padding:'0 32px',height:'76px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:100,backdropFilter:'saturate(200%) blur(28px)',WebkitBackdropFilter:'saturate(200%) blur(28px)'}}>
         <Link href="/"><Image src="/SportSpot-Logo-Light.png" alt="SportSpot" width={676} height={184} style={{height:'60px',width:'auto'}}/></Link>
         <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
-          <Link href="/" className="nav-link" style={{color:'#3a3a3c',fontSize:'13px',padding:'7px 14px',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'8px',fontWeight:'500',transition:'all 0.2s'}}>
+          <Link href="/" className="nav-link" style={{color:'#3a3a3c',fontSize:'13px',padding:'7px 14px',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'8px',fontWeight:'500',transition:'background 0.2s'}}>
             Return to Home Page
           </Link>
-          <a href="/map" className="nav-link" style={{color:'#3a3a3c',fontSize:'13px',padding:'7px 14px',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'8px',fontWeight:'500',transition:'all 0.2s'}}>
+          <a href="/map" className="nav-link" style={{color:'#3a3a3c',fontSize:'13px',padding:'7px 14px',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'8px',fontWeight:'500',transition:'background 0.2s'}}>
             Fan Map
           </a>
           <button onClick={async () => { await supabase.auth.signOut(); window.location.href='/' }} className="nav-link"
@@ -220,20 +220,20 @@ export default function FanProfile() {
 
             {/* Name card */}
             <div style={{background:'rgba(255,255,255,0.7)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',border:'1px solid rgba(0,0,0,0.06)',borderRadius:'16px',padding:'28px',position:'relative',overflow:'hidden',boxShadow:'0 4px 24px rgba(0,0,0,0.04)'}}>
-              <div style={{position:'absolute',top:0,right:0,width:'120px',height:'120px',background:'radial-gradient(circle, rgba(232,115,42,0.08) 0%, transparent 70%)',pointerEvents:'none'}}/>
+              <div style={{position:'absolute',top:'-40px',right:'-40px',width:'120px',height:'120px',background:'radial-gradient(circle, rgba(232,115,42,0.08) 0%, transparent 70%)',pointerEvents:'none'}}/>
               <div style={{fontSize:'11px',fontWeight:'700',letterSpacing:'2px',textTransform:'uppercase',color:'#e8732a',marginBottom:'20px'}}>Identity</div>
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'16px'}}>
                 <div>
                   <label style={{display:'block',fontSize:'11px',fontWeight:'700',letterSpacing:'1px',textTransform:'uppercase',color:'#aeaeb2',marginBottom:'8px'}}>First Name</label>
                   <input className="input-field" value={firstName} onChange={e => setFirstName(e.target.value)}
                     placeholder="e.g. James"
-                    style={{width:'100%',padding:'12px 14px',background:'rgba(255,255,255,0.8)',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'10px',color:'#152238',fontSize:'15px',transition:'all 0.2s'}}/>
+                    style={{width:'100%',padding:'12px 14px',background:'rgba(255,255,255,0.8)',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'10px',color:'#152238',fontSize:'15px',transition:'border-color 0.2s ease, box-shadow 0.2s ease'}}/>
                 </div>
                 <div>
                   <label style={{display:'block',fontSize:'11px',fontWeight:'700',letterSpacing:'1px',textTransform:'uppercase',color:'#aeaeb2',marginBottom:'8px'}}>Last Name</label>
                   <input className="input-field" value={lastName} onChange={e => setLastName(e.target.value)}
                     placeholder="e.g. Smith"
-                    style={{width:'100%',padding:'12px 14px',background:'rgba(255,255,255,0.8)',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'10px',color:'#152238',fontSize:'15px',transition:'all 0.2s'}}/>
+                    style={{width:'100%',padding:'12px 14px',background:'rgba(255,255,255,0.8)',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'10px',color:'#152238',fontSize:'15px',transition:'border-color 0.2s ease, box-shadow 0.2s ease'}}/>
                 </div>
               </div>
             </div>
