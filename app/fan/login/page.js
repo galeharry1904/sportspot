@@ -49,7 +49,7 @@ export default function FanLogin() {
 
       {/* Nav */}
       <nav style={{padding:'0 24px',height:'60px',display:'flex',alignItems:'center',borderBottom:'1px solid rgba(0,0,0,0.08)',background:'rgba(255,255,255,0.5)',backdropFilter:'saturate(200%) blur(28px)',WebkitBackdropFilter:'saturate(200%) blur(28px)',flexShrink:0,position:'relative',zIndex:1}}>
-        <Link href="/"><Image src="/New%20Logo.png" alt="SportSpot" width={2085} height={635} style={{height:'48px',width:'auto'}}/></Link>
+        <Link href="/"><Image src="/New%20Logo.png" alt="SportSpot" width={2085} height={635} style={{height:'56px',width:'auto'}}/></Link>
       </nav>
 
       {/* Card */}

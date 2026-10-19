@@ -347,7 +347,7 @@ export default function Home() {
         display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 24px',
       }}>
         <Link href="/">
-          <Image src="/New%20Logo.png" alt="SportSpot" width={2085} height={635} style={{height:'60px',width:'auto'}}/>
+          <Image src="/New%20Logo.png" alt="SportSpot" width={2085} height={635} style={{height:'72px',width:'auto'}}/>
         </Link>
 
         <div className="nav-desktop" style={{display:'flex',gap:'4px',alignItems:'center'}}>
