@@ -29,7 +29,7 @@ export const metadata = {
     title: `${SITE_NAME} — Find a Pub Showing the Game`,
     description: SITE_DESCRIPTION,
     siteName: SITE_NAME,
-    images: ["/SportSpot-Logo-Light.png"],
+    images: ["/New%20Logo.png"],
     locale: "en_GB",
     type: "website",
   },
@@ -37,7 +37,7 @@ export const metadata = {
     card: "summary_large_image",
     title: `${SITE_NAME} — Find a Pub Showing the Game`,
     description: SITE_DESCRIPTION,
-    images: ["/SportSpot-Logo-Light.png"],
+    images: ["/New%20Logo.png"],
   },
 };
 

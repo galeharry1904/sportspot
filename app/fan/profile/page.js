@@ -142,7 +142,7 @@ export default function FanProfile() {
 
       {/* Nav */}
       <nav style={{background:'rgba(245,245,247,0.72)',borderBottom:'1px solid rgba(0,0,0,0.08)',padding:'0 32px',height:'76px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:100,backdropFilter:'saturate(200%) blur(28px)',WebkitBackdropFilter:'saturate(200%) blur(28px)'}}>
-        <Link href="/"><Image src="/SportSpot-Logo-Light.png" alt="SportSpot" width={676} height={184} style={{height:'60px',width:'auto'}}/></Link>
+        <Link href="/"><Image src="/New%20Logo.png" alt="SportSpot" width={2085} height={635} style={{height:'60px',width:'auto'}}/></Link>
         <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
           <Link href="/" className="nav-link" style={{color:'#3a3a3c',fontSize:'13px',padding:'7px 14px',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'8px',fontWeight:'500',transition:'background 0.2s'}}>
             Return to Home Page

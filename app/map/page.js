@@ -514,7 +514,7 @@ export default function FanMap() {
 
         {/* Mobile nav */}
         <div style={{background:'rgba(255,255,255,0.75)',backdropFilter:'saturate(200%) blur(20px)',WebkitBackdropFilter:'saturate(200%) blur(20px)',borderBottom:'1px solid rgba(0,0,0,0.06)',padding:'0 16px',height:'52px',display:'flex',alignItems:'center',justifyContent:'space-between',flexShrink:0,zIndex:10}}>
-          <Link href="/"><Image src="/SportSpot-Logo-Light.png" alt="SportSpot" width={676} height={184} style={{height:'40px',width:'auto'}}/></Link>
+          <Link href="/"><Image src="/New%20Logo.png" alt="SportSpot" width={2085} height={635} style={{height:'40px',width:'auto'}}/></Link>
           <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
             <Link href="/" style={{background:'transparent',color:'#6e6e73',padding:'5px 10px',borderRadius:'8px',fontSize:'11px',fontWeight:'600',border:'1px solid rgba(0,0,0,0.08)',whiteSpace:'nowrap'}}>Home</Link>
             {activeFiltersCount > 0 && (
@@ -826,7 +826,7 @@ export default function FanMap() {
 
       {/* Top nav bar */}
       <div style={{position:'relative',zIndex:100,background:'rgba(255,255,255,0.75)',borderBottom:'1px solid rgba(0,0,0,0.06)',padding:'0 24px',height:'64px',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'16px',flexShrink:0,backdropFilter:'saturate(200%) blur(20px)',WebkitBackdropFilter:'saturate(200%) blur(20px)'}}>
-        <Link href="/"><Image src="/SportSpot-Logo-Light.png" alt="SportSpot" width={676} height={184} style={{height:'52px',width:'auto'}}/></Link>
+        <Link href="/"><Image src="/New%20Logo.png" alt="SportSpot" width={2085} height={635} style={{height:'52px',width:'auto'}}/></Link>
 
         {/* Right controls */}
         <div style={{display:'flex',gap:'8px',alignItems:'center',flexShrink:0}}>

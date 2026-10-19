@@ -347,7 +347,7 @@ export default function Home() {
         display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 24px',
       }}>
         <Link href="/">
-          <Image src="/SportSpot-Logo-Light.png" alt="SportSpot" width={676} height={184} style={{height:'60px',width:'auto'}}/>
+          <Image src="/New%20Logo.png" alt="SportSpot" width={2085} height={635} style={{height:'60px',width:'auto'}}/>
         </Link>
 
         <div className="nav-desktop" style={{display:'flex',gap:'4px',alignItems:'center'}}>
@@ -643,7 +643,7 @@ export default function Home() {
           <a href="mailto:sportspotadmin@gmail.com" className="nav-link" style={{color:'#152238',fontSize:'14px',fontWeight:'600'}}>sportspotadmin@gmail.com</a>
         </div>
         <div className="footer-inner" style={{maxWidth:'1080px',margin:'0 auto',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'12px'}}>
-          <Image src="/SportSpot-Logo-Light.png" alt="SportSpot" width={676} height={184} style={{height:'28px',width:'auto'}}/>
+          <Image src="/New%20Logo.png" alt="SportSpot" width={2085} height={635} style={{height:'28px',width:'auto'}}/>
           <p style={{color:'#aeaeb2',fontSize:'13px',fontWeight:'400'}}>© 2026 SportSpot. All rights reserved.</p>
           <div className="footer-links" style={{display:'flex',gap:'24px'}}>
             {[{href:'/map',label:'Find Pubs'},{href:'/leagues',label:'Leagues'},{href:'/login',label:'Venue Login'},{href:'/register',label:'Register'}].map(item => (
