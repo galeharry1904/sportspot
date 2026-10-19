@@ -7,12 +7,22 @@ const width = Number(process.argv[5] || 1440);
 const height = Number(process.argv[6] || 900);
 
 const browser = await chromium.launch();
-const context = await browser.newContext({ storageState: '/tmp/sportspot-auth.json', viewport: { width, height } });
-const page = await context.newPage();
+const page = await browser.newPage({ viewport: { width, height } });
 await page.goto(url, { waitUntil: 'networkidle' });
+await page.waitForTimeout(2500);
+
+const matches = await page.getByText(clickText, { exact: false }).all();
+console.log(`found ${matches.length} elements matching "${clickText}"`);
+for (const m of matches) {
+  const box = await m.boundingBox();
+  const tag = await m.evaluate(el => el.tagName + '.' + el.className);
+  console.log(' ->', tag, JSON.stringify(box));
+}
+
+const tabBtn = page.locator('button.tab-btn', { hasText: clickText });
+console.log('tab-btn matches:', await tabBtn.count());
+await tabBtn.click();
 await page.waitForTimeout(1500);
-await page.click(`text=${clickText}`);
-await page.waitForTimeout(1200);
 
 await page.screenshot({ path: outPath, fullPage: true });
 await browser.close();

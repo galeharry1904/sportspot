@@ -109,6 +109,13 @@ function LeaguesContent() {
         }
         @media (max-width: 720px) {
           .tables-grid { grid-template-columns: 1fr !important; }
+          .standings-row { grid-template-columns: 26px 1fr 34px 40px !important; }
+          .standings-extra { display: none !important; }
+        }
+        @media (max-width: 480px) {
+          .fixture-row { align-items: flex-start !important; }
+          .fixture-teams { flex-direction: column !important; align-items: flex-start !important; gap: 4px !important; }
+          .fixture-team { flex: none !important; width: 100% !important; text-align: left !important; }
         }
       `}</style>
 
@@ -227,16 +234,20 @@ function StandingsTable({ standings, competition, seasonLabel, emptyText, isFavo
     <div>
       <div style={{fontSize:'12px',fontWeight:'800',letterSpacing:'0.3px',color:'#6e6e73',marginBottom:'10px'}}>{seasonLabel}</div>
       <div style={{background:'white',border:'1px solid rgba(0,0,0,0.06)',borderRadius:'16px',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.03)',fontVariantNumeric:'tabular-nums'}}>
-        <div style={{display:'grid',gridTemplateColumns:'32px 1fr 28px 28px 28px 28px 40px 44px',gap:'6px',padding:'12px 16px',borderBottom:'1px solid rgba(0,0,0,0.06)',background:'#fafafa'}}>
-          {['#','Club','P','W','D','L','GD','Pts'].map(h => (
-            <span key={h} style={{fontSize:'10px',fontWeight:'800',letterSpacing:'0.5px',color:'#aeaeb2',textAlign: h==='Club' ? 'left':'center'}}>{h}</span>
+        <div className="standings-row" style={{display:'grid',gridTemplateColumns:'32px 1fr 28px 28px 28px 28px 40px 44px',gap:'6px',padding:'12px 16px',borderBottom:'1px solid rgba(0,0,0,0.06)',background:'#fafafa'}}>
+          <span style={{fontSize:'10px',fontWeight:'800',letterSpacing:'0.5px',color:'#aeaeb2',textAlign:'center'}}>#</span>
+          <span style={{fontSize:'10px',fontWeight:'800',letterSpacing:'0.5px',color:'#aeaeb2',textAlign:'left'}}>Club</span>
+          {['P','W','D','L'].map(h => (
+            <span key={h} className="standings-extra" style={{fontSize:'10px',fontWeight:'800',letterSpacing:'0.5px',color:'#aeaeb2',textAlign:'center'}}>{h}</span>
           ))}
+          <span style={{fontSize:'10px',fontWeight:'800',letterSpacing:'0.5px',color:'#aeaeb2',textAlign:'center'}}>GD</span>
+          <span style={{fontSize:'10px',fontWeight:'800',letterSpacing:'0.5px',color:'#aeaeb2',textAlign:'center'}}>Pts</span>
         </div>
         {standings.map((row, i) => {
           const accent = standingsRowAccent(competition, row.position, standings.length)
           const isYours = isFavouriteTeam?.(row.team)
           return (
-            <div key={row.id} className="table-row" style={{display:'grid',gridTemplateColumns:'32px 1fr 28px 28px 28px 28px 40px 44px',gap:'6px',padding:'12px 16px',alignItems:'center',borderBottom: i < standings.length-1 ? '1px solid rgba(0,0,0,0.05)' : 'none',borderLeft:`3px solid ${accent}`,background: isYours ? 'rgba(232,115,42,0.05)' : 'transparent',transition:'background 0.1s'}}>
+            <div key={row.id} className="table-row standings-row" style={{display:'grid',gridTemplateColumns:'32px 1fr 28px 28px 28px 28px 40px 44px',gap:'6px',padding:'12px 16px',alignItems:'center',borderBottom: i < standings.length-1 ? '1px solid rgba(0,0,0,0.05)' : 'none',borderLeft:`3px solid ${accent}`,background: isYours ? 'rgba(232,115,42,0.05)' : 'transparent',transition:'background 0.1s'}}>
               <span style={{fontSize:'12px',fontWeight:'700',color:'#152238',textAlign:'center'}}>{row.position}</span>
               <span style={{display:'flex',alignItems:'center',gap:'6px',overflow:'hidden'}}>
                 <span style={{fontSize:'12px',fontWeight:'700',color:'#152238',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{row.team}</span>
@@ -247,10 +258,10 @@ function StandingsTable({ standings, competition, seasonLabel, emptyText, isFavo
                   </span>
                 )}
               </span>
-              <span style={{fontSize:'11px',color:'#6e6e73',textAlign:'center'}}>{row.played}</span>
-              <span style={{fontSize:'11px',color:'#6e6e73',textAlign:'center'}}>{row.won}</span>
-              <span style={{fontSize:'11px',color:'#6e6e73',textAlign:'center'}}>{row.drawn}</span>
-              <span style={{fontSize:'11px',color:'#6e6e73',textAlign:'center'}}>{row.lost}</span>
+              <span className="standings-extra" style={{fontSize:'11px',color:'#6e6e73',textAlign:'center'}}>{row.played}</span>
+              <span className="standings-extra" style={{fontSize:'11px',color:'#6e6e73',textAlign:'center'}}>{row.won}</span>
+              <span className="standings-extra" style={{fontSize:'11px',color:'#6e6e73',textAlign:'center'}}>{row.drawn}</span>
+              <span className="standings-extra" style={{fontSize:'11px',color:'#6e6e73',textAlign:'center'}}>{row.lost}</span>
               <span style={{fontSize:'11px',color:'#6e6e73',textAlign:'center'}}>{row.goal_difference > 0 ? `+${row.goal_difference}` : row.goal_difference}</span>
               <span style={{fontSize:'12px',fontWeight:'800',color:'#152238',textAlign:'center'}}>{row.points}</span>
             </div>
@@ -313,9 +324,9 @@ function FixtureList({ fixtures, showScore }) {
           </div>
           <div style={{background:'white',border:'1px solid rgba(0,0,0,0.06)',borderRadius:'14px',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.03)'}}>
             {group.items.map((f, i) => (
-              <div key={f.id} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 20px',borderBottom: i < group.items.length-1 ? '1px solid rgba(0,0,0,0.05)' : 'none',gap:'12px'}}>
-                <div style={{display:'flex',alignItems:'center',gap:'10px',flex:1,minWidth:0}}>
-                  <span style={{fontSize:'14px',fontWeight:'700',color:'#152238',textAlign:'right',flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{f.home_team}</span>
+              <div key={f.id} className="fixture-row" style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 20px',borderBottom: i < group.items.length-1 ? '1px solid rgba(0,0,0,0.05)' : 'none',gap:'12px'}}>
+                <div className="fixture-teams" style={{display:'flex',alignItems:'center',gap:'10px',flex:1,minWidth:0}}>
+                  <span className="fixture-team" style={{fontSize:'14px',fontWeight:'700',color:'#152238',textAlign:'right',flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{f.home_team}</span>
                   {showScore ? (
                     <span style={{fontSize:'14px',fontWeight:'800',color:'#152238',background:'#f5f5f7',borderRadius:'6px',padding:'4px 10px',flexShrink:0,whiteSpace:'nowrap'}}>
                       {f.home_score} – {f.away_score}
@@ -323,7 +334,7 @@ function FixtureList({ fixtures, showScore }) {
                   ) : (
                     <span style={{fontSize:'12px',color:'#aeaeb2',flexShrink:0}}>vs</span>
                   )}
-                  <span style={{fontSize:'14px',fontWeight:'700',color:'#152238',flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{f.away_team}</span>
+                  <span className="fixture-team" style={{fontSize:'14px',fontWeight:'700',color:'#152238',flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{f.away_team}</span>
                 </div>
                 {!showScore && (
                   <span style={{fontSize:'12px',fontWeight:'700',color:'#e8732a',background:'rgba(232,115,42,0.1)',borderRadius:'6px',padding:'4px 10px',flexShrink:0}}>
