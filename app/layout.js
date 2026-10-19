@@ -39,6 +39,15 @@ export const metadata = {
     description: SITE_DESCRIPTION,
     images: ["/New%20Logo.png"],
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: SITE_NAME,
+  },
+};
+
+export const viewport = {
+  themeColor: "#121a33",
 };
 
 export default function RootLayout({ children }) {
