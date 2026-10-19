@@ -155,6 +155,15 @@ export default function PlanPage() {
       <style>{`
         * { box-sizing: border-box; }
         .plan-input:focus { border-color: #e8732a !important; box-shadow: 0 0 0 3px rgba(232,115,42,0.12); outline: none; }
+        .nav-label-short { display: none; }
+        @media (max-width: 480px) {
+          .plan-nav { padding: 0 16px !important; }
+          .plan-nav-logo { height: 42px !important; }
+          .plan-nav-links { gap: 6px !important; }
+          .plan-nav-links .nav-link { padding: 7px 10px !important; }
+          .nav-label-full { display: none; }
+          .nav-label-short { display: inline; }
+        }
         @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
         .reveal-1 { animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both; }
         .reveal-2 { animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.08s both; }
@@ -170,13 +179,17 @@ export default function PlanPage() {
       `}</style>
 
       {/* Nav */}
-      <nav style={{background:'rgba(245,245,247,0.72)',borderBottom:'1px solid rgba(0,0,0,0.08)',padding:'0 32px',height:'76px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:100,backdropFilter:'saturate(200%) blur(28px)',WebkitBackdropFilter:'saturate(200%) blur(28px)'}}>
-        <Link href="/"><Image src="/New%20Logo.png" alt="SportSpot" width={2085} height={635} style={{height:'72px',width:'auto'}}/></Link>
-        <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
-          <Link href="/" className="nav-link" style={{color:'#3a3a3c',fontSize:'13px',padding:'7px 14px',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'8px',fontWeight:'500'}}>Return to Home Page</Link>
-          <a href="/map" className="nav-link" style={{color:'#3a3a3c',fontSize:'13px',padding:'7px 14px',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'8px',fontWeight:'500'}}>Fan Map</a>
+      <nav className="plan-nav" style={{background:'rgba(245,245,247,0.72)',borderBottom:'1px solid rgba(0,0,0,0.08)',padding:'0 32px',height:'76px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:100,backdropFilter:'saturate(200%) blur(28px)',WebkitBackdropFilter:'saturate(200%) blur(28px)'}}>
+        <Link href="/"><Image className="plan-nav-logo" src="/New%20Logo.png" alt="SportSpot" width={2085} height={635} style={{height:'72px',width:'auto'}}/></Link>
+        <div className="plan-nav-links" style={{display:'flex',gap:'8px',alignItems:'center'}}>
+          <Link href="/" className="nav-link" style={{color:'#3a3a3c',fontSize:'13px',padding:'7px 14px',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'8px',fontWeight:'500',whiteSpace:'nowrap'}}>
+            <span className="nav-label-full">Return to Home Page</span><span className="nav-label-short">Home</span>
+          </Link>
+          <a href="/map" className="nav-link" style={{color:'#3a3a3c',fontSize:'13px',padding:'7px 14px',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'8px',fontWeight:'500',whiteSpace:'nowrap'}}>
+            <span className="nav-label-full">Fan Map</span><span className="nav-label-short">Map</span>
+          </a>
           <button onClick={async () => { await supabase.auth.signOut(); window.location.href='/' }} className="nav-link"
-            style={{color:'#3a3a3c',fontSize:'13px',background:'none',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'8px',padding:'7px 14px',cursor:'pointer',fontWeight:'500'}}>
+            style={{color:'#3a3a3c',fontSize:'13px',background:'none',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'8px',padding:'7px 14px',cursor:'pointer',fontWeight:'500',whiteSpace:'nowrap'}}>
             Sign Out
           </button>
         </div>

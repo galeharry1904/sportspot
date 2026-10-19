@@ -20,7 +20,6 @@ await page.waitForTimeout(waitMs);
 console.log('landed on', page.url());
 await page.screenshot({ path: outPath, fullPage: true });
 
-// Save storage state so follow-up scripts can reuse this session without re-login.
 await page.context().storageState({ path: '/tmp/sportspot-auth.json' });
 
 await browser.close();
