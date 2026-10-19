@@ -8,7 +8,8 @@ import { Download, Share, X } from '../lib/icons'
 // this prompt is about giving fans the app, not venue managers).
 const HIDDEN_PATHS = ['/map', '/admin', '/dashboard', '/setup', '/login', '/register', '/fan/login', '/fan/register']
 
-const DISMISS_KEY = 'sportspot-install-dismissed'
+const DISMISS_KEY = 'sportspot-install-dismissed' // session-only: X or "Got It"
+const INSTALLED_KEY = 'sportspot-installed' // permanent: only set once they confirm it's added
 
 function isStandalone() {
   return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true
@@ -29,6 +30,7 @@ export default function InstallPrompt() {
 
   useEffect(() => {
     if (isStandalone()) return
+    if (localStorage.getItem(INSTALLED_KEY)) return
     if (sessionStorage.getItem(DISMISS_KEY)) return
 
     if (isIOS()) {
@@ -42,6 +44,8 @@ export default function InstallPrompt() {
       setPlatform('android')
     }
     function onAppInstalled() {
+      // Authoritative signal the install actually completed — permanent.
+      localStorage.setItem(INSTALLED_KEY, '1')
       setPlatform(null)
     }
     window.addEventListener('beforeinstallprompt', onBeforeInstallPrompt)
@@ -52,8 +56,16 @@ export default function InstallPrompt() {
     }
   }, [])
 
+  // Session-only: the X, or "Got It" — reappears next visit until installed.
   function dismiss() {
     sessionStorage.setItem(DISMISS_KEY, '1')
+    setPlatform(null)
+    setShowIOSSheet(false)
+  }
+
+  // Permanent: only once they confirm they've actually added it.
+  function markInstalled() {
+    localStorage.setItem(INSTALLED_KEY, '1')
     setPlatform(null)
     setShowIOSSheet(false)
   }
@@ -66,11 +78,10 @@ export default function InstallPrompt() {
     const deferredPrompt = deferredPromptRef.current
     if (!deferredPrompt) { dismiss(); return }
     deferredPrompt.prompt()
-    await deferredPrompt.userChoice
+    const { outcome } = await deferredPrompt.userChoice
     deferredPromptRef.current = null
-    // Whatever they chose, don't ask again this session — if they actually
-    // installed, standalone-mode detection keeps it hidden for good next time.
-    dismiss()
+    if (outcome === 'accepted') markInstalled()
+    else dismiss()
   }
 
   if (!platform || HIDDEN_PATHS.some(p => pathname?.startsWith(p))) return null
@@ -124,7 +135,10 @@ export default function InstallPrompt() {
               <div style={{width:'28px',height:'28px',borderRadius:'8px',background:'rgba(232,115,42,0.1)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,color:'#e8732a',fontSize:'13px',fontWeight:'800'}}>+</div>
               <p style={{fontSize:'14px',color:'#152238',paddingTop:'3px'}}>Scroll down and tap <strong>Add to Home Screen</strong></p>
             </div>
-            <button onClick={dismiss} style={{width:'100%',background:'#e8732a',color:'white',border:'none',borderRadius:'980px',padding:'14px',fontSize:'15px',fontWeight:'700',cursor:'pointer'}}>Got it</button>
+            <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
+              <button onClick={markInstalled} style={{width:'100%',background:'#e8732a',color:'white',border:'none',borderRadius:'980px',padding:'14px',fontSize:'15px',fontWeight:'700',cursor:'pointer'}}>Added to Home Screen</button>
+              <button onClick={dismiss} style={{width:'100%',background:'transparent',color:'#6e6e73',border:'none',borderRadius:'980px',padding:'10px',fontSize:'14px',fontWeight:'600',cursor:'pointer'}}>Got It</button>
+            </div>
           </div>
         </div>
       )}
