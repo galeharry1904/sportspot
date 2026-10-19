@@ -323,24 +323,27 @@ function FixtureList({ fixtures, showScore }) {
             {formatDate(group.date)}
           </div>
           <div style={{background:'white',border:'1px solid rgba(0,0,0,0.06)',borderRadius:'14px',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.03)'}}>
-            {group.items.map((f, i) => (
+            {group.items.map((f, i) => showScore ? (
+              <div key={f.id} style={{padding:'14px 20px',borderBottom: i < group.items.length-1 ? '1px solid rgba(0,0,0,0.05)' : 'none',display:'flex',flexDirection:'column',gap:'4px'}}>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'12px'}}>
+                  <span style={{fontSize:'14px',fontWeight: f.home_score > f.away_score ? '800' : '600',color:'#152238',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{f.home_team}</span>
+                  <span style={{fontSize:'14px',fontWeight:'800',color:'#152238',flexShrink:0}}>{f.home_score}</span>
+                </div>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'12px'}}>
+                  <span style={{fontSize:'14px',fontWeight: f.away_score > f.home_score ? '800' : '600',color:'#152238',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{f.away_team}</span>
+                  <span style={{fontSize:'14px',fontWeight:'800',color:'#152238',flexShrink:0}}>{f.away_score}</span>
+                </div>
+              </div>
+            ) : (
               <div key={f.id} className="fixture-row" style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 20px',borderBottom: i < group.items.length-1 ? '1px solid rgba(0,0,0,0.05)' : 'none',gap:'12px'}}>
                 <div className="fixture-teams" style={{display:'flex',alignItems:'center',gap:'10px',flex:1,minWidth:0}}>
                   <span className="fixture-team" style={{fontSize:'14px',fontWeight:'700',color:'#152238',textAlign:'right',flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{f.home_team}</span>
-                  {showScore ? (
-                    <span style={{fontSize:'14px',fontWeight:'800',color:'#152238',background:'#f5f5f7',borderRadius:'6px',padding:'4px 10px',flexShrink:0,whiteSpace:'nowrap'}}>
-                      {f.home_score} – {f.away_score}
-                    </span>
-                  ) : (
-                    <span style={{fontSize:'12px',color:'#aeaeb2',flexShrink:0}}>vs</span>
-                  )}
+                  <span style={{fontSize:'12px',color:'#aeaeb2',flexShrink:0}}>vs</span>
                   <span className="fixture-team" style={{fontSize:'14px',fontWeight:'700',color:'#152238',flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{f.away_team}</span>
                 </div>
-                {!showScore && (
-                  <span style={{fontSize:'12px',fontWeight:'700',color:'#e8732a',background:'rgba(232,115,42,0.1)',borderRadius:'6px',padding:'4px 10px',flexShrink:0}}>
-                    {new Date(f.kickoff_time).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}
-                  </span>
-                )}
+                <span style={{fontSize:'12px',fontWeight:'700',color:'#e8732a',background:'rgba(232,115,42,0.1)',borderRadius:'6px',padding:'4px 10px',flexShrink:0}}>
+                  {new Date(f.kickoff_time).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}
+                </span>
               </div>
             ))}
           </div>
