@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { APIProvider, Map, AdvancedMarker, AdvancedMarkerAnchorPoint, InfoWindow } from '@vis.gl/react-google-maps'
 import { supabase } from '../../lib/supabase'
-import { SportIcon, Star, Tv, MapPin, X, Check, ChevronDown, ChevronUp, ArrowRight, PubPin } from '../../lib/icons'
+import { SportIcon, Star, Tv, MapPin, X, Check, ChevronDown, ChevronUp, ArrowRight, PubPin, Navigation } from '../../lib/icons'
 import { getFanInitials } from '../../lib/fanProfile'
 import { FACILITIES } from '../../lib/facilities'
 
@@ -406,6 +406,24 @@ export default function FanMap() {
     )
   }
 
+  function DirectionsButtons({ pub }) {
+    const origin = userLocation ? `${userLocation.lat},${userLocation.lng}` : null
+    const googleMapsUrl = `https://www.google.com/maps/dir/?api=1${origin ? `&origin=${origin}` : ''}&destination=${pub.latitude},${pub.longitude}`
+    const citymapperUrl = `https://citymapper.com/directions?${origin ? `startcoord=${origin}&` : ''}endcoord=${pub.latitude},${pub.longitude}&endname=${encodeURIComponent(pub.name)}`
+    return (
+      <div style={{display:'flex',gap:'6px'}}>
+        <a href={googleMapsUrl} target="_blank" rel="noopener noreferrer"
+          style={{display:'flex',alignItems:'center',gap:'4px',fontSize:'11px',fontWeight:'700',color:'white',background:'#e8732a',borderRadius:'8px',padding:'5px 9px',textDecoration:'none',whiteSpace:'nowrap'}}>
+          <Navigation size={11}/> Google Maps
+        </a>
+        <a href={citymapperUrl} target="_blank" rel="noopener noreferrer"
+          style={{display:'flex',alignItems:'center',gap:'4px',fontSize:'11px',fontWeight:'700',color:'#152238',border:'1px solid rgba(0,0,0,0.15)',borderRadius:'8px',padding:'5px 9px',textDecoration:'none',whiteSpace:'nowrap'}}>
+          <Navigation size={11}/> Citymapper
+        </a>
+      </div>
+    )
+  }
+
   // ─── SHARED INFOWINDOW ──────────────────────────────────────────────────────
   function PubInfoWindow({ pub }) {
     const fixtures = getFixturesForPub(pub.id)
@@ -417,6 +435,9 @@ export default function FanMap() {
             <div style={{fontSize:'11px',color:'#8e8e93',display:'flex',alignItems:'center',gap:'4px'}}><MapPin size={11} strokeWidth={2}/><span>{pub.address}</span></div>
           </div>
           <button onClick={() => setSelectedPub(null)} style={{background:'white',border:'1px solid rgba(0,0,0,0.08)',borderRadius:'50%',width:'26px',height:'26px',color:'#8e8e93',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}><X size={13} strokeWidth={2}/></button>
+        </div>
+        <div style={{padding:'10px 16px',background:'white',borderBottom:'1px solid rgba(0,0,0,0.06)'}}>
+          <DirectionsButtons pub={pub}/>
         </div>
         <div style={{display:'flex',background:'white',borderBottom:'1px solid rgba(0,0,0,0.06)'}}>
           {[{id:'fixtures',label:'Live Sport'},{id:'info',label:'Pub Info'}].map(tab => (
@@ -605,6 +626,9 @@ export default function FanMap() {
                       <div style={{display:'flex',gap:'6px',padding:'0 16px 12px'}}>
                         {mobilePubDetail.has_sky && <div style={{background:'#0ea5e911',border:'1px solid #0ea5e930',borderRadius:'6px',padding:'3px 10px',fontSize:'11px',fontWeight:'700',color:'#0ea5e9'}}>Sky Sports</div>}
                         {mobilePubDetail.has_tnt && <div style={{background:'#a855f711',border:'1px solid #a855f730',borderRadius:'6px',padding:'3px 10px',fontSize:'11px',fontWeight:'700',color:'#a855f7'}}>TNT Sports</div>}
+                      </div>
+                      <div style={{padding:'0 16px 12px'}}>
+                        <DirectionsButtons pub={mobilePubDetail}/>
                       </div>
                       <div style={{display:'flex',background:'#f5f5f7',borderTop:'1px solid rgba(0,0,0,0.06)',borderBottom:'1px solid rgba(0,0,0,0.06)'}}>
                         {[{id:'fixtures',label:'Live Sport'},{id:'info',label:'Pub Info'}].map(tab => (
