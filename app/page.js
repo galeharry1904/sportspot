@@ -5,7 +5,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lenis from 'lenis'
 import Link from 'next/link'
 import Image from 'next/image'
-import { User, ClipboardList, MapPin, Beer, CheckCircle2, Tv, FootballIcon, Menu, X, ArrowRight, Star, Calendar } from '../lib/icons'
+import { MapPin, CheckCircle2, Tv, FootballIcon, Menu, X, ArrowRight, Star, Calendar } from '../lib/icons'
+import FindYourPubSteps from '../components/find-your-pub-steps/FindYourPubSteps'
 import { supabase } from '../lib/supabase'
 import { CURRENT_SEASON, CURRENT_SEASON_LABEL } from '../lib/season'
 import { standingsRowAccent, COMPETITION_SIZE } from '../lib/leagueTable'
@@ -462,41 +463,14 @@ export default function Home() {
       </div>
 
       {/* ── HOW IT WORKS ── */}
-      <div className="hiw-section" style={{padding:'120px 24px',background:'#f5f5f7'}}>
-        <div style={{maxWidth:'1080px',margin:'0 auto'}}>
-          <div style={{textAlign:'center',marginBottom:'64px'}}>
-            <h2 className="section-title" style={{fontSize:'48px',fontWeight:'700',letterSpacing:'-2px',color:'#152238',marginBottom:'16px'}}>Find your pub in 4 steps</h2>
-            <p className="section-sub" style={{fontSize:'19px',color:'#6e6e73',fontWeight:'400',letterSpacing:'-0.3px'}}>Designed to get you to the right pub, fast.</p>
-          </div>
-          <div className="steps-grid" style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'16px',position:'relative'}}>
-            <div className="steps-line" style={{position:'absolute',top:'28px',left:'12.5%',right:'12.5%',height:'2px',background:'repeating-linear-gradient(to right, rgba(232,115,42,0.25) 0 6px, transparent 6px 12px)'}}/>
-            {[
-              {icon:User,title:'Create your account',desc:'Sign up and tell SportSpot which sports and teams you follow. We do the rest.'},
-              {icon:ClipboardList,title:'Venues confirm daily',desc:'Pub managers log in each match day and confirm exactly which games they are showing.'},
-              {icon:MapPin,title:'Open the fan map',desc:'See every confirmed venue near you on a live map, sorted by distance.'},
-              {icon:Beer,title:'Head to the right pub',desc:'Pick a venue, check the kick-off time, and walk in knowing exactly what is on screen.'},
-            ].map((s, i) => (
-              <div key={s.title} className="step-card" style={{position:'relative',textAlign:'center'}}>
-                <div className="step-icon" style={{width:'56px',height:'56px',borderRadius:'50%',background:'white',border:'2px solid rgba(232,115,42,0.3)',display:'flex',alignItems:'center',justifyContent:'center',color:'#e8732a',margin:'0 auto 24px',position:'relative',flexShrink:0}}>
-                  <s.icon size={22} strokeWidth={1.75}/>
-                  <div className="step-badge" style={{position:'absolute',top:'-6px',right:'-6px',width:'20px',height:'20px',borderRadius:'50%',background:'#e8732a',color:'white',fontSize:'10px',fontWeight:'800',display:'flex',alignItems:'center',justifyContent:'center'}}>{i + 1}</div>
-                </div>
-                <div className="step-copy" style={{maxWidth:'220px',margin:'0 auto'}}>
-                  <div style={{fontWeight:'600',fontSize:'16px',marginBottom:'8px',color:'#152238',letterSpacing:'-0.3px'}}>{s.title}</div>
-                  <div style={{fontSize:'14px',color:'#6e6e73',lineHeight:'1.6',fontWeight:'400'}}>{s.desc}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      <FindYourPubSteps />
 
       {/* ── FEATURES ── */}
       <div className="features-section" style={{padding:'120px 24px',background:'white'}}>
         <div style={{maxWidth:'960px',margin:'0 auto'}}>
           <div style={{textAlign:'center',marginBottom:'64px'}}>
             <h2 className="section-title" style={{fontSize:'48px',fontWeight:'700',letterSpacing:'-2px',color:'#152238',marginBottom:'16px'}}>No more wasted trips.</h2>
-            <p className="section-sub" style={{fontSize:'19px',color:'#6e6e73',fontWeight:'400',letterSpacing:'-0.3px',maxWidth:'500px',margin:'0 auto'}}>Every feature built around one goal — getting you to the right pub.</p>
+            <p className="section-sub" style={{fontSize:'19px',color:'#6e6e73',fontWeight:'400',letterSpacing:'-0.3px',maxWidth:'500px',margin:'0 auto'}}>Every feature built around one goal - getting you to the right pub.</p>
           </div>
           <div className="features-grid" style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'20px'}}>
             {[

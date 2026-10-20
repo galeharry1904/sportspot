@@ -1,0 +1,471 @@
+/* "Find your pub in 4 steps" — Option A: Matchday Route
+   Everything is plain CSS. One shared 12s timeline; each .a element picks its own keyframes. */
+
+.section {
+  box-sizing: border-box;
+  padding: 104px 24px 112px;
+  background: #f5f5f7;
+  color: #152238;
+  font-family: inherit;
+  overflow: hidden;
+}
+
+.inner {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: 48px;
+  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: -2px;
+  color: #152238;
+  text-wrap: balance;
+}
+
+.subtitle {
+  margin: 0;
+  text-wrap: balance;
+  font-size: 18px;
+  line-height: 1.5;
+  color: #6e6e73;
+}
+
+.stage {
+  position: relative;
+  margin-top: 72px;
+}
+
+/* ---------- route track ---------- */
+
+.track {
+  position: absolute;
+  left: 12.5%;
+  right: 12.5%;
+  top: 270px;
+  height: 4px;
+}
+
+.trackBase,
+.trackProgress {
+  position: absolute;
+  inset: 0;
+  border-radius: 2px;
+}
+
+.trackBase {
+  background-image: repeating-linear-gradient(90deg, #e6d6c8 0px, #e6d6c8 10px, rgba(230, 214, 200, 0) 10px, rgba(230, 214, 200, 0) 18px);
+}
+
+.trackProgress {
+  background: #e8732a;
+  transform-origin: 0% 50%;
+  animation-name: kfProg;
+}
+
+.marker {
+  position: absolute;
+  left: 0%;
+  top: -14px;
+  width: 32px;
+  height: 32px;
+  margin-left: -16px;
+  animation-name: kfMark;
+}
+
+.markerPulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(232, 115, 42, 0.35);
+  animation: kfPulse 2s ease-out infinite;
+}
+
+.markerDot {
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  width: 20px;
+  height: 20px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: #e8732a;
+  border: 3px solid #ffffff;
+  box-shadow: 0 3px 10px rgba(232, 115, 42, 0.45);
+}
+
+/* ---------- steps ---------- */
+
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: 24px;
+  row-gap: 48px;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.card {
+  width: 100%;
+  height: 220px;
+  box-sizing: border-box;
+  padding: 14px;
+  border-radius: 24px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(21, 34, 56, 0.06);
+}
+
+.art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  font-family: inherit;
+}
+
+.number {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  margin-top: 28px;
+}
+
+.badge {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.badgeIdle {
+  background: #ffffff;
+  border: 2px solid #f0d6c2;
+  color: #b4520f;
+}
+
+.badgeActive {
+  background: #e8732a;
+  color: #152238;
+  box-shadow: 0 6px 16px rgba(232, 115, 42, 0.35);
+}
+
+.stepTitle {
+  margin: 20px 0 0;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: #152238;
+}
+
+.stepCopy {
+  margin: 8px 0 0;
+  max-width: 250px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #6e6e73;
+}
+
+/* ---------- animation plumbing ---------- */
+
+.a {
+  animation-duration: 12s;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.pulse {
+  animation: kfPulse 2s ease-out infinite;
+}
+
+.tv {
+  animation: kfTv 1.6s ease-in-out infinite alternate;
+}
+
+.c1 { animation-name: kfC1; }
+.c2 { animation-name: kfC2; }
+.c3 { animation-name: kfC3; }
+.c4 { animation-name: kfC4; }
+.n2 { animation-name: kfN2; }
+.n3 { animation-name: kfN3; }
+.n4 { animation-name: kfN4; }
+.tap1 { animation-name: kfTap1; }
+.chip1 { animation-name: kfChip1; }
+.tgl1 { animation-name: kfTgl1; }
+.knob1 { animation-name: kfKnob1; }
+.ready { animation-name: kfReady; }
+.t2a { animation-name: kfT2a; }
+.k2a { animation-name: kfK2a; }
+.t2b { animation-name: kfT2b; }
+.k2b { animation-name: kfK2b; }
+.t2c { animation-name: kfT2c; }
+.k2c { animation-name: kfK2c; }
+.bn { animation-name: kfBn; }
+.p1 { animation-name: kfP1; }
+.p2 { animation-name: kfP2; }
+.p3 { animation-name: kfP3; }
+.dist { animation-name: kfDist; }
+.sheet { animation-name: kfSheet; }
+.route { animation-name: kfRoute; }
+.walk { animation-name: kfWalk; }
+.door { animation-name: kfDoor; }
+.kickoff { animation-name: kfKO; }
+.live { animation-name: kfLive; }
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 920px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .track {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .title {
+    font-size: 40px;
+    letter-spacing: -1.5px;
+  }
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .a,
+  .pulse,
+  .tv,
+  .markerPulse {
+    animation: none !important;
+  }
+}
+
+/* ---------- keyframes (percent = seconds / 12s) ---------- */
+
+@keyframes kfPulse {
+  0% { transform:scale(.5); opacity:.6 }
+  100% { transform:scale(2.6); opacity:0 }
+}
+
+@keyframes kfTv {
+  0% { transform:translateX(0px) }
+  100% { transform:translateX(22px) }
+}
+
+@keyframes kfProg {
+  0%, 22% { transform:scaleX(0) }
+  26%, 47% { transform:scaleX(.3333) }
+  51%, 72% { transform:scaleX(.6667) }
+  76%, 95% { transform:scaleX(1) }
+  98%, 100% { transform:scaleX(0) }
+}
+
+@keyframes kfMark {
+  0%, 22% { left:0%; opacity:1 }
+  26%, 47% { left:33.333%; opacity:1 }
+  51%, 72% { left:66.667%; opacity:1 }
+  76%, 95% { left:100%; opacity:1 }
+  96.5% { left:100%; opacity:0 }
+  97% { left:0%; opacity:0 }
+  99%, 100% { left:0%; opacity:1 }
+}
+
+@keyframes kfC1 {
+  0%, 23% { opacity:1; transform:translateY(-10px); border-color:rgba(232,115,42,.55); box-shadow:0 2px 4px rgba(0,0,0,.04), 0 24px 48px rgba(232,115,42,.18) }
+  26%, 96% { opacity:.62; transform:translateY(0px); border-color:rgba(0,0,0,.05); box-shadow:0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(21,34,56,.06) }
+  99%, 100% { opacity:1; transform:translateY(-10px); border-color:rgba(232,115,42,.55); box-shadow:0 2px 4px rgba(0,0,0,.04), 0 24px 48px rgba(232,115,42,.18) }
+}
+
+@keyframes kfC2 {
+  0%, 23% { opacity:.62; transform:translateY(0px); border-color:rgba(0,0,0,.05); box-shadow:0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(21,34,56,.06) }
+  26%, 48% { opacity:1; transform:translateY(-10px); border-color:rgba(232,115,42,.55); box-shadow:0 2px 4px rgba(0,0,0,.04), 0 24px 48px rgba(232,115,42,.18) }
+  51%, 100% { opacity:.62; transform:translateY(0px); border-color:rgba(0,0,0,.05); box-shadow:0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(21,34,56,.06) }
+}
+
+@keyframes kfC3 {
+  0%, 48% { opacity:.62; transform:translateY(0px); border-color:rgba(0,0,0,.05); box-shadow:0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(21,34,56,.06) }
+  51%, 73% { opacity:1; transform:translateY(-10px); border-color:rgba(232,115,42,.55); box-shadow:0 2px 4px rgba(0,0,0,.04), 0 24px 48px rgba(232,115,42,.18) }
+  76%, 100% { opacity:.62; transform:translateY(0px); border-color:rgba(0,0,0,.05); box-shadow:0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(21,34,56,.06) }
+}
+
+@keyframes kfC4 {
+  0%, 73% { opacity:.62; transform:translateY(0px); border-color:rgba(0,0,0,.05); box-shadow:0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(21,34,56,.06) }
+  76%, 95% { opacity:1; transform:translateY(-10px); border-color:rgba(232,115,42,.55); box-shadow:0 2px 4px rgba(0,0,0,.04), 0 24px 48px rgba(232,115,42,.18) }
+  98%, 100% { opacity:.62; transform:translateY(0px); border-color:rgba(0,0,0,.05); box-shadow:0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(21,34,56,.06) }
+}
+
+@keyframes kfN2 {
+  0%, 24% { opacity:0; transform:scale(.6) }
+  26.5%, 95% { opacity:1; transform:scale(1) }
+  98%, 100% { opacity:0; transform:scale(.6) }
+}
+
+@keyframes kfN3 {
+  0%, 49% { opacity:0; transform:scale(.6) }
+  51.5%, 95% { opacity:1; transform:scale(1) }
+  98%, 100% { opacity:0; transform:scale(.6) }
+}
+
+@keyframes kfN4 {
+  0%, 74% { opacity:0; transform:scale(.6) }
+  76.5%, 95% { opacity:1; transform:scale(1) }
+  98%, 100% { opacity:0; transform:scale(.6) }
+}
+
+@keyframes kfTap1 {
+  0%, 3% { opacity:0; transform:scale(.4) }
+  4% { opacity:.9; transform:scale(.8) }
+  7.5%, 100% { opacity:0; transform:scale(2) }
+}
+
+@keyframes kfChip1 {
+  0%, 5.5% { opacity:0 }
+  6.5%, 97% { opacity:1 }
+  98.5%, 100% { opacity:0 }
+}
+
+@keyframes kfTgl1 {
+  0%, 11% { opacity:0 }
+  12%, 97% { opacity:1 }
+  98.5%, 100% { opacity:0 }
+}
+
+@keyframes kfKnob1 {
+  0%, 11% { transform:translateX(0px) }
+  12.5%, 97% { transform:translateX(14px) }
+  98.5%, 100% { transform:translateX(0px) }
+}
+
+@keyframes kfReady {
+  0%, 16% { opacity:0; transform:translateY(6px) }
+  18%, 97% { opacity:1; transform:translateY(0px) }
+  98.5%, 100% { opacity:0; transform:translateY(6px) }
+}
+
+@keyframes kfT2a {
+  0%, 29% { opacity:0 }
+  30%, 97% { opacity:1 }
+  98.5%, 100% { opacity:0 }
+}
+
+@keyframes kfK2a {
+  0%, 29% { transform:translateX(0px) }
+  30.5%, 97% { transform:translateX(14px) }
+  98.5%, 100% { transform:translateX(0px) }
+}
+
+@keyframes kfT2b {
+  0%, 32.5% { opacity:0 }
+  33.5%, 97% { opacity:1 }
+  98.5%, 100% { opacity:0 }
+}
+
+@keyframes kfK2b {
+  0%, 32.5% { transform:translateX(0px) }
+  34%, 97% { transform:translateX(14px) }
+  98.5%, 100% { transform:translateX(0px) }
+}
+
+@keyframes kfT2c {
+  0%, 35.8% { opacity:0 }
+  36.8%, 97% { opacity:1 }
+  98.5%, 100% { opacity:0 }
+}
+
+@keyframes kfK2c {
+  0%, 35.8% { transform:translateX(0px) }
+  37.3%, 97% { transform:translateX(14px) }
+  98.5%, 100% { transform:translateX(0px) }
+}
+
+@keyframes kfBn {
+  0%, 40% { opacity:0; transform:scale(.96) }
+  41.5%, 97% { opacity:1; transform:scale(1) }
+  98.5%, 100% { opacity:0; transform:scale(.96) }
+}
+
+@keyframes kfP1 {
+  0%, 52.5% { opacity:0; transform:translateY(-24px) }
+  54.5%, 97% { opacity:1; transform:translateY(0px) }
+  98.5%, 100% { opacity:0; transform:translateY(-24px) }
+}
+
+@keyframes kfP2 {
+  0%, 54.2% { opacity:0; transform:translateY(-24px) }
+  56.2%, 97% { opacity:1; transform:translateY(0px) }
+  98.5%, 100% { opacity:0; transform:translateY(-24px) }
+}
+
+@keyframes kfP3 {
+  0%, 55.8% { opacity:0; transform:translateY(-24px) }
+  57.8%, 97% { opacity:1; transform:translateY(0px) }
+  98.5%, 100% { opacity:0; transform:translateY(-24px) }
+}
+
+@keyframes kfDist {
+  0%, 60% { opacity:0; transform:scale(.6) }
+  62%, 97% { opacity:1; transform:scale(1) }
+  98.5%, 100% { opacity:0; transform:scale(.6) }
+}
+
+@keyframes kfSheet {
+  0%, 58% { transform:translateY(40px) }
+  61%, 97% { transform:translateY(0px) }
+  98.5%, 100% { transform:translateY(40px) }
+}
+
+@keyframes kfRoute {
+  0%, 76% { stroke-dashoffset:124 }
+  84%, 97% { stroke-dashoffset:0 }
+  98.5%, 100% { stroke-dashoffset:124 }
+}
+
+@keyframes kfWalk {
+  0%, 76% { transform:translateX(0px); opacity:0 }
+  77% { transform:translateX(0px); opacity:1 }
+  84% { transform:translateX(112px); opacity:1 }
+  86%, 100% { transform:translateX(112px); opacity:0 }
+}
+
+@keyframes kfDoor {
+  0%, 84% { opacity:0 }
+  86%, 97% { opacity:1 }
+  98.5%, 100% { opacity:0 }
+}
+
+@keyframes kfKO {
+  0%, 85% { opacity:0; transform:scale(.6) }
+  87%, 97% { opacity:1; transform:scale(1) }
+  98.5%, 100% { opacity:0; transform:scale(.6) }
+}
+
+@keyframes kfLive {
+  0%, 88% { opacity:0 }
+  89%, 97% { opacity:1 }
+  98.5%, 100% { opacity:0 }
+}
