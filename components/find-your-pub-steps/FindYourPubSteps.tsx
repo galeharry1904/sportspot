@@ -1,14 +1,21 @@
+"use client";
+
 /**
  * "Find your pub in 4 steps" — animated section (Option A: Matchday Route)
  *
- * Drop-in React component for the SportSpot Next.js site. Pure CSS animation:
- * no client JavaScript, no dependencies, works as a Server Component in the
- * App Router and as a normal component in the Pages Router.
+ * Desktop/tablet (>560px): a single shared 12-second loop — a marker travels
+ * along the route and each step card comes forward in turn while its
+ * illustration plays, exactly as before.
  *
- * 12-second loop: a marker travels along the route and each step card comes
- * forward in turn while its illustration plays. Respects prefers-reduced-motion
- * (everything shows in its finished state, nothing moves).
+ * Mobile (<=560px): each step plays its own illustration once, independently,
+ * as it scrolls into view — driven by IntersectionObserver below. The CSS
+ * module redefines every animation-name under its 560px media query to a
+ * self-contained "...M" keyframe set (instead of a slice of the shared 12s
+ * clock) and gates playback on a `.inView` class this component toggles per
+ * step. Respects prefers-reduced-motion either way (everything shows in its
+ * finished state, nothing moves).
  */
+import { useEffect, useRef, useState } from "react";
 import s from "./FindYourPubSteps.module.css";
 
 type Step = {
@@ -50,6 +57,33 @@ const STEPS: Step[] = [
 ];
 
 export default function FindYourPubSteps() {
+  const stepRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const [visible, setVisible] = useState<boolean[]>(() => STEPS.map(() => false));
+
+  useEffect(() => {
+    // Only matters on mobile (the CSS only gates playback on .inView under its
+    // 560px query), but observing everywhere is harmless and keeps this
+    // effect simple — the class is inert above that width.
+    const observer = new IntersectionObserver(
+      (entries) => {
+        setVisible((prev) => {
+          let changed = false;
+          const next = [...prev];
+          for (const entry of entries) {
+            const index = stepRefs.current.indexOf(entry.target as HTMLLIElement);
+            if (index === -1 || next[index] || !entry.isIntersecting) continue;
+            next[index] = true;
+            changed = true;
+          }
+          return changed ? next : prev;
+        });
+      },
+      { threshold: 0.35 }
+    );
+    stepRefs.current.forEach((el) => el && observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section className={s.section} aria-labelledby="find-your-pub-title">
       <div className={s.inner}>
@@ -73,7 +107,13 @@ export default function FindYourPubSteps() {
 
           <ol className={s.grid}>
             {STEPS.map(({ title, copy, Art, cardClass, activeNumberClass }, i) => (
-              <li key={title} className={s.step}>
+              <li
+                key={title}
+                ref={(el) => {
+                  stepRefs.current[i] = el;
+                }}
+                className={`${s.step} ${visible[i] ? s.inView : ""}`}
+              >
                 <div className={`${s.a} ${s.card} ${cardClass}`}>
                   <Art />
                 </div>

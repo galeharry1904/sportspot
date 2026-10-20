@@ -254,6 +254,180 @@
   .grid {
     grid-template-columns: minmax(0, 1fr);
   }
+
+  /* ---------- scroll-triggered reveal (replaces the shared 12s loop) ----------
+     Each step becomes an independent one-shot animation, paused until its
+     <li> gets .inView (toggled by the component's IntersectionObserver),
+     then plays once and holds its finished state. Every animation-name
+     below is redefined to a self-contained 0–100% timeline instead of a
+     slice of the desktop 12s clock. */
+  .a {
+    animation-duration: 2.2s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+    animation-play-state: paused;
+    /* The desktop cubic-bezier(0.22,1,0.36,1) is a steep ease-out that
+       visually finishes within the first ~15% of any duration — fine for
+       a 12s ambient loop, but it made a one-shot scroll reveal look like
+       it snapped in instantly. A gentler, more even curve here so the
+       reveal is still visible as the step scrolls into place. */
+    animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+  }
+  .step.inView .a {
+    animation-play-state: running;
+  }
+
+  .c1, .c2, .c3, .c4 { animation-name: kfCardRevealM; }
+  .n2, .n3, .n4 { animation-name: kfBadgeRevealM; }
+
+  .tap1 { animation-name: kfTap1M; }
+  .chip1 { animation-name: kfChip1M; }
+  .tgl1 { animation-name: kfTgl1M; }
+  .knob1 { animation-name: kfKnob1M; }
+  .ready { animation-name: kfReadyM; }
+
+  .t2a { animation-name: kfT2aM; }
+  .k2a { animation-name: kfK2aM; }
+  .t2b { animation-name: kfT2bM; }
+  .k2b { animation-name: kfK2bM; }
+  .t2c { animation-name: kfT2cM; }
+  .k2c { animation-name: kfK2cM; }
+  .bn { animation-name: kfBnM; }
+
+  .p1 { animation-name: kfP1M; }
+  .p2 { animation-name: kfP2M; }
+  .p3 { animation-name: kfP3M; }
+  .dist { animation-name: kfDistM; }
+  .sheet { animation-name: kfSheetM; }
+
+  .route { animation-name: kfRouteM; }
+  .walk { animation-name: kfWalkM; }
+  .door { animation-name: kfDoorM; }
+  .kickoff { animation-name: kfKOM; }
+  .live { animation-name: kfLiveM; }
+}
+
+@keyframes kfCardRevealM {
+  0% { opacity: 0; transform: translateY(20px) scale(.97); border-color: rgba(0,0,0,.05); box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(21,34,56,.06); }
+  60%, 100% { opacity: 1; transform: translateY(-10px) scale(1); border-color: rgba(232,115,42,.55); box-shadow: 0 2px 4px rgba(0,0,0,.04), 0 24px 48px rgba(232,115,42,.18); }
+}
+
+@keyframes kfBadgeRevealM {
+  0% { opacity: 0; transform: scale(.6); }
+  60%, 100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes kfTap1M {
+  0%, 8% { opacity: 0; transform: scale(.4); }
+  14% { opacity: .9; transform: scale(.8); }
+  28%, 100% { opacity: 0; transform: scale(2); }
+}
+
+@keyframes kfChip1M {
+  0%, 16% { opacity: 0; }
+  26%, 100% { opacity: 1; }
+}
+
+@keyframes kfTgl1M {
+  0%, 38% { opacity: 0; }
+  46%, 100% { opacity: 1; }
+}
+
+@keyframes kfKnob1M {
+  0%, 38% { transform: translateX(0px); }
+  48%, 100% { transform: translateX(14px); }
+}
+
+@keyframes kfReadyM {
+  0%, 55% { opacity: 0; transform: translateY(6px); }
+  68%, 100% { opacity: 1; transform: translateY(0px); }
+}
+
+@keyframes kfT2aM {
+  0%, 10% { opacity: 0; }
+  20%, 100% { opacity: 1; }
+}
+
+@keyframes kfK2aM {
+  0%, 10% { transform: translateX(0px); }
+  22%, 100% { transform: translateX(14px); }
+}
+
+@keyframes kfT2bM {
+  0%, 32% { opacity: 0; }
+  42%, 100% { opacity: 1; }
+}
+
+@keyframes kfK2bM {
+  0%, 32% { transform: translateX(0px); }
+  44%, 100% { transform: translateX(14px); }
+}
+
+@keyframes kfT2cM {
+  0%, 54% { opacity: 0; }
+  64%, 100% { opacity: 1; }
+}
+
+@keyframes kfK2cM {
+  0%, 54% { transform: translateX(0px); }
+  66%, 100% { transform: translateX(14px); }
+}
+
+@keyframes kfBnM {
+  0%, 76% { opacity: 0; transform: scale(.96); }
+  90%, 100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes kfP1M {
+  0%, 10% { opacity: 0; transform: translateY(-24px); }
+  24%, 100% { opacity: 1; transform: translateY(0px); }
+}
+
+@keyframes kfP2M {
+  0%, 24% { opacity: 0; transform: translateY(-24px); }
+  38%, 100% { opacity: 1; transform: translateY(0px); }
+}
+
+@keyframes kfP3M {
+  0%, 38% { opacity: 0; transform: translateY(-24px); }
+  52%, 100% { opacity: 1; transform: translateY(0px); }
+}
+
+@keyframes kfDistM {
+  0%, 56% { opacity: 0; transform: scale(.6); }
+  70%, 100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes kfSheetM {
+  0%, 70% { transform: translateY(40px); }
+  88%, 100% { transform: translateY(0px); }
+}
+
+@keyframes kfRouteM {
+  0%, 6% { stroke-dashoffset: 124; }
+  48%, 100% { stroke-dashoffset: 0; }
+}
+
+@keyframes kfWalkM {
+  0%, 6% { transform: translateX(0px); opacity: 0; }
+  10% { transform: translateX(0px); opacity: 1; }
+  48% { transform: translateX(112px); opacity: 1; }
+  58%, 100% { transform: translateX(112px); opacity: 0; }
+}
+
+@keyframes kfDoorM {
+  0%, 56% { opacity: 0; }
+  70%, 100% { opacity: 1; }
+}
+
+@keyframes kfKOM {
+  0%, 60% { opacity: 0; transform: scale(.6); }
+  74%, 100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes kfLiveM {
+  0%, 66% { opacity: 0; }
+  80%, 100% { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
