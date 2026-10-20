@@ -1,13 +1,10 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-// TODO: swap this for your real production URL once the site is deployed
-// somewhere reachable — it is where Supabase sends the manager after it
-// verifies their one-click login token. Pointed at localhost for now
-// since the app is only running locally; the link will only work while
-// `npm run dev` is running on the machine that opens the email.
-const SITE_URL = 'http://localhost:3000'
+// Where Supabase sends the manager after it verifies their one-click login
+// token, and where the header/footer logo images are fetched from.
+const SITE_URL = 'https://sportspot-phi.vercel.app'
 const DASHBOARD_PATH = '/dashboard'
-const LOGO_URL = 'https://prlrakhymwfuffazjtxm.supabase.co/storage/v1/object/public/assets/SportSpot-Logo-Light.png'
+const LOGO_URL = 'https://sportspot-phi.vercel.app/New%20Logo.png'
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
@@ -124,7 +121,7 @@ function buildEmailHtml({ pubName, fixtures, magicLink }) {
           <!-- Logo -->
           <tr>
             <td align="center" style="padding-bottom:32px;">
-              <img src="${LOGO_URL}" alt="SportSpot" height="36" style="height:36px;width:auto;display:block;border:0;"/>
+              <img src="${LOGO_URL}" alt="SportSpot" height="40" style="height:40px;width:auto;display:block;border:0;"/>
             </td>
           </tr>
 
