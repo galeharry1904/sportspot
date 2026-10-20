@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { APIProvider, Map, AdvancedMarker, AdvancedMarkerAnchorPoint, InfoWindow } from '@vis.gl/react-google-maps'
 import { supabase } from '../../lib/supabase'
-import { SportIcon, Star, Tv, MapPin, X, Check, ChevronDown, ChevronUp, ArrowRight, PubPin, Navigation } from '../../lib/icons'
+import { SportIcon, Star, Tv, MapPin, X, Check, ChevronDown, ChevronUp, ArrowRight, PubPin, Navigation, GoogleMapsIcon, AppleMapsIcon } from '../../lib/icons'
 import { getFanInitials } from '../../lib/fanProfile'
 import { FACILITIES } from '../../lib/facilities'
 
@@ -408,18 +408,43 @@ export default function FanMap() {
 
   function DirectionsButtons({ pub }) {
     const origin = userLocation ? `${userLocation.lat},${userLocation.lng}` : null
-    const googleMapsUrl = `https://www.google.com/maps/dir/?api=1${origin ? `&origin=${origin}` : ''}&destination=${pub.latitude},${pub.longitude}`
-    const citymapperUrl = `https://citymapper.com/directions?${origin ? `startcoord=${origin}&` : ''}endcoord=${pub.latitude},${pub.longitude}&endname=${encodeURIComponent(pub.name)}`
+    const dest = `${pub.latitude},${pub.longitude}`
+    const options = [
+      {
+        label: 'Google Maps',
+        Icon: GoogleMapsIcon,
+        color: '#4285F4',
+        href: `https://www.google.com/maps/dir/?api=1${origin ? `&origin=${origin}` : ''}&destination=${dest}`,
+      },
+      {
+        label: 'Apple Maps',
+        Icon: AppleMapsIcon,
+        color: '#1d1d1f',
+        href: `https://maps.apple.com/?${origin ? `saddr=${origin}&` : ''}daddr=${dest}`,
+      },
+      {
+        label: 'Citymapper',
+        Icon: Navigation,
+        color: '#00afaa',
+        href: `https://citymapper.com/directions?${origin ? `startcoord=${origin}&` : ''}endcoord=${dest}&endname=${encodeURIComponent(pub.name)}`,
+      },
+    ]
     return (
-      <div style={{display:'flex',gap:'6px'}}>
-        <a href={googleMapsUrl} target="_blank" rel="noopener noreferrer"
-          style={{display:'flex',alignItems:'center',gap:'4px',fontSize:'11px',fontWeight:'700',color:'white',background:'#e8732a',borderRadius:'8px',padding:'5px 9px',textDecoration:'none',whiteSpace:'nowrap'}}>
-          <Navigation size={11}/> Google Maps
-        </a>
-        <a href={citymapperUrl} target="_blank" rel="noopener noreferrer"
-          style={{display:'flex',alignItems:'center',gap:'4px',fontSize:'11px',fontWeight:'700',color:'#152238',border:'1px solid rgba(0,0,0,0.15)',borderRadius:'8px',padding:'5px 9px',textDecoration:'none',whiteSpace:'nowrap'}}>
-          <Navigation size={11}/> Citymapper
-        </a>
+      <div style={{background:'#f9f9fb',border:'1px solid rgba(0,0,0,0.06)',borderRadius:'12px',padding:'10px 10px 11px'}}>
+        <div style={{fontSize:'9px',fontWeight:'800',letterSpacing:'1.5px',textTransform:'uppercase',color:'#aeaeb2',marginBottom:'8px',paddingLeft:'2px'}}>
+          Direct Me
+        </div>
+        <div style={{display:'flex',gap:'6px'}}>
+          {options.map(opt => (
+            <a key={opt.label} href={opt.href} target="_blank" rel="noopener noreferrer" className="directions-option"
+              style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:'5px',background:'white',border:'1px solid rgba(0,0,0,0.07)',borderRadius:'10px',padding:'9px 4px 8px',textDecoration:'none'}}>
+              <div style={{width:'24px',height:'24px',borderRadius:'50%',background:`${opt.color}18`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                <opt.Icon size={13} strokeWidth={2} color={opt.color}/>
+              </div>
+              <span style={{fontSize:'10px',fontWeight:'700',color:'#152238',whiteSpace:'nowrap'}}>{opt.label}</span>
+            </a>
+          ))}
+        </div>
       </div>
     )
   }
@@ -846,7 +871,7 @@ export default function FanMap() {
   // ─── DESKTOP ─────────────────────────────────────────────────────────────────
   return (
     <div style={{height:'100vh',display:'flex',flexDirection:'column',background:'#f5f5f7'}}>
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}} @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}} @keyframes dropdownIn{from{opacity:0;transform:translateY(-6px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}} @keyframes userLocationPulse{0%{transform:scale(0.6);opacity:1}100%{transform:scale(1);opacity:0}} @media (hover: hover) and (pointer: fine){ .pub-hover:hover{border-color:rgba(0,0,0,0.12)!important;background:#fafafa!important} .filter-option:hover{background:rgba(0,0,0,0.045)!important} }`}</style>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}} @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}} @keyframes dropdownIn{from{opacity:0;transform:translateY(-6px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}} @keyframes userLocationPulse{0%{transform:scale(0.6);opacity:1}100%{transform:scale(1);opacity:0}} @media (hover: hover) and (pointer: fine){ .pub-hover:hover{border-color:rgba(0,0,0,0.12)!important;background:#fafafa!important} .filter-option:hover{background:rgba(0,0,0,0.045)!important} .directions-option:hover{border-color:rgba(0,0,0,0.16)!important;background:#fafafa!important} }`}</style>
 
       {/* Top nav bar */}
       <div style={{position:'relative',zIndex:100,background:'rgba(255,255,255,0.75)',borderBottom:'1px solid rgba(0,0,0,0.06)',padding:'0 24px',height:'64px',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'16px',flexShrink:0,backdropFilter:'saturate(200%) blur(20px)',WebkitBackdropFilter:'saturate(200%) blur(20px)'}}>

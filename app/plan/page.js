@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps'
 import { supabase } from '../../lib/supabase'
-import { Clock, MapPin, X, Navigation } from '../../lib/icons'
+import { Clock, MapPin, X, Navigation, GoogleMapsIcon, AppleMapsIcon } from '../../lib/icons'
 
 function getDistance(lat1, lon1, lat2, lon2) {
   const R = 6371
@@ -325,7 +325,11 @@ export default function PlanPage() {
                         </a>
                         <a href={`https://www.google.com/maps/dir/?api=1&origin=${suggestions.nearestStop.latitude},${suggestions.nearestStop.longitude}&destination=${pub.latitude},${pub.longitude}`} target="_blank" rel="noopener noreferrer"
                           style={{display:'flex',alignItems:'center',gap:'4px',fontSize:'11px',fontWeight:'700',color:'white',background:'#e8732a',borderRadius:'8px',padding:'5px 9px',textDecoration:'none',whiteSpace:'nowrap'}}>
-                          <Navigation size={11}/> Google Maps
+                          <GoogleMapsIcon size={11} color="white"/> Google Maps
+                        </a>
+                        <a href={`https://maps.apple.com/?saddr=${suggestions.nearestStop.latitude},${suggestions.nearestStop.longitude}&daddr=${pub.latitude},${pub.longitude}`} target="_blank" rel="noopener noreferrer"
+                          style={{display:'flex',alignItems:'center',gap:'4px',fontSize:'11px',fontWeight:'700',color:'#152238',border:'1px solid rgba(0,0,0,0.15)',borderRadius:'8px',padding:'5px 9px',textDecoration:'none',whiteSpace:'nowrap'}}>
+                          <AppleMapsIcon size={11} color="#152238"/> Apple Maps
                         </a>
                         <a href={`https://citymapper.com/directions?startcoord=${suggestions.nearestStop.latitude},${suggestions.nearestStop.longitude}&endcoord=${pub.latitude},${pub.longitude}&endname=${encodeURIComponent(pub.name)}`} target="_blank" rel="noopener noreferrer"
                           style={{display:'flex',alignItems:'center',gap:'4px',fontSize:'11px',fontWeight:'700',color:'#152238',border:'1px solid rgba(0,0,0,0.15)',borderRadius:'8px',padding:'5px 9px',textDecoration:'none',whiteSpace:'nowrap'}}>
