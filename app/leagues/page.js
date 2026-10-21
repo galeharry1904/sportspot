@@ -25,10 +25,6 @@ const COMPETITIONS = [
   { name: 'Europa League', hasTable: false },
 ]
 
-// Competitions the Table tab renders — every one of these appears side by
-// side, independent of which pill is selected for Results/Fixtures.
-const TABLE_COMPETITIONS = COMPETITIONS.filter(c => c.hasTable).map(c => c.name)
-
 function formatDate(dateStr) {
   return new Date(dateStr).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
 }
@@ -48,37 +44,21 @@ function LeaguesContent() {
 
   const [selectedCompetition, setSelectedCompetition] = useState(initialCompetition)
   const [activeTab, setActiveTab] = useState('table')
-  // Table tab shows every TABLE_COMPETITIONS league side by side, independent
-  // of selectedCompetition (which only drives Results/Fixtures) — both
-  // seasons are loaded once so the toggle below just swaps already-fetched
-  // data rather than re-querying.
-  const [allStandings, setAllStandings] = useState({})
-  const [tableSeason, setTableSeason] = useState(SEASON)
+  const [standings, setStandings] = useState([])
+  const [lastSeasonStandings, setLastSeasonStandings] = useState([])
   const [fixtures, setFixtures] = useState([])
   const [loading, setLoading] = useState(true)
   const [fanProfile, setFanProfile] = useState(null)
 
+  const competition = COMPETITIONS.find(c => c.name === selectedCompetition)
+
+  useEffect(() => {
+    if (!competition.hasTable && activeTab === 'table') setActiveTab('results')
+  }, [selectedCompetition, activeTab, competition.hasTable])
+
   useEffect(() => {
     loadData(selectedCompetition)
   }, [selectedCompetition])
-
-  useEffect(() => {
-    async function loadAllStandings() {
-      const { data } = await supabase
-        .from('standings').select('*')
-        .in('competition', TABLE_COMPETITIONS).in('season', [SEASON, LAST_SEASON])
-        .order('position')
-      const grouped = {}
-      for (const name of TABLE_COMPETITIONS) {
-        grouped[name] = {
-          [SEASON]: (data || []).filter(r => r.competition === name && r.season === SEASON),
-          [LAST_SEASON]: (data || []).filter(r => r.competition === name && r.season === LAST_SEASON),
-        }
-      }
-      setAllStandings(grouped)
-    }
-    loadAllStandings()
-  }, [])
 
   // /leagues is public — a fan doesn't need to be logged in to view it, so
   // this looks up their favourite teams without redirecting if there's no session.
@@ -98,9 +78,14 @@ function LeaguesContent() {
 
   async function loadData(comp) {
     setLoading(true)
-    const { data: fixturesData } = await supabase.from('fixtures').select('*').eq('competition', comp)
-      .gte('fixture_date', SEASON_START).lt('fixture_date', SEASON_END)
-      .order('kickoff_time')
+    const [{ data: standingsData }, { data: fixturesData }] = await Promise.all([
+      supabase.from('standings').select('*').eq('competition', comp).in('season', [SEASON, LAST_SEASON]).order('position'),
+      supabase.from('fixtures').select('*').eq('competition', comp)
+        .gte('fixture_date', SEASON_START).lt('fixture_date', SEASON_END)
+        .order('kickoff_time'),
+    ])
+    setStandings((standingsData || []).filter(r => r.season === SEASON))
+    setLastSeasonStandings((standingsData || []).filter(r => r.season === LAST_SEASON))
     setFixtures(fixturesData || [])
     setLoading(false)
   }
@@ -123,8 +108,10 @@ function LeaguesContent() {
           .tab-btn:hover { color: #e8732a; }
           .table-row:hover { background: rgba(0,0,0,0.02) !important; }
         }
-        @media (max-width: 900px) {
+        @media (max-width: 720px) {
           .tables-grid { grid-template-columns: 1fr !important; }
+          .standings-row { grid-template-columns: 26px 1fr 34px 40px !important; }
+          .standings-extra { display: none !important; }
         }
         @media (max-width: 480px) {
           .fixture-row { align-items: flex-start !important; }
@@ -167,15 +154,13 @@ function LeaguesContent() {
           })}
         </div>
 
-        {/* Sub tabs — Table is a standalone view of every league with a
-            table, independent of the pill selected above; Results/Fixtures
-            still follow it. */}
+        {/* Sub tabs */}
         <div style={{display:'flex',gap:'4px',borderBottom:'1px solid rgba(0,0,0,0.08)',marginBottom:'24px'}}>
           {[
-            { id:'table', label:'Table', icon: Award },
+            competition.hasTable && { id:'table', label:'Table', icon: Award },
             { id:'results', label:'Results', icon: TrendingUp },
             { id:'fixtures', label:'Fixtures', icon: Clock },
-          ].map(tab => (
+          ].filter(Boolean).map(tab => (
             <button key={tab.id} className="tab-btn" onClick={() => setActiveTab(tab.id)}
               style={{display:'flex',alignItems:'center',gap:'6px',padding:'12px 18px',border:'none',background:'transparent',cursor:'pointer',
                 fontSize:'13px',fontWeight:'700',color: activeTab===tab.id ? '#e8732a' : '#6e6e73',
@@ -190,33 +175,28 @@ function LeaguesContent() {
           <div style={{textAlign:'center',padding:'60px 0',color:'#aeaeb2',fontSize:'14px'}}>Loading {selectedCompetition}…</div>
         ) : (
           <>
-            {/* TABLE — every league at once, laptop-width gets all three side
-                by side; a shared season toggle swaps all of them together,
-                since splitting that per-card wouldn't fit alongside three
-                leagues. */}
-            {activeTab === 'table' && (
-              <>
-                <div style={{display:'flex',gap:'6px',marginBottom:'18px'}}>
-                  {[[SEASON, SEASON_LABEL], [LAST_SEASON, LAST_SEASON_LABEL]].map(([value, label]) => (
-                    <button key={value} onClick={() => setTableSeason(value)}
-                      style={{padding:'7px 16px',borderRadius:'8px',border:`1px solid ${tableSeason===value ? '#e8732a' : 'rgba(0,0,0,0.09)'}`,background: tableSeason===value ? '#e8732a' : 'white',color: tableSeason===value ? 'white' : '#6e6e73',fontSize:'12px',fontWeight:'700',cursor:'pointer'}}>
-                      {label}
-                    </button>
-                  ))}
+            {/* TABLE */}
+            {activeTab === 'table' && competition.hasTable && (
+              standings.length === 0 && lastSeasonStandings.length === 0 ? (
+                <EmptyState text={`No table data for ${selectedCompetition} yet.`}/>
+              ) : (
+                <div className="tables-grid" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'20px',alignItems:'start'}}>
+                  <StandingsTable
+                    standings={standings}
+                    competition={selectedCompetition}
+                    seasonLabel={SEASON_LABEL}
+                    emptyText={`No table data for ${selectedCompetition} yet.`}
+                    isFavouriteTeam={isFavouriteTeam}
+                  />
+                  <StandingsTable
+                    standings={lastSeasonStandings}
+                    competition={selectedCompetition}
+                    seasonLabel={LAST_SEASON_LABEL}
+                    emptyText={`No table data for ${selectedCompetition} in ${LAST_SEASON_LABEL}.`}
+                    isFavouriteTeam={isFavouriteTeam}
+                  />
                 </div>
-                <div className="tables-grid" style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'16px',alignItems:'start'}}>
-                  {TABLE_COMPETITIONS.map(name => (
-                    <StandingsTable
-                      key={name}
-                      standings={allStandings[name]?.[tableSeason] || []}
-                      competition={name}
-                      title={name}
-                      emptyText={`No table data for ${name} in ${tableSeason === SEASON ? SEASON_LABEL : LAST_SEASON_LABEL}.`}
-                      isFavouriteTeam={isFavouriteTeam}
-                    />
-                  ))}
-                </div>
-              </>
+              )
             )}
 
             {/* RESULTS */}
@@ -243,62 +223,73 @@ function LeaguesContent() {
   )
 }
 
-// Compact by design — this renders three to a row on laptop widths (see
-// .tables-grid), so only the columns that matter at a glance make the cut.
-// Full W/D/L used to live here when one competition got the full page width;
-// dropped now that there isn't room for them alongside two other leagues.
-function StandingsTable({ standings, competition, title, emptyText, isFavouriteTeam }) {
-  const hasLegend = competition === 'Premier League' || competition === 'Championship'
-
+function StandingsTable({ standings, competition, seasonLabel, emptyText, isFavouriteTeam }) {
   if (standings.length === 0) return (
     <div>
-      <div style={{fontSize:'13px',fontWeight:'800',color:'#152238',marginBottom:'10px'}}>{title}</div>
+      <div style={{fontSize:'12px',fontWeight:'800',letterSpacing:'0.3px',color:'#6e6e73',marginBottom:'10px'}}>{seasonLabel}</div>
       <EmptyState text={emptyText}/>
     </div>
   )
 
   return (
     <div>
-      <div style={{fontSize:'13px',fontWeight:'800',color:'#152238',marginBottom:'10px'}}>{title}</div>
+      <div style={{fontSize:'12px',fontWeight:'800',letterSpacing:'0.3px',color:'#6e6e73',marginBottom:'10px'}}>{seasonLabel}</div>
       <div style={{background:'white',border:'1px solid rgba(0,0,0,0.06)',borderRadius:'16px',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.03)',fontVariantNumeric:'tabular-nums'}}>
-        <div className="standings-row" style={{display:'grid',gridTemplateColumns:'24px 1fr 26px 32px',gap:'5px',padding:'10px 12px',borderBottom:'1px solid rgba(0,0,0,0.06)',background:'#fafafa'}}>
-          <span style={{fontSize:'9px',fontWeight:'800',letterSpacing:'0.4px',color:'#aeaeb2',textAlign:'center'}}>#</span>
-          <span style={{fontSize:'9px',fontWeight:'800',letterSpacing:'0.4px',color:'#aeaeb2',textAlign:'left'}}>Club</span>
-          <span style={{fontSize:'9px',fontWeight:'800',letterSpacing:'0.4px',color:'#aeaeb2',textAlign:'center'}}>GD</span>
-          <span style={{fontSize:'9px',fontWeight:'800',letterSpacing:'0.4px',color:'#aeaeb2',textAlign:'center'}}>Pts</span>
+        <div className="standings-row" style={{display:'grid',gridTemplateColumns:'32px 1fr 28px 28px 28px 28px 40px 44px',gap:'6px',padding:'12px 16px',borderBottom:'1px solid rgba(0,0,0,0.06)',background:'#fafafa'}}>
+          <span style={{fontSize:'10px',fontWeight:'800',letterSpacing:'0.5px',color:'#aeaeb2',textAlign:'center'}}>#</span>
+          <span style={{fontSize:'10px',fontWeight:'800',letterSpacing:'0.5px',color:'#aeaeb2',textAlign:'left'}}>Club</span>
+          {['P','W','D','L'].map(h => (
+            <span key={h} className="standings-extra" style={{fontSize:'10px',fontWeight:'800',letterSpacing:'0.5px',color:'#aeaeb2',textAlign:'center'}}>{h}</span>
+          ))}
+          <span style={{fontSize:'10px',fontWeight:'800',letterSpacing:'0.5px',color:'#aeaeb2',textAlign:'center'}}>GD</span>
+          <span style={{fontSize:'10px',fontWeight:'800',letterSpacing:'0.5px',color:'#aeaeb2',textAlign:'center'}}>Pts</span>
         </div>
         {standings.map((row, i) => {
           const accent = standingsRowAccent(competition, row.position, standings.length)
           const isYours = isFavouriteTeam?.(row.team)
           return (
-            <div key={row.id} className="table-row standings-row" style={{display:'grid',gridTemplateColumns:'24px 1fr 26px 32px',gap:'5px',padding:'9px 12px',alignItems:'center',borderBottom: i < standings.length-1 ? '1px solid rgba(0,0,0,0.05)' : 'none',borderLeft:`3px solid ${accent}`,background: isYours ? 'rgba(232,115,42,0.05)' : 'transparent',transition:'background 0.1s'}}>
-              <span style={{fontSize:'11px',fontWeight:'700',color:'#152238',textAlign:'center'}}>{row.position}</span>
-              <span style={{display:'flex',alignItems:'center',gap:'5px',overflow:'hidden'}}>
-                <span style={{fontSize:'11px',fontWeight:'700',color:'#152238',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{row.team}</span>
-                {isYours && <Star size={9} color="#e8732a" fill="#e8732a" style={{flexShrink:0}}/>}
+            <div key={row.id} className="table-row standings-row" style={{display:'grid',gridTemplateColumns:'32px 1fr 28px 28px 28px 28px 40px 44px',gap:'6px',padding:'12px 16px',alignItems:'center',borderBottom: i < standings.length-1 ? '1px solid rgba(0,0,0,0.05)' : 'none',borderLeft:`3px solid ${accent}`,background: isYours ? 'rgba(232,115,42,0.05)' : 'transparent',transition:'background 0.1s'}}>
+              <span style={{fontSize:'12px',fontWeight:'700',color:'#152238',textAlign:'center'}}>{row.position}</span>
+              <span style={{display:'flex',alignItems:'center',gap:'6px',overflow:'hidden'}}>
+                <span style={{fontSize:'12px',fontWeight:'700',color:'#152238',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{row.team}</span>
+                {isYours && (
+                  <span style={{display:'flex',alignItems:'center',gap:'3px',flexShrink:0,background:'#e8732a',borderRadius:'10px',padding:'2px 7px'}}>
+                    <Star size={8} color="white" fill="white"/>
+                    <span style={{fontSize:'8px',fontWeight:'800',color:'white',letterSpacing:'0.3px',whiteSpace:'nowrap'}}>YOUR TEAM</span>
+                  </span>
+                )}
               </span>
-              <span style={{fontSize:'10px',color:'#6e6e73',textAlign:'center'}}>{row.goal_difference > 0 ? `+${row.goal_difference}` : row.goal_difference}</span>
-              <span style={{fontSize:'11px',fontWeight:'800',color:'#152238',textAlign:'center'}}>{row.points}</span>
+              <span className="standings-extra" style={{fontSize:'11px',color:'#6e6e73',textAlign:'center'}}>{row.played}</span>
+              <span className="standings-extra" style={{fontSize:'11px',color:'#6e6e73',textAlign:'center'}}>{row.won}</span>
+              <span className="standings-extra" style={{fontSize:'11px',color:'#6e6e73',textAlign:'center'}}>{row.drawn}</span>
+              <span className="standings-extra" style={{fontSize:'11px',color:'#6e6e73',textAlign:'center'}}>{row.lost}</span>
+              <span style={{fontSize:'11px',color:'#6e6e73',textAlign:'center'}}>{row.goal_difference > 0 ? `+${row.goal_difference}` : row.goal_difference}</span>
+              <span style={{fontSize:'12px',fontWeight:'800',color:'#152238',textAlign:'center'}}>{row.points}</span>
             </div>
           )
         })}
-        {hasLegend && (
-          <div style={{display:'flex',flexWrap:'wrap',gap:'10px',padding:'10px 12px',borderTop:'1px solid rgba(0,0,0,0.06)',background:'#fafafa'}}>
-            {competition === 'Premier League' && (
-              <>
-                <LegendDot color="#0ea5e9" label="Champions League"/>
-                <LegendDot color="#dc2626" label="Relegation"/>
-              </>
-            )}
-            {competition === 'Championship' && (
-              <>
-                <LegendDot color="#22c55e" label="Automatic promotion"/>
-                <LegendDot color="#e8732a" label="Play-offs"/>
-                <LegendDot color="#dc2626" label="Relegation"/>
-              </>
-            )}
-          </div>
-        )}
+        <div style={{display:'flex',flexWrap:'wrap',gap:'12px',padding:'12px 16px',borderTop:'1px solid rgba(0,0,0,0.06)',background:'#fafafa'}}>
+          {competition === 'Premier League' && (
+            <>
+              <LegendDot color="#0ea5e9" label="Champions League"/>
+              <LegendDot color="#dc2626" label="Relegation"/>
+            </>
+          )}
+          {competition === 'Championship' && (
+            <>
+              <LegendDot color="#22c55e" label="Automatic promotion"/>
+              <LegendDot color="#e8732a" label="Play-offs"/>
+              <LegendDot color="#dc2626" label="Relegation"/>
+            </>
+          )}
+          {competition === "Women's Super League" && (
+            <>
+              <LegendDot color="#0ea5e9" label="Champions League"/>
+              <LegendDot color="#e8732a" label="Champions League qualifying"/>
+              <LegendDot color="#dc2626" label="Relegation play-off"/>
+            </>
+          )}
+        </div>
       </div>
     </div>
   )

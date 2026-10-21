@@ -12,7 +12,7 @@ import { CURRENT_SEASON, CURRENT_SEASON_LABEL } from '../lib/season'
 import { standingsRowAccent, COMPETITION_SIZE } from '../lib/leagueTable'
 import { getFanInitials } from '../lib/fanProfile'
 
-const PREVIEW_COMPETITIONS = ['Premier League', 'Championship']
+const PREVIEW_COMPETITIONS = ['Premier League', 'Championship', "Women's Super League"]
 
 function timeAgo(dateStr) {
   const diffMs = Date.now() - new Date(dateStr).getTime()
@@ -531,9 +531,9 @@ export default function Home() {
         <div style={{maxWidth:'1080px',margin:'0 auto'}}>
           <div style={{textAlign:'center',marginBottom:'56px'}}>
             <h2 className="section-title" style={{fontSize:'48px',fontWeight:'700',letterSpacing:'-2px',color:'#152238',marginBottom:'16px'}}>This season&apos;s tables.</h2>
-            <p className="section-sub" style={{fontSize:'19px',color:'#6e6e73',fontWeight:'400',letterSpacing:'-0.3px',maxWidth:'500px',margin:'0 auto'}}>Premier League and Championship, synced automatically — no need to leave SportSpot.</p>
+            <p className="section-sub" style={{fontSize:'19px',color:'#6e6e73',fontWeight:'400',letterSpacing:'-0.3px',maxWidth:'560px',margin:'0 auto'}}>Premier League, Championship and the Women&apos;s Super League, synced automatically — no need to leave SportSpot.</p>
           </div>
-          <div className="tables-grid" style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'20px'}}>
+          <div className="tables-grid" style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'20px'}}>
             {PREVIEW_COMPETITIONS.map(comp => {
               const rows = previewTables[comp] || []
               const total = COMPETITION_SIZE[comp]
