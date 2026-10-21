@@ -11,6 +11,9 @@ const SPORTS = ['All', 'Football', 'Rugby', 'Cricket', 'Tennis']
 const SUPPORTED_SPORTS = ['All', 'Football']
 
 export default function Dashboard() {
+  // A manager can own several venues; `pubs` is everything they own and
+  // `pub` is the one currently being edited.
+  const [pubs, setPubs] = useState([])
   const [pub, setPub] = useState(null)
   const [fixtures, setFixtures] = useState([])
   const [showings, setShowings] = useState({})
@@ -34,19 +37,48 @@ export default function Dashboard() {
     if (!session) { router.push('/login'); return }
     const { data: adminCheck } = await supabase.rpc('is_admin')
     setIsAdmin(!!adminCheck)
-    const { data: pubData } = await supabase.from('pubs').select('*').eq('owner_id', session.user.id).single()
-    if (!pubData) { router.push('/setup'); return }
-    setPub(pubData)
-    if (pubData.status !== 'approved') { setLoading(false); return }
-    setVenueForm({ name: pubData.name || '', address: pubData.address || '', has_sky: pubData.has_sky || false, has_tnt: pubData.has_tnt || false, facilities: pubData.facilities || [] })
+    // Deliberately not .single() — that errors as soon as a manager owns
+    // more than one venue, which would take the whole dashboard down.
+    const { data: pubList } = await supabase
+      .from('pubs').select('*').eq('owner_id', session.user.id).order('created_at')
+    if (!pubList?.length) { router.push('/setup'); return }
+    setPubs(pubList)
+
+    // Prefer an approved venue, so owning one pending venue doesn't hide the
+    // working dashboard for the rest.
+    const initial = pubList.find(p => p.status === 'approved') || pubList[0]
+    setPub(initial)
+    if (initial.status !== 'approved') { setLoading(false); return }
+
     const today = new Date().toISOString().split('T')[0]
     const { data: fixtureData } = await supabase.from('fixtures').select('*').eq('fixture_date', today).order('kickoff_time')
     setFixtures(fixtureData || [])
-    const { data: showingData } = await supabase.from('showings').select('*').eq('pub_id', pubData.id)
+    await loadPubState(initial)
+    setLoading(false)
+  }
+
+  // Everything that's specific to one venue — re-run when switching between them.
+  async function loadPubState(target) {
+    setVenueForm({
+      name: target.name || '', address: target.address || '',
+      has_sky: target.has_sky || false, has_tnt: target.has_tnt || false,
+      facilities: target.facilities || [],
+    })
+    const { data: showingData } = await supabase.from('showings').select('*').eq('pub_id', target.id)
     const map = {}
     showingData?.forEach(s => { map[s.fixture_id] = s.is_showing })
     setShowings(map)
-    setLoading(false)
+    // confirmed_at is per-venue and only meaningful for today.
+    const today = new Date().toISOString().split('T')[0]
+    setConfirmed(!!target.confirmed_at && target.confirmed_at.split('T')[0] === today)
+  }
+
+  async function switchPub(target) {
+    if (target.id === pub?.id) return
+    setPub(target)
+    setVenueSaved(false)
+    setVenueError(null)
+    await loadPubState(target)
   }
 
   async function toggleShowing(fixtureId, current) {
@@ -59,8 +91,11 @@ export default function Dashboard() {
   }
 
   async function confirmLineup() {
-    await supabase.from('pubs').update({ confirmed_at: new Date().toISOString() }).eq('id', pub.id)
+    const confirmedAt = new Date().toISOString()
+    await supabase.from('pubs').update({ confirmed_at: confirmedAt }).eq('id', pub.id)
     setConfirmed(true)
+    setPub(p => ({ ...p, confirmed_at: confirmedAt }))
+    setPubs(list => list.map(p => p.id === pub.id ? { ...p, confirmed_at: confirmedAt } : p))
   }
 
   async function saveVenueDetails() {
@@ -72,6 +107,7 @@ export default function Dashboard() {
     }).eq('id', pub.id)
     if (error) { setVenueError(error.message); return }
     setPub(p => ({...p, ...venueForm}))
+    setPubs(list => list.map(p => p.id === pub.id ? { ...p, ...venueForm } : p))
     setVenueSaved(true)
     setTimeout(() => setVenueSaved(false), 2000)
   }
@@ -93,7 +129,11 @@ export default function Dashboard() {
     <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',color:'#6e6e73',background:'#f5f5f7'}}>Loading...</div>
   )
 
-  if (pub && pub.status !== 'approved') {
+  // Full-page takeover only when this manager has nothing approved at all.
+  // If they own an approved venue too, a pending one is shown inline below
+  // instead — otherwise selecting it in the switcher would be a dead end,
+  // since this screen has no way back to the other venues.
+  if (pub && pub.status !== 'approved' && !pubs.some(p => p.status === 'approved')) {
     const rejected = pub.status === 'rejected'
     return (
       <div style={{minHeight:'100vh',position:'relative',overflow:'hidden',background:'linear-gradient(135deg, #fff8f3 0%, #ffffff 25%, #f0f4ff 55%, #f8f0ff 80%, #fff5f0 100%)',display:'flex',alignItems:'center',justifyContent:'center',padding:'24px'}}>
@@ -158,6 +198,9 @@ export default function Dashboard() {
           .fixture-competition { display: none !important; }
           .stats-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
           .stats-grid > div:last-child { grid-column: 1 / -1 !important; }
+          .venue-switcher { flex-wrap: nowrap !important; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 2px; }
+          .venue-switcher::-webkit-scrollbar { display: none; }
+          .venue-chip { flex-shrink: 0 !important; }
           .venue-grid { grid-template-columns: 1fr !important; }
           .facilities-grid { grid-template-columns: 1fr 1fr !important; }
         }
@@ -184,7 +227,70 @@ export default function Dashboard() {
       <div className="dash-content reveal-1" style={{maxWidth:'1000px',margin:'0 auto',padding:'32px 24px'}}>
 
         <h1 className="dash-title" style={{fontSize:'24px',fontWeight:'700',letterSpacing:'-0.5px',marginBottom:'4px',color:'#152238'}}>Manager Dashboard</h1>
-        <p style={{color:'#6e6e73',fontSize:'14px',marginBottom:'20px'}}>Control which sporting events are showcased on your screens today.</p>
+        <p style={{color:'#6e6e73',fontSize:'14px',marginBottom:'20px'}}>
+          {pubs.length > 1
+            ? 'Pick a venue, then control which sporting events are showcased on its screens today.'
+            : 'Control which sporting events are showcased on your screens today.'}
+        </p>
+
+        {/* Venue switcher — only meaningful when this manager owns several */}
+        {pubs.length > 1 && (
+          <div style={{marginBottom:'20px'}}>
+            <div style={{fontSize:'11px',fontWeight:'800',letterSpacing:'0.8px',textTransform:'uppercase',color:'#aeaeb2',marginBottom:'8px'}}>
+              Your venues ({pubs.length})
+            </div>
+            <div className="venue-switcher" style={{display:'flex',gap:'8px',flexWrap:'wrap'}}>
+              {pubs.map(p => {
+                const isActive = p.id === pub?.id
+                const isPending = p.status !== 'approved'
+                return (
+                  <button key={p.id} onClick={() => switchPub(p)} className="venue-chip"
+                    title={isPending ? `${p.name} — ${p.status}` : p.name}
+                    style={{
+                      display:'flex',alignItems:'center',gap:'7px',
+                      background: isActive ? '#e8732a' : 'white',
+                      color: isActive ? 'white' : '#152238',
+                      border:`1px solid ${isActive ? '#e8732a' : 'rgba(0,0,0,0.1)'}`,
+                      borderRadius:'10px',padding:'9px 14px',fontSize:'13px',fontWeight:'700',
+                      cursor:'pointer',whiteSpace:'nowrap',
+                      boxShadow: isActive ? '0 4px 14px rgba(232,115,42,0.25)' : '0 1px 3px rgba(0,0,0,0.04)',
+                    }}>
+                    {p.name}
+                    {isPending && (
+                      <span style={{fontSize:'10px',fontWeight:'700',textTransform:'uppercase',letterSpacing:'0.4px',
+                        background: isActive ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.06)',
+                        color: isActive ? 'white' : '#8e8e93',
+                        borderRadius:'5px',padding:'2px 6px'}}>
+                        {p.status}
+                      </span>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Selected venue still awaiting approval — inline, so the switcher
+            above stays reachable (unlike the full-page state further up). */}
+        {pub && pub.status !== 'approved' && (
+          <div style={{background:'rgba(232,115,42,0.06)',border:'1px solid rgba(232,115,42,0.25)',borderRadius:'12px',padding:'28px 24px',textAlign:'center'}}>
+            <div style={{display:'inline-flex',alignItems:'center',gap:'6px',background:'rgba(232,115,42,0.1)',border:'1px solid rgba(232,115,42,0.25)',borderRadius:'980px',padding:'5px 14px',marginBottom:'14px'}}>
+              <div style={{width:'6px',height:'6px',borderRadius:'50%',background: pub.status === 'rejected' ? '#dc2626' : '#e8732a'}}/>
+              <span style={{fontSize:'12px',color: pub.status === 'rejected' ? '#dc2626' : '#e8732a',fontWeight:'600'}}>
+                {pub.status === 'rejected' ? 'Application not approved' : 'Application under review'}
+              </span>
+            </div>
+            <h2 style={{color:'#152238',fontSize:'18px',fontWeight:'700',marginBottom:'8px'}}>{pub.name}</h2>
+            <p style={{color:'#6e6e73',fontSize:'14px',lineHeight:'1.6',margin:0}}>
+              {pub.status === 'rejected'
+                ? "We weren't able to approve this venue. Get in touch if you think that's a mistake."
+                : "You'll be able to set this venue's fixtures once it's approved. Pick another venue above in the meantime."}
+            </p>
+          </div>
+        )}
+
+        {pub && pub.status === 'approved' && (<>
 
         {/* Confirm banner */}
         <div className="confirm-banner" style={{background: confirmed ? 'rgba(34,197,94,0.08)' : 'rgba(232,115,42,0.08)',border:`1px solid ${confirmed?'rgba(34,197,94,0.3)':'rgba(232,115,42,0.3)'}`,borderRadius:'12px',padding:'16px 20px',marginBottom:'20px',display:'flex',justifyContent:'space-between',alignItems:'center',gap:'12px'}}>
@@ -397,6 +503,8 @@ export default function Dashboard() {
             </div>
           </div>
         )}
+
+        </>)}
       </div>
 
       {/* Mobile fixture row overrides */}
