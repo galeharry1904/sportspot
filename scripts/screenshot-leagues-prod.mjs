@@ -1,0 +1,11 @@
+import { chromium } from 'playwright';
+const outDir = process.argv[2];
+const url = process.argv[3] || 'https://sportspot-phi.vercel.app/leagues';
+const browser = await chromium.launch();
+const ctx = await browser.newContext({ viewport: { width: 1200, height: 1100 } });
+const page = await ctx.newPage();
+await page.goto(url, { waitUntil: 'networkidle' });
+await page.waitForTimeout(2500);
+await page.screenshot({ path: `${outDir}/leagues-prod.png`, fullPage: false });
+await browser.close();
+console.log('done');
