@@ -7,6 +7,16 @@ import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps'
 import { supabase } from '../../lib/supabase'
 import { Clock, MapPin, X, Navigation, GoogleMapsIcon, AppleMapsIcon } from '../../lib/icons'
 
+// Split into lead/rest so the action is emphasised without putting markup
+// in a translatable-looking string.
+const HOW_IT_WORKS = [
+  { lead: 'Drop a pin', rest: ' on the map, or search for the area you’ll be in.' },
+  { lead: 'Set the time', rest: ' you expect to be there.' },
+  { lead: 'Add it as a stop', rest: ' — repeat for anywhere else you’re heading.' },
+  { lead: 'Pick your match', rest: ' from the fixture list.' },
+  { lead: 'See the nearest pubs', rest: ' showing it, closest to you first.' },
+]
+
 function getDistance(lat1, lon1, lat2, lon2) {
   const R = 6371
   const dLat = (lat2-lat1) * Math.PI / 180
@@ -203,6 +213,34 @@ export default function PlanPage() {
       </div>
 
       <div className="reveal-2" style={{maxWidth:'720px',margin:'0 auto',padding:'28px 24px 32px'}}>
+
+        {/* How it works */}
+        <div style={{background:'white',border:'1px solid rgba(0,0,0,0.06)',borderRadius:'16px',padding:'24px',marginBottom:'20px',boxShadow:'0 2px 12px rgba(0,0,0,0.03)'}}>
+          <div style={{fontSize:'10px',fontWeight:'800',letterSpacing:'1.2px',textTransform:'uppercase',color:'#e8732a',marginBottom:'6px'}}>
+            How it works
+          </div>
+          <h2 style={{fontSize:'15px',fontWeight:'700',color:'#152238',marginBottom:'18px'}}>Five steps to your matchday pub</h2>
+
+          <div>
+            {HOW_IT_WORKS.map((step, i) => {
+              const isLast = i === HOW_IT_WORKS.length - 1
+              return (
+                <div key={step.lead} style={{display:'flex',gap:'12px',alignItems:'flex-start',position:'relative',paddingBottom: isLast ? 0 : '16px'}}>
+                  {/* Connector echoing the route line on the homepage steps */}
+                  {!isLast && (
+                    <div aria-hidden="true" style={{position:'absolute',left:'11px',top:'27px',bottom:'3px',width:'1px',background:'linear-gradient(to bottom, rgba(232,115,42,0.35), rgba(232,115,42,0.08))'}}/>
+                  )}
+                  <div style={{width:'23px',height:'23px',flexShrink:0,borderRadius:'50%',background:'rgba(232,115,42,0.1)',border:'1px solid rgba(232,115,42,0.22)',color:'#e8732a',fontSize:'11px',fontWeight:'800',display:'flex',alignItems:'center',justifyContent:'center',lineHeight:1}}>
+                    {i + 1}
+                  </div>
+                  <p style={{margin:0,paddingTop:'3px',fontSize:'13.5px',lineHeight:'1.5',color:'#6e6e73'}}>
+                    <strong style={{color:'#152238',fontWeight:'650'}}>{step.lead}</strong>{step.rest}
+                  </p>
+                </div>
+              )
+            })}
+          </div>
+        </div>
 
         {/* Today's stops */}
         <div style={{background:'white',border:'1px solid rgba(0,0,0,0.06)',borderRadius:'16px',padding:'24px',marginBottom:'20px',boxShadow:'0 2px 12px rgba(0,0,0,0.03)'}}>
