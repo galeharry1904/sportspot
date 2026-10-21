@@ -77,6 +77,60 @@ async function syncStandings(season) {
   return rows
 }
 
+// WSL standings come from ESPN, not football-data.org (see sync-fixtures for
+// why) — same shape of job, different source and field names.
+const ESPN_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
+  'Accept': 'application/json',
+}
+
+async function syncWSLStandings(season) {
+  const name = "Women's Super League"
+  let rows = 0
+  try {
+    const res = await fetch(
+      'https://site.api.espn.com/apis/v2/sports/soccer/eng.w.1/standings?season=' + season,
+      { headers: ESPN_HEADERS }
+    )
+    if (!res.ok) {
+      console.error(`sync-results-and-standings: ${name} standings HTTP ${res.status}`)
+      return 0
+    }
+    const data = await res.json()
+    const entries = data.children?.[0]?.standings?.entries ?? data.standings?.entries
+    if (!entries) {
+      console.log(`sync-results-and-standings: no standings entries for ${name}`)
+      return 0
+    }
+    for (const entry of entries) {
+      const stat = (statName) => entry.stats?.find((s) => s.name === statName)?.value
+      const record = {
+        competition: name,
+        season: String(season),
+        team: entry.team.displayName,
+        position: stat('rank'),
+        played: stat('gamesPlayed'),
+        won: stat('wins'),
+        drawn: stat('ties'),
+        lost: stat('losses'),
+        goals_for: stat('pointsFor'),
+        goals_against: stat('pointsAgainst'),
+        goal_difference: stat('pointDifferential'),
+        points: stat('points'),
+        updated_at: new Date().toISOString(),
+      }
+      const { error } = await supabase
+        .from('standings')
+        .upsert(record, { onConflict: 'competition,season,team' })
+      if (error) console.error(`sync-results-and-standings: ${name} standings upsert failed`, error.message)
+      else rows++
+    }
+  } catch (err) {
+    console.error(`sync-results-and-standings: ${name} standings fetch failed`, err)
+  }
+  return rows
+}
+
 async function syncResults(season) {
   const key = Deno.env.get('FOOTBALL_DATA_KEY')
   let updated = 0
@@ -110,11 +164,18 @@ async function syncResults(season) {
   return updated
 }
 
-Deno.serve(async () => {
-  const season = currentFootballSeason()
+Deno.serve(async (req) => {
+  // Daily cron calls this with no params — defaults to the live season.
+  // An explicit ?season=2025 lets it double as the one-off historical
+  // backfill tool (same pattern already used for Premier League /
+  // Championship), without a second copy of this function to maintain.
+  const requestedSeason = new URL(req.url).searchParams.get('season')
+  const season = requestedSeason ? Number(requestedSeason) : currentFootballSeason()
+
   const standingsRows = await syncStandings(season)
+  const wslStandingsRows = await syncWSLStandings(season)
   const resultsUpdated = await syncResults(season)
-  const summary = { success: true, season, standingsRows, resultsUpdated }
+  const summary = { success: true, season, standingsRows, wslStandingsRows, resultsUpdated }
   console.log('sync-results-and-standings: run complete', summary)
   return new Response(JSON.stringify(summary), { headers: { 'Content-Type': 'application/json' } })
 })
