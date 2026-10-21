@@ -18,6 +18,9 @@ const SEASON_END = `${Number(SEASON) + 1}-07-01`
 const COMPETITIONS = [
   { name: 'Premier League', hasTable: true },
   { name: 'Championship', hasTable: true },
+  // Fixtures/results come from ESPN; no standings synced for it yet, so the
+  // Table tab stays hidden rather than showing an empty one.
+  { name: "Women's Super League", hasTable: false },
   { name: 'FA Cup', hasTable: false },
   { name: 'League Cup', hasTable: false },
   { name: 'Champions League', hasTable: false },

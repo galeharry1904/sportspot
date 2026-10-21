@@ -70,6 +70,114 @@ async function syncFootball(from, to) {
   return total
 }
 
+// Women's Super League from ESPN's public scoreboard.
+//
+// Why ESPN and not the APIs used above: football-data.org's catalogue has no
+// women's competitions at all, and API-Football lists the WSL but blocks the
+// current season on the free plan ("try from 2022 to 2024"). ESPN's scoreboard
+// is undocumented but open, needs no key, and carries the live season.
+//
+// Two quirks worth keeping in mind:
+//  - It 403s with "Access Denied" unless a browser-ish User-Agent is sent.
+//    From Deno/edge with no UA you get HTML, not JSON.
+//  - It rejects date *ranges* (400); only single ?dates=YYYYMMDD works, so we
+//    walk the window a day at a time. That's ~8 unauthenticated calls a run.
+const WSL = {
+  name: "Women's Super League",
+  // WSL is shared between Sky Sports and the BBC in the UK. ESPN reports US
+  // broadcasters (Paramount+), so that field is deliberately ignored.
+  broadcaster: 'Sky Sports / BBC',
+  espnLeague: 'eng.w.1',
+}
+
+const ESPN_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
+  'Accept': 'application/json',
+}
+
+function eachDate(from, to) {
+  const days = []
+  const cursor = new Date(from + 'T00:00:00Z')
+  const end = new Date(to + 'T00:00:00Z')
+  while (cursor <= end) {
+    days.push(cursor.toISOString().split('T')[0].replace(/-/g, ''))
+    cursor.setUTCDate(cursor.getUTCDate() + 1)
+  }
+  return days
+}
+
+async function syncWSL(from, to) {
+  let total = 0
+  const seen = new Set()
+
+  for (const day of eachDate(from, to)) {
+    try {
+      const res = await fetch(
+        'https://site.api.espn.com/apis/site/v2/sports/soccer/' + WSL.espnLeague + '/scoreboard?dates=' + day,
+        { headers: ESPN_HEADERS }
+      )
+      if (!res.ok) {
+        console.error(WSL.name + ' ' + day + ': HTTP ' + res.status)
+        continue
+      }
+      const data = await res.json()
+      const events = data.events || []
+
+      for (const event of events) {
+        // The same fixture can surface under neighbouring days depending on
+        // how ESPN buckets kick-offs by timezone — upsert handles it, but
+        // skipping avoids pointless writes.
+        if (seen.has(event.id)) continue
+        seen.add(event.id)
+
+        const competition = (event.competitions || [])[0]
+        const competitors = (competition && competition.competitors) || []
+        const home = competitors.find(function(c) { return c.homeAway === 'home' })
+        const away = competitors.find(function(c) { return c.homeAway === 'away' })
+        if (!home || !away) {
+          console.warn(WSL.name + ': skipping ' + event.id + ' — missing competitor')
+          continue
+        }
+
+        // 'pre' | 'in' | 'post'. Only a completed match has meaningful scores;
+        // ESPN reports 0-0 for anything not yet played, which would otherwise
+        // look like a real goalless result.
+        const state = event.status && event.status.type && event.status.type.state
+        const finished = state === 'post'
+
+        const kickoff = new Date(event.date).toISOString()
+        const row = {
+          home_team:      home.team.displayName,
+          away_team:      away.team.displayName,
+          competition:    WSL.name,
+          sport:          'football',
+          kickoff_time:   kickoff,
+          fixture_date:   kickoff.split('T')[0],
+          broadcaster:    WSL.broadcaster,
+          api_fixture_id: 'espn-' + event.id,
+          status:         finished ? 'FINISHED' : 'SCHEDULED',
+          home_score:     finished ? Number(home.score) : null,
+          away_score:     finished ? Number(away.score) : null,
+        }
+
+        const result = await supabase
+          .from('fixtures')
+          .upsert(row, { onConflict: 'api_fixture_id' })
+        if (result.error) {
+          console.error(WSL.name + ' insert error:', result.error.message)
+        } else {
+          total++
+        }
+      }
+    } catch (e) {
+      console.error(WSL.name + ' ' + day + ' failed:', e)
+    }
+  }
+
+  console.log(WSL.name + ': ' + total + ' fixtures synced')
+  return total
+}
+
 // Other sports from TheSportsDB
 const OTHER_LEAGUES = [
   { id: '4391', name: 'Premiership Rugby',        sport: 'rugby',    broadcaster: 'TNT Sports' },
@@ -135,10 +243,11 @@ Deno.serve(async function() {
   console.log('Syncing fixtures from ' + from + ' to ' + to)
 
   const football = await syncFootball(from, to)
+  const wsl = await syncWSL(from, to)
   const other = await syncOtherSports(from, to)
 
   return new Response(
-    JSON.stringify({ success: true, football: football, other: other, total: football + other }),
+    JSON.stringify({ success: true, football: football, wsl: wsl, other: other, total: football + wsl + other }),
     { headers: { 'Content-Type': 'application/json' } }
   )
 })
