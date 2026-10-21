@@ -1,0 +1,14 @@
+import { chromium } from 'playwright';
+const outDir = process.argv[2];
+const browser = await chromium.launch();
+const ctx = await browser.newContext({ viewport: { width: 1440, height: 1400 } });
+const page = await ctx.newPage();
+await page.goto('http://localhost:3000/', { waitUntil: 'networkidle' });
+const section = page.locator('section[aria-labelledby="find-your-pub-title"]');
+await section.scrollIntoViewIfNeeded();
+await page.waitForTimeout(500);
+await section.screenshot({ path: `${outDir}/desktop-check-t0.png` });
+await page.waitForTimeout(3000);
+await section.screenshot({ path: `${outDir}/desktop-check-t3s.png` });
+await browser.close();
+console.log('done');

@@ -255,6 +255,16 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
+  /* Number above its own illustration, not between card and title, so it's
+     unambiguous which card each number belongs to in a single stacked
+     column (desktop keeps the original order — the route track there
+     already ties each number to its card). */
+  .number {
+    order: -1;
+    margin-top: 0;
+    margin-bottom: 20px;
+  }
+
   /* ---------- scroll-triggered reveal (replaces the shared 12s loop) ----------
      Each step becomes an independent one-shot animation, paused until its
      <li> gets .inView (toggled by the component's IntersectionObserver),

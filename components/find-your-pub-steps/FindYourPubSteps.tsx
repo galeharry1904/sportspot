@@ -7,13 +7,15 @@
  * along the route and each step card comes forward in turn while its
  * illustration plays, exactly as before.
  *
- * Mobile (<=560px): each step plays its own illustration once, independently,
- * as it scrolls into view — driven by IntersectionObserver below. The CSS
+ * Mobile (<=560px): each step plays its own illustration independently, every
+ * time it scrolls into view — driven by IntersectionObserver below. The CSS
  * module redefines every animation-name under its 560px media query to a
  * self-contained "...M" keyframe set (instead of a slice of the shared 12s
  * clock) and gates playback on a `.inView` class this component toggles per
- * step. Respects prefers-reduced-motion either way (everything shows in its
- * finished state, nothing moves).
+ * step. Each re-entry bumps a per-step play counter used as a React key, which
+ * remounts the card — a finished CSS animation won't restart on its own, so
+ * the remount is what makes it replay. Respects prefers-reduced-motion either
+ * way (everything shows in its finished state, nothing moves).
  */
 import { useEffect, useRef, useState } from "react";
 import s from "./FindYourPubSteps.module.css";
@@ -57,31 +59,59 @@ const STEPS: Step[] = [
 ];
 
 export default function FindYourPubSteps() {
-  const stepRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  // Tracked synchronously (not via React state) so the guard below is
+  // reliable even when IntersectionObserver re-notifies us about an element
+  // we just re-observed (observe() always fires an initial callback for the
+  // element's current state) — without this, re-observing a freshly
+  // remounted-but-still-visible card would read as "just became visible"
+  // again and bump playCount forever.
+  const visibleRef = useRef<boolean[]>(STEPS.map(() => false));
   const [visible, setVisible] = useState<boolean[]>(() => STEPS.map(() => false));
+  // Bumped on every re-entry into view; used as part of each <li>'s React key
+  // so the card remounts fresh each time — a completed one-shot CSS animation
+  // (animation-fill-mode: forwards) just sits at its end state if you merely
+  // toggle animation-play-state again, it won't replay on its own.
+  const [playCount, setPlayCount] = useState<number[]>(() => STEPS.map(() => 0));
 
   useEffect(() => {
     // Only matters on mobile (the CSS only gates playback on .inView under its
     // 560px query), but observing everywhere is harmless and keeps this
     // effect simple — the class is inert above that width.
-    const observer = new IntersectionObserver(
+    observerRef.current = new IntersectionObserver(
       (entries) => {
-        setVisible((prev) => {
-          let changed = false;
-          const next = [...prev];
-          for (const entry of entries) {
-            const index = stepRefs.current.indexOf(entry.target as HTMLLIElement);
-            if (index === -1 || next[index] || !entry.isIntersecting) continue;
-            next[index] = true;
-            changed = true;
+        for (const entry of entries) {
+          const indexAttr = (entry.target as HTMLElement).dataset.stepIndex;
+          const index = indexAttr ? Number(indexAttr) : NaN;
+          if (Number.isNaN(index)) continue;
+
+          if (entry.isIntersecting) {
+            if (visibleRef.current[index]) continue; // already marked visible — redundant notification
+            visibleRef.current[index] = true;
+            setVisible((prev) => {
+              const next = [...prev];
+              next[index] = true;
+              return next;
+            });
+            setPlayCount((prev) => {
+              const next = [...prev];
+              next[index] = next[index] + 1;
+              return next;
+            });
+          } else {
+            if (!visibleRef.current[index]) continue;
+            visibleRef.current[index] = false;
+            setVisible((prev) => {
+              const next = [...prev];
+              next[index] = false;
+              return next;
+            });
           }
-          return changed ? next : prev;
-        });
+        }
       },
       { threshold: 0.35 }
     );
-    stepRefs.current.forEach((el) => el && observer.observe(el));
-    return () => observer.disconnect();
+    return () => observerRef.current?.disconnect();
   }, []);
 
   return (
@@ -108,9 +138,13 @@ export default function FindYourPubSteps() {
           <ol className={s.grid}>
             {STEPS.map(({ title, copy, Art, cardClass, activeNumberClass }, i) => (
               <li
-                key={title}
+                key={`${title}-${playCount[i]}`}
+                data-step-index={i}
                 ref={(el) => {
-                  stepRefs.current[i] = el;
+                  if (el) observerRef.current?.observe(el);
+                  return () => {
+                    if (el) observerRef.current?.unobserve(el);
+                  };
                 }}
                 className={`${s.step} ${visible[i] ? s.inView : ""}`}
               >
