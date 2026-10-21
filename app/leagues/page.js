@@ -49,6 +49,10 @@ function LeaguesContent() {
   const [fixtures, setFixtures] = useState([])
   const [loading, setLoading] = useState(true)
   const [fanProfile, setFanProfile] = useState(null)
+  // Drives the Fixtures/Results split below — re-ticked on every refresh (see
+  // the polling effect) so a match that kicks off while the page is just
+  // sitting open moves itself out of Fixtures without needing a reload.
+  const [now, setNow] = useState(() => new Date())
 
   const competition = COMPETITIONS.find(c => c.name === selectedCompetition)
 
@@ -58,6 +62,15 @@ function LeaguesContent() {
 
   useEffect(() => {
     loadData(selectedCompetition)
+  }, [selectedCompetition])
+
+  // Background refresh so Fixtures/Results stay current on their own — both
+  // for newly-finished scores landing from the sync, and for the time-based
+  // live/finished split below, which depends on "now" actually moving on.
+  // Silent: no loading-spinner flicker every minute.
+  useEffect(() => {
+    const id = setInterval(() => loadData(selectedCompetition, { silent: true }), 60000)
+    return () => clearInterval(id)
   }, [selectedCompetition])
 
   // /leagues is public — a fan doesn't need to be logged in to view it, so
@@ -76,8 +89,8 @@ function LeaguesContent() {
     return fanProfile?.favourite_teams?.some(t => team?.includes(t)) || false
   }
 
-  async function loadData(comp) {
-    setLoading(true)
+  async function loadData(comp, { silent = false } = {}) {
+    if (!silent) setLoading(true)
     const [{ data: standingsData }, { data: fixturesData }] = await Promise.all([
       supabase.from('standings').select('*').eq('competition', comp).in('season', [SEASON, LAST_SEASON]).order('position'),
       supabase.from('fixtures').select('*').eq('competition', comp)
@@ -87,11 +100,28 @@ function LeaguesContent() {
     setStandings((standingsData || []).filter(r => r.season === SEASON))
     setLastSeasonStandings((standingsData || []).filter(r => r.season === LAST_SEASON))
     setFixtures(fixturesData || [])
-    setLoading(false)
+    setNow(new Date())
+    if (!silent) setLoading(false)
   }
 
-  const results = fixtures.filter(f => f.status === 'FINISHED').slice().sort((a, b) => new Date(b.kickoff_time) - new Date(a.kickoff_time))
-  const upcoming = fixtures.filter(f => f.status !== 'FINISHED').slice().sort((a, b) => new Date(a.kickoff_time) - new Date(b.kickoff_time))
+  // Our own sync only flips a fixture to FINISHED when the periodic job
+  // notices (every 3 hours for results) — relying on that alone would leave
+  // an already-over match sitting under "Fixtures" looking upcoming for
+  // hours. So a fixture also counts as finished once enough real time has
+  // passed since kickoff that it must be over, regardless of what the DB
+  // currently says. 3 hours comfortably covers full time, stoppage, extra
+  // time and penalties for any competition on this page.
+  const FINISHED_AFTER_MS = 3 * 60 * 60 * 1000
+  function isEffectivelyFinished(f) {
+    if (f.status === 'FINISHED') return true
+    return now - new Date(f.kickoff_time) > FINISHED_AFTER_MS
+  }
+
+  // Results: everything effectively finished, most recent first.
+  // Fixtures: everything else — still live, later today, or further out —
+  // never anything already in the past, soonest first.
+  const results = fixtures.filter(isEffectivelyFinished).slice().sort((a, b) => new Date(b.kickoff_time) - new Date(a.kickoff_time))
+  const upcoming = fixtures.filter(f => !isEffectivelyFinished(f)).slice().sort((a, b) => new Date(a.kickoff_time) - new Date(b.kickoff_time))
 
   return (
     <div style={{minHeight:'100vh',background:'#f5f5f7',color:'#152238'}}>
