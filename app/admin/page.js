@@ -120,6 +120,37 @@ function GrowthPanel({ title, data, color, onClick }) {
   )
 }
 
+// Horizontal bar leaderboard — shares the same card chrome as GrowthPanel/
+// StatTile so the new fan-analytics section reads as part of the same page,
+// not a bolted-on widget.
+function RankedList({ title, rows, color, emptyText }) {
+  const max = rows && rows.length ? Math.max(...rows.map(r => r.value)) : 0
+  return (
+    <div style={{flex:1,minWidth:'260px',background:'white',border:'1px solid rgba(0,0,0,0.06)',borderRadius:'16px',padding:'22px 24px',boxShadow:'0 2px 12px rgba(0,0,0,0.03)'}}>
+      <div style={{fontSize:'13px',color:'#6e6e73',fontWeight:'600',marginBottom:'16px'}}>{title}</div>
+      {!rows ? (
+        <div style={{color:'#aeaeb2',fontSize:'13px',padding:'24px 0',textAlign:'center'}}>Loading...</div>
+      ) : rows.length === 0 ? (
+        <div style={{color:'#aeaeb2',fontSize:'13px',padding:'24px 0',textAlign:'center'}}>{emptyText}</div>
+      ) : (
+        <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
+          {rows.slice(0, 8).map(r => (
+            <div key={r.label}>
+              <div style={{display:'flex',justifyContent:'space-between',fontSize:'13px',marginBottom:'4px',gap:'10px'}}>
+                <span style={{color:'#152238',fontWeight:'600',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{r.label}</span>
+                <span style={{color:'#6e6e73',fontVariantNumeric:'tabular-nums',flexShrink:0}}>{r.value.toLocaleString()}</span>
+              </div>
+              <div style={{background:'#f0efe9',borderRadius:'6px',height:'6px',overflow:'hidden'}}>
+                <div style={{width:`${max ? (r.value / max) * 100 : 0}%`,height:'100%',background:color,borderRadius:'6px'}}/>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function DrilldownModal({ title, loading, items, kind, onClose }) {
   return (
     <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.4)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:1000,padding:'24px'}}>
@@ -174,6 +205,11 @@ export default function AdminPage() {
   const [stats, setStats] = useState(null)
   const [growth, setGrowth] = useState(null)
   const [drilldown, setDrilldown] = useState(null)
+  const [fanStats, setFanStats] = useState(null)
+  const [teamPopularity, setTeamPopularity] = useState(null)
+  const [sportPopularity, setSportPopularity] = useState(null)
+  const [fanLocations, setFanLocations] = useState(null)
+  const [pubPopularity, setPubPopularity] = useState(null)
   const router = useRouter()
 
   // Runs once on mount; init/loadPending/loadStats/loadGrowth are re-created
@@ -192,6 +228,7 @@ export default function AdminPage() {
     loadPending()
     loadStats()
     loadGrowth()
+    loadFanAnalytics()
   }
 
   async function loadPending() {
@@ -209,6 +246,21 @@ export default function AdminPage() {
   async function loadGrowth() {
     const { data } = await supabase.rpc('admin_growth_stats')
     setGrowth(data || [])
+  }
+
+  async function loadFanAnalytics() {
+    const [{ data: fs }, { data: teams }, { data: sports }, { data: locations }, { data: pubs }] = await Promise.all([
+      supabase.rpc('admin_fan_stats'),
+      supabase.rpc('admin_team_popularity'),
+      supabase.rpc('admin_sport_popularity'),
+      supabase.rpc('admin_fan_locations'),
+      supabase.rpc('admin_pub_popularity'),
+    ])
+    setFanStats(fs?.[0] || null)
+    setTeamPopularity(teams || [])
+    setSportPopularity(sports || [])
+    setFanLocations(locations || [])
+    setPubPopularity(pubs || [])
   }
 
   async function openDrilldown(kind, title) {
@@ -306,6 +358,30 @@ export default function AdminPage() {
           <DrilldownModal title={drilldown.title} loading={drilldown.loading} items={drilldown.items} kind={drilldown.kind}
             onClose={() => setDrilldown(null)}/>
         )}
+
+        <h2 style={{fontSize:'18px',fontWeight:'700',color:'#152238',letterSpacing:'-0.3px',marginBottom:'4px'}}>Fans &amp; activity</h2>
+        <p style={{color:'#6e6e73',fontSize:'14px',marginBottom:'20px'}}>What fans are into and where they&apos;re based — handy when pitching a venue.</p>
+
+        <div style={{display:'flex',gap:'12px',flexWrap:'wrap',marginBottom:'20px'}}>
+          <StatTile label="Fan Profiles" value={fanStats ? fanStats.total_fan_profiles : '—'} />
+          <StatTile label="Planned Stops" value={fanStats ? fanStats.total_planned_stops : '—'} />
+          <StatTile label="Pubs Saved" value={fanStats ? fanStats.total_saved_pubs : '—'} />
+        </div>
+
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(260px, 1fr))',gap:'16px',marginBottom:'32px'}}>
+          <RankedList title="Top favourite teams" color="#e8732a"
+            rows={teamPopularity && teamPopularity.map(r => ({ label: r.team, value: r.fan_count }))}
+            emptyText="No favourite teams set yet."/>
+          <RankedList title="Favourite sports" color="#2a78d6"
+            rows={sportPopularity && sportPopularity.map(r => ({ label: r.sport, value: r.fan_count }))}
+            emptyText="No sports selected yet."/>
+          <RankedList title="Where fans are based" color="#16a34a"
+            rows={fanLocations && fanLocations.map(r => ({ label: r.area, value: r.fan_count }))}
+            emptyText="No location signal yet — fans haven't planned a stop or saved a pub."/>
+          <RankedList title="Most-saved venues" color="#a855f7"
+            rows={pubPopularity && pubPopularity.map(r => ({ label: r.pub_name, value: r.save_count }))}
+            emptyText="No venues saved yet."/>
+        </div>
 
         <h2 style={{fontSize:'18px',fontWeight:'700',color:'#152238',letterSpacing:'-0.3px',marginBottom:'4px'}}>Venue applications</h2>
         <p style={{color:'#6e6e73',fontSize:'14px',marginBottom:'20px'}}>{pending.length} waiting for review</p>
