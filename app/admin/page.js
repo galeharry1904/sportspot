@@ -316,21 +316,33 @@ export default function AdminPage() {
     <div style={{minHeight:'100vh',background:'#f5f5f7'}}>
       <style>{`
         * { box-sizing: border-box; }
+        .nav-label-short { display: none; }
         @media (hover: hover) and (pointer: fine) {
           .nav-link:hover { background: rgba(0,0,0,0.04) !important; }
           .approve-btn:hover { transform: scale(1.02); }
           .clickable-tile:hover { opacity: 0.75; }
         }
+        @media (max-width: 480px) {
+          .admin-nav { padding: 0 16px !important; }
+          .admin-nav-logo { height: 40px !important; }
+          .admin-nav-badge { display: none; }
+          .admin-nav-links { gap: 6px !important; }
+          .admin-nav-links .nav-link { padding: 6px 10px !important; }
+          .nav-label-full { display: none; }
+          .nav-label-short { display: inline; }
+        }
       `}</style>
 
       {/* Nav */}
-      <div style={{background:'rgba(245,245,247,0.72)',borderBottom:'1px solid rgba(0,0,0,0.08)',backdropFilter:'saturate(200%) blur(28px)',WebkitBackdropFilter:'saturate(200%) blur(28px)',padding:'0 32px',display:'flex',alignItems:'center',justifyContent:'space-between',height:'60px',position:'sticky',top:0,zIndex:100}}>
-        <div style={{display:'flex',alignItems:'center',gap:'12px'}}>
-          <Link href="/"><Image src="/New%20Logo.png" alt="SportSpot" width={2085} height={635} style={{height:'54px',width:'auto'}}/></Link>
-          <span style={{background:'rgba(0,0,0,0.05)',color:'#6e6e73',fontSize:'12px',padding:'3px 10px',borderRadius:'20px'}}>Admin</span>
+      <div className="admin-nav" style={{background:'rgba(245,245,247,0.72)',borderBottom:'1px solid rgba(0,0,0,0.08)',backdropFilter:'saturate(200%) blur(28px)',WebkitBackdropFilter:'saturate(200%) blur(28px)',padding:'0 32px',display:'flex',alignItems:'center',justifyContent:'space-between',height:'60px',position:'sticky',top:0,zIndex:100}}>
+        <div style={{display:'flex',alignItems:'center',gap:'12px',minWidth:0}}>
+          <Link href="/"><Image className="admin-nav-logo" src="/New%20Logo.png" alt="SportSpot" width={2085} height={635} style={{height:'54px',width:'auto'}}/></Link>
+          <span className="admin-nav-badge" style={{background:'rgba(0,0,0,0.05)',color:'#6e6e73',fontSize:'12px',padding:'3px 10px',borderRadius:'20px',whiteSpace:'nowrap'}}>Admin</span>
         </div>
-        <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
-          <Link href="/" className="nav-link" style={{fontSize:'13px',color:'#6e6e73',padding:'6px 12px',borderRadius:'6px',border:'1px solid rgba(0,0,0,0.1)',whiteSpace:'nowrap'}}>Return to Home Page</Link>
+        <div className="admin-nav-links" style={{display:'flex',gap:'8px',alignItems:'center',flexShrink:0}}>
+          <Link href="/" className="nav-link" style={{fontSize:'13px',color:'#6e6e73',padding:'6px 12px',borderRadius:'6px',border:'1px solid rgba(0,0,0,0.1)',whiteSpace:'nowrap'}}>
+            <span className="nav-label-full">Return to Home Page</span><span className="nav-label-short">Home</span>
+          </Link>
           <button onClick={async () => { await supabase.auth.signOut(); router.push('/login') }} className="nav-link"
             style={{fontSize:'13px',color:'#6e6e73',background:'none',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'6px',padding:'6px 12px',cursor:'pointer',whiteSpace:'nowrap'}}>
             Sign Out
